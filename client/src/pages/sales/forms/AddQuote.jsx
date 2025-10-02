@@ -1,25 +1,23 @@
 import { useState, useEffect } from 'react';
 import { FaSave, FaPrint, FaPaperPlane, FaFileInvoice, FaPlus, FaTrash, FaArrowLeft } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+
 
 function AddQuote({ onClose }) {
   const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
+  const [isSaving, setIsSaving] = useState(false); // Loading state for save button
+
+
   
   const [quoteData, setQuoteData] = useState({
-    clientId: '',
-    // Client Information
-    clientName: '',
-    clientCompany: '',
-    clientEmail: '',
-    clientPhone: '',
-    clientAddress: '',
-    clientReference: '',
+    clientID: '',
     
     // Quote Header
     quoteNumber: `DEV-${Date.now()}`,
     dateCreated: new Date().toISOString().split('T')[0],
     expiryDate: '',
-    status: 'draft',
+    status: 'brouillon',
     
     // Products/Services
     items: [
@@ -46,16 +44,14 @@ function AddQuote({ onClose }) {
     fetchProducts();
   }, []);
 
+
+
   const fetchClients = async () => {
     // Your API call to get clients from MySQL
     const response = await fetch('/api/clients');
     const data = await response.json();
     setClients(data);
-    // Mock data for now
-    // setClients([
-    //   { id: 1, name: 'John Doe', company: 'ABC Corp', email: 'john@abc.com', phone: '0123456789', address: '123 Main St' },
-    //   { id: 2, name: 'Jane Smith', company: 'XYZ Ltd', email: 'jane@xyz.com', phone: '0987654321', address: '456 Oak Ave' }
-    // ]);
+    
   };
 
   const fetchProducts = async () => {
@@ -63,37 +59,22 @@ function AddQuote({ onClose }) {
     const response = await fetch('/api/products');
     const data = await response.json();
     setProducts(data);
-    console.log(data)
-    
-    // Mock data for now
-    // setProducts([
-    //   { id: 1, name: 'Product A', price: 100, description: 'Description A' },
-    //   { id: 2, name: 'Product B', price: 200, description: 'Description B' },
-    //   { id: 3, name: 'Product C', price: 150, description: 'Description C' }
-    // ]);
+
   };
 
-  // const handleClientChange = (clientId) => {
-  //   const selectedClient = clients.find(client => client.id === parseInt(clientId));
-  //   if (selectedClient) {
-  //     setQuoteData(prev => ({
-  //       ...prev,
-  //       clientId: clientId,
-  //       clientName: selectedClient.name,
-  //       clientCompany: selectedClient.company,
-  //       clientEmail: selectedClient.email,
-  //       clientPhone: selectedClient.phone,
-  //       clientAddress: selectedClient.address
-  //     }));
-  //   }
-  // };
+  useEffect(() => {
+    fetchClients();
+    fetchProducts();
+  }, []);
+
+  
 
   const handleProductChange = (itemId, productId) => {
     const selectedProduct = products.find(product => product.id === parseInt(productId));
     if (selectedProduct) {
       updateItem(itemId, 'productId', productId);
-      updateItem(itemId, 'description', selectedProduct.name);
-      updateItem(itemId, 'unitPrice', selectedProduct.price);
+      updateItem(itemId, 'description', selectedProduct.nom);
+      updateItem(itemId, 'unitPrice', selectedProduct.prix);
     }
   };
 
@@ -141,6 +122,64 @@ function AddQuote({ onClose }) {
   const subtotal = quoteData.items.reduce((sum, item) => sum + item.total, 0);
   const taxAmount = subtotal * 0.2; // 20% TVA
   const totalAmount = subtotal + taxAmount;
+
+   // Function to save quote to database
+  const saveQuote = async () => {
+    // Validate required fields
+    if (!quoteData.clientID) {
+      alert('Veuillez sélectionner un client');
+      return;
+    }
+
+    if (quoteData.items.length === 0 || quoteData.items.some(item => !item.productId)) {
+      alert('Veuillez ajouter au moins un article valide');
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      // Prepare data for API
+      const quoteToSave = {
+        ...quoteData,
+        subtotal: subtotal,
+        taxAmount: taxAmount,
+        totalAmount: totalAmount
+      };
+
+      // Send POST request to save quote
+      const response = await fetch('/api/quote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(quoteToSave)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Success - show confirmation and close or reset form
+        alert(`Devis ${result.quoteNumber} créé avec succès!`);
+        
+        // Option 1: Close the form
+        // onClose();
+        
+        // Option 2: Reset form for new quote
+        // resetForm();
+        
+      } else {
+        // Error from server
+        alert(`Erreur: ${result.message}`);
+      }
+
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+      alert('Erreur lors de la sauvegarde du devis');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[90vh] overflow-y-auto relative">
@@ -265,11 +304,9 @@ function AddQuote({ onClose }) {
                 <select 
                   value={quoteData.clientId} 
                   onChange={(e) => {
-                    const selectedClient = clients.find(client => client.id === parseInt(e.target.value));
                     setQuoteData(prev => ({
                       ...prev,
-                      clientId: e.target.value,
-                      clientName: selectedClient ? selectedClient.name : ''
+                      clientID:e.target.value
                     }));
                   }}
                   className="w-full border rounded px-3 py-2"
@@ -456,24 +493,24 @@ function AddQuote({ onClose }) {
         {/* Actions */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex gap-4 justify-between">
-            <button 
+            <Link
+              to={"/sales"} 
               onClick={onClose}
               className="flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
             >
               <FaArrowLeft /> Retour aux Ventes
-            </button>
-            <div className="flex gap-4">
-              <button className="flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                <FaSave /> Sauvegarder
-              </button>
-              <button className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                <FaPrint /> Imprimer
-              </button>
-              <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                <FaPaperPlane /> Envoyer
-              </button>
-              <button className="flex items-center gap-2 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
-                <FaFileInvoice /> Convertir en Facture
+            </Link>
+            <div >
+              {/* Save Button - Primary Action */}
+              <button 
+                onClick={saveQuote}
+                disabled={isSaving}
+                className={`flex items-center gap-2 ${
+                  isSaving ? 'bg-blue-400' : 'bg-blue-500 hover:bg-blue-600'
+                } text-white px-4 py-2 rounded transition-colors`}
+              >
+                <FaSave /> 
+                {isSaving ? 'Sauvegarde...' : 'Ajouter le Devis'}
               </button>
             </div>
           </div>
