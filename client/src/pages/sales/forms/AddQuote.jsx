@@ -2,24 +2,32 @@ import { useState, useEffect } from 'react';
 import { FaSave, FaPrint, FaPaperPlane, FaFileInvoice, FaPlus, FaTrash, FaArrowLeft } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
-
+// =============================================================================
+// COMPONENT: AddQuote
+// PURPOSE: Form for creating new quotes with client selection, product items, and terms
+// =============================================================================
 function AddQuote({ onClose }) {
+  // ===========================================================================
+  // STATE MANAGEMENT SECTION
+  // ===========================================================================
   const [clients, setClients] = useState([]);
   const [products, setProducts] = useState([]);
   const [isSaving, setIsSaving] = useState(false); // Loading state for save button
 
-
-  
+  // ===========================================================================
+  // QUOTE DATA STATE - Main form data structure
+  // WARNING: Changing this structure may break save functionality
+  // ===========================================================================
   const [quoteData, setQuoteData] = useState({
     clientID: '',
     
-    // Quote Header
+    // Quote Header - Auto-generated values
     quoteNumber: `DEV-${Date.now()}`,
     dateCreated: new Date().toISOString().split('T')[0],
     expiryDate: '',
-    status: 'brouillon',
+    status: '',
     
-    // Products/Services
+    // Products/Services - Dynamic items array
     items: [
       {
         id: 1,
@@ -32,53 +40,59 @@ function AddQuote({ onClose }) {
       }
     ],
     
-    // Terms & Conditions
-    paymentTerms: '30 jours',
-    deliveryConditions: 'Livraison sous 15 jours',
-    validityPeriod: '30 jours',
-    specialNotes: ''
+    // // Terms & Conditions - Default values
+    // paymentTerms: '30 jours',
+    // deliveryConditions: 'Livraison sous 15 jours',
+    // validityPeriod: '30 jours',
+    // specialNotes: ''
   });
 
-  useEffect(() => {
-    fetchClients();
-    fetchProducts();
-  }, []);
-
-
-
+  // ===========================================================================
+  // API DATA FETCHING SECTION
+  // ERROR: If these fail, check network tab and API endpoints
+  // ===========================================================================
   const fetchClients = async () => {
-    // Your API call to get clients from MySQL
+    // TODO: Add error handling for failed API calls
     const response = await fetch('/api/clients');
     const data = await response.json();
     setClients(data);
-    
   };
 
   const fetchProducts = async () => {
-    // Your API call to get products from MySQL
+    // TODO: Add error handling for failed API calls
     const response = await fetch('/api/products');
     const data = await response.json();
     setProducts(data);
-
   };
 
+  // ===========================================================================
+  // EFFECT HOOKS SECTION
+  // ===========================================================================
   useEffect(() => {
+    // Load initial data on component mount
     fetchClients();
     fetchProducts();
   }, []);
 
   
+  
 
+  // ===========================================================================
+  // PRODUCT/ITEM MANAGEMENT SECTION
+  // CRITICAL: This handles product selection and item updates
+  // ===========================================================================
   const handleProductChange = (itemId, productId) => {
+    // Find selected product and auto-populate fields
     const selectedProduct = products.find(product => product.id === parseInt(productId));
     if (selectedProduct) {
       updateItem(itemId, 'productId', productId);
-      updateItem(itemId, 'description', selectedProduct.nom);
-      updateItem(itemId, 'unitPrice', selectedProduct.prix);
+      updateItem(itemId, 'description', selectedProduct.product_name);
+      updateItem(itemId, 'unitPrice', selectedProduct.product_price);
     }
   };
 
   const addItem = () => {
+    // Add new empty item to the quote
     setQuoteData(prev => ({
       ...prev,
       items: [
@@ -97,6 +111,18 @@ function AddQuote({ onClose }) {
   };
 
   const removeItem = (id) => {
+    
+    if(quoteData.items.length === 1 ){
+      return alert("you can't delete just this only row so you can add at least one item")
+    } else {
+      // Remove item by id - TODO: Add validation for minimum items
+    setQuoteData(prev => ({
+      ...prev,
+      items: prev.items.filter(item => item.id !== id)
+    }));
+    }
+    
+    // Remove item by id - TODO: Add validation for minimum items
     setQuoteData(prev => ({
       ...prev,
       items: prev.items.filter(item => item.id !== id)
@@ -104,11 +130,13 @@ function AddQuote({ onClose }) {
   };
 
   const updateItem = (id, field, value) => {
+    // Update specific item field and recalculate totals if needed
     setQuoteData(prev => ({
       ...prev,
       items: prev.items.map(item => {
         if (item.id === id) {
           const updatedItem = { ...item, [field]: value };
+          // Recalculate total when quantity or price changes
           if (field === 'quantity' || field === 'unitPrice') {
             updatedItem.total = updatedItem.quantity * updatedItem.unitPrice;
           }
@@ -119,13 +147,22 @@ function AddQuote({ onClose }) {
     }));
   };
 
+ 
+
+  // ===========================================================================
+  // CALCULATIONS SECTION
+  // IMPORTANT: These values are used in the save operation
+  // ===========================================================================
   const subtotal = quoteData.items.reduce((sum, item) => sum + item.total, 0);
-  const taxAmount = subtotal * 0.2; // 20% TVA
+  const taxAmount = subtotal * 0.2; // 20% TVA - TODO: Make dynamic based on item tax rates
   const totalAmount = subtotal + taxAmount;
 
-   // Function to save quote to database
+  // ===========================================================================
+  // SAVE OPERATION SECTION
+  // CRITICAL: This sends data to the backend API
+  // ===========================================================================
   const saveQuote = async () => {
-    // Validate required fields
+    // Validation - TODO: Enhance with better error messages
     if (!quoteData.clientID) {
       alert('Veuillez sélectionner un client');
       return;
@@ -139,7 +176,7 @@ function AddQuote({ onClose }) {
     setIsSaving(true);
 
     try {
-      // Prepare data for API
+      // Prepare data for API - includes calculated fields
       const quoteToSave = {
         ...quoteData,
         subtotal: subtotal,
@@ -147,8 +184,8 @@ function AddQuote({ onClose }) {
         totalAmount: totalAmount
       };
 
-      // Send POST request to save quote
-      const response = await fetch('/api/quote', {
+      // API Call - TODO: Add timeout and retry logic
+        const result = await fetch('/api/quote', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -156,24 +193,24 @@ function AddQuote({ onClose }) {
         body: JSON.stringify(quoteToSave)
       });
 
-      const result = await response.json();
+      // const result = await response.json();
 
       if (result.success) {
-        // Success - show confirmation and close or reset form
+        // Success handling - TODO: Add success notification instead of alert
         alert(`Devis ${result.quoteNumber} créé avec succès!`);
         
-        // Option 1: Close the form
+        // TODO: Implement proper form reset or navigation
         // onClose();
-        
-        // Option 2: Reset form for new quote
         // resetForm();
         
       } else {
-        // Error from server
-        alert(`Erreur: ${result.message}`);
+        // Server-side error
+        // alert(`Erreur: ${result.message}`);
+        console.log(result.message)
       }
 
     } catch (error) {
+      // Network or client-side error
       console.error('Erreur lors de la sauvegarde:', error);
       alert('Erreur lors de la sauvegarde du devis');
     } finally {
@@ -181,21 +218,19 @@ function AddQuote({ onClose }) {
     }
   };
 
+  // ===========================================================================
+  // UI RENDERING SECTION
+  // STRUCTURE: Divided into logical sections for maintainability
+  // ===========================================================================
   return (
     <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[90vh] overflow-y-auto relative">
-      {/* Close button */}
-      <button 
-        onClick={onClose}
-        className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 bg-white rounded-full p-2"
-      >
-        ✕
-      </button>
-      
       <div className="p-6">
-        {/* Header */}
+        {/* =====================================================================
+            HEADER SECTION: Quote information and client selection
+        ===================================================================== */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex justify-between items-start">
-            {/* Quote Header - Left */}
+            {/* Quote Header - Left side with quote details */}
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-gray-800">Nouveau Devis</h1>
               <div className="mt-4 space-y-2">
@@ -236,73 +271,13 @@ function AddQuote({ onClose }) {
                 </div>
               </div>
             </div>
-
-            {/* Client Information - Right */}
-            {/* <div className="flex-1 max-w-md">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Client</h2>
-              <div className="space-y-3">
-                <select 
-                  value={quoteData.clientId} 
-                  onChange={(e) => handleClientChange(e.target.value)}
-                  className="w-full border rounded px-3 py-2"
-                >
-                  <option value="">Sélectionner un client</option>
-                  {clients.map(client => (
-                    <option key={client.id} value={client.id}>
-                      {client.name} - {client.company}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="text"
-                  placeholder="Nom du client"
-                  value={quoteData.clientName}
-                  onChange={(e) => setQuoteData(prev => ({ ...prev, clientName: e.target.value }))}
-                  className="w-full border rounded px-3 py-2"
-                />
-                <input
-                  type="text"
-                  placeholder="Entreprise"
-                  value={quoteData.clientCompany}
-                  onChange={(e) => setQuoteData(prev => ({ ...prev, clientCompany: e.target.value }))}
-                  className="w-full border rounded px-3 py-2"
-                />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={quoteData.clientEmail}
-                  onChange={(e) => setQuoteData(prev => ({ ...prev, clientEmail: e.target.value }))}
-                  className="w-full border rounded px-3 py-2"
-                />
-                <input
-                  type="text"
-                  placeholder="Téléphone"
-                  value={quoteData.clientPhone}
-                  onChange={(e) => setQuoteData(prev => ({ ...prev, clientPhone: e.target.value }))}
-                  className="w-full border rounded px-3 py-2"
-                />
-                <textarea
-                  placeholder="Adresse"
-                  value={quoteData.clientAddress}
-                  onChange={(e) => setQuoteData(prev => ({ ...prev, clientAddress: e.target.value }))}
-                  className="w-full border rounded px-3 py-2"
-                  rows="2"
-                />
-                <input
-                  type="text"
-                  placeholder="Référence client"
-                  value={quoteData.clientReference}
-                  onChange={(e) => setQuoteData(prev => ({ ...prev, clientReference: e.target.value }))}
-                  className="w-full border rounded px-3 py-2"
-                />
-              </div>
-            </div> */}
-            {/* Client Information - Right */}
+            
+            {/* Client Information - Right side with client selection */}
             <div className="flex-1 max-w-md">
               <h2 className="text-lg font-semibold text-gray-800 mb-4">Client</h2>
               <div className="space-y-3">
                 <select 
-                  value={quoteData.clientId} 
+                  value={quoteData.clientID} 
                   onChange={(e) => {
                     setQuoteData(prev => ({
                       ...prev,
@@ -314,7 +289,7 @@ function AddQuote({ onClose }) {
                   <option value="">Sélectionner un client</option>
                   {clients.map(client => (
                     <option key={client.id} value={client.id}>
-                      {client.nom} 
+                      {client.name} 
                     </option>
                   ))}
                 </select>
@@ -323,7 +298,9 @@ function AddQuote({ onClose }) {
           </div>
         </div>
 
-        {/* Products/Services Table */}
+        {/* =====================================================================
+            PRODUCTS/SERVICES SECTION: Dynamic items table with calculations
+        ===================================================================== */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold text-gray-800">Articles</h2>
@@ -353,14 +330,14 @@ function AddQuote({ onClose }) {
                   <tr key={item.id} className="border-b">
                     <td className="p-3">
                       <select
-                        value={item.productId}
+                        value={item.productId || ""}
                         onChange={(e) => handleProductChange(item.id, e.target.value)}
                         className="w-full border rounded px-2 py-1"
                       >
                         <option value="">Sélectionner un produit</option>
                         {products.map(product => (
                           <option key={product.id} value={product.id}>
-                            {product.nom} - {product.prix}€
+                            {product.product_name} - {product.product_price}€
                           </option>
                         ))}
                       </select>
@@ -420,7 +397,7 @@ function AddQuote({ onClose }) {
             </table>
           </div>
 
-          {/* Calculations Section */}
+          {/* Calculations Section - Auto-calculated totals */}
           <div className="flex justify-end mt-6">
             <div className="w-64 space-y-2">
               <div className="flex justify-between">
@@ -439,58 +416,9 @@ function AddQuote({ onClose }) {
           </div>
         </div>
 
-        {/* Terms & Conditions */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Conditions générales</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Conditions de paiement
-              </label>
-              <input
-                type="text"
-                value={quoteData.paymentTerms}
-                onChange={(e) => setQuoteData(prev => ({ ...prev, paymentTerms: e.target.value }))}
-                className="w-full border rounded px-3 py-2"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Conditions de livraison
-              </label>
-              <input
-                type="text"
-                value={quoteData.deliveryConditions}
-                onChange={(e) => setQuoteData(prev => ({ ...prev, deliveryConditions: e.target.value }))}
-                className="w-full border rounded px-3 py-2"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Validité
-              </label>
-              <input
-                type="text"
-                value={quoteData.validityPeriod}
-                onChange={(e) => setQuoteData(prev => ({ ...prev, validityPeriod: e.target.value }))}
-                className="w-full border rounded px-3 py-2"
-              />
-            </div>
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Notes spéciales
-              </label>
-              <textarea
-                value={quoteData.specialNotes}
-                onChange={(e) => setQuoteData(prev => ({ ...prev, specialNotes: e.target.value }))}
-                className="w-full border rounded px-3 py-2"
-                rows="3"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Actions */}
+        {/* =====================================================================
+            ACTION BUTTONS SECTION: Navigation and save operations
+        ===================================================================== */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex gap-4 justify-between">
             <Link
@@ -501,7 +429,7 @@ function AddQuote({ onClose }) {
               <FaArrowLeft /> Retour aux Ventes
             </Link>
             <div >
-              {/* Save Button - Primary Action */}
+              {/* Save Button - Primary Action with loading state */}
               <button 
                 onClick={saveQuote}
                 disabled={isSaving}

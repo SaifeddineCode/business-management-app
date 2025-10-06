@@ -94,10 +94,10 @@ const Sales = () => {
         <div className="flex space-x-3">
 
           {/* Consulter les devis */}
-          <button className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">
+          <Link to={"/quote"} className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">
             <FiFileText size={18} />
             <span>Consulter les devis</span>
-          </button>
+          </Link>
           
 
           {/* Consulter les bons de ventes */}
