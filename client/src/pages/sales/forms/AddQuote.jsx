@@ -147,6 +147,11 @@ function AddQuote({ onClose }) {
     }));
   };
 
+
+  useEffect(()=>{
+    console.log(quoteData.status)
+  },[quoteData.status])
+
  
 
   // ===========================================================================
@@ -263,10 +268,10 @@ function AddQuote({ onClose }) {
                     onChange={(e) => setQuoteData(prev => ({ ...prev, status: e.target.value }))}
                     className="border rounded px-2 py-1"
                   >
-                    <option value="draft">Brouillon</option>
-                    <option value="sent">Envoyé</option>
-                    <option value="accepted">Accepté</option>
-                    <option value="rejected">Refusé</option>
+                    <option value="Brouillon">Brouillon</option>
+                    <option value="Envoye">Envoyé</option>
+                    <option value="accepte">Accepté</option>
+                    <option value="refuse">Refusé</option>
                   </select>
                 </div>
               </div>

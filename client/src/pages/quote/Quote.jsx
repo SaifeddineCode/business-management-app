@@ -2,51 +2,48 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { FaSearch, FaFilter, FaEye, FaEdit, FaCopy, FaPaperPlane, FaFileInvoice, FaTrash } from 'react-icons/fa';
 
-export default function Quote() {
+function QuotesList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-
-  const [quotes,setQuotes] = useState([])
   
-//   Mock data - replace with your API data
+  // Mock data - replace with your API data
 //   const quotes = [
 //     { id: 'DEV-001', clientId: 'CL-001', clientName: 'John Doe', date: '2024-01-15', total_ht: 1000, tva: 200, total_ttc: 1200, status: 'sent' },
 //     { id: 'DEV-002', clientId: 'CL-002', clientName: 'Jane Smith', date: '2024-01-16', total_ht: 1500, tva: 300, total_ttc: 1800, status: 'draft' },
 //     { id: 'DEV-003', clientId: 'CL-003', clientName: 'Mike Johnson', date: '2024-01-17', total_ht: 800, tva: 160, total_ttc: 960, status: 'accepted' },
 //   ];
 
-useEffect(()=>{
-    fetch("/api/quote")
-    .then((res)=>res.json())
-    .then((result)=>setQuotes(result))
-},[])
+    const [quotes,setQuotes] = useState([])
 
+    useEffect(()=>{
+        fetch("/api/quote")
+        .then(res => res.json()
+        .then(result => setQuotes(result))
+    )
+    
+    },[])
 
+    // console.log(quotes)
 
-console.log(quotes)
+  // const getStatusBadge = (status) => {
+  //   const statusConfig = {
+  //     draft: { color: 'bg-gray-100 text-gray-800', label: 'Brouillon' },
+  //     sent: { color: 'bg-blue-100 text-blue-800', label: 'Envoye' },
+  //     accepted: { color: 'bg-green-100 text-green-800', label: 'accepte' },
+  //     rejected: { color: 'bg-red-100 text-red-800', label: 'refuse' }
+  //   };
+  //   const config = statusConfig[status] || statusConfig.draft;
+  //   return <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>{config.label}</span>;
+  // };
 
+//   const filteredQuotes = quotes.filter(quote => {
+//     const matchesSearch = quote.id.toLowerCase().includes(searchTerm.toLowerCase()) || 
+//                          quote.clientName.toLowerCase().includes(searchTerm.toLowerCase());
+//     const matchesStatus = statusFilter === 'all' || quote.status === statusFilter;
+//     return matchesSearch && matchesStatus;
+//   });
 
-
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      draft: { color: 'bg-gray-100 text-gray-800', label: 'Brouillon' },
-      sent: { color: 'bg-blue-100 text-blue-800', label: 'Envoyé' },
-      accepted: { color: 'bg-green-100 text-green-800', label: 'Accepté' },
-      rejected: { color: 'bg-red-100 text-red-800', label: 'Refusé' }
-    };
-    const config = statusConfig[status] || statusConfig.draft;
-    return <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>{config.label}</span>;
-  };
-
-  const filteredQuotes = quotes.filter(quote => {
-    const matchesSearch = quote.id.toString().toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         quote.clientName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || quote.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
-
-   return (
+  return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Header */}
       <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
@@ -122,7 +119,7 @@ console.log(quotes)
               </tr>
             </thead>
             <tbody>
-              {filteredQuotes.map((quote) => (
+              {/* {filteredQuotes.map((quote) => (
                 <tr key={quote.id} className="hover:bg-gray-50">
                   <td className="py-3 px-4 border-b text-blue-600 font-medium">{quote.id}</td>
                   <td className="py-3 px-4 border-b">
@@ -130,10 +127,40 @@ console.log(quotes)
                     <div className="text-sm text-gray-500">{quote.clientId}</div>
                   </td>
                   <td className="py-3 px-4 border-b text-gray-600">{quote.date}</td>
-                  <td className="py-3 px-4 border-b font-medium">{parseFloat(quote.total_ht).toFixed(2)} €</td>
-                  <td className="py-3 px-4 border-b text-gray-600">{parseFloat(quote.tva).toFixed(2)}  €</td>
-                  <td className="py-3 px-4 border-b font-bold text-green-600">{parseFloat(quote.total_ttc).toFixed(2)} €</td>
+                  <td className="py-3 px-4 border-b font-medium">{quote.total_ht.toFixed(2)} €</td>
+                  <td className="py-3 px-4 border-b text-gray-600">{quote.tva.toFixed(2)} €</td>
+                  <td className="py-3 px-4 border-b font-bold text-green-600">{quote.total_ttc.toFixed(2)} €</td>
                   <td className="py-3 px-4 border-b">{getStatusBadge(quote.status)}</td>
+                  <td className="py-3 px-4 border-b">
+                    <div className="flex gap-2">
+                      <button className="text-blue-500 hover:text-blue-700">
+                        <FaEye />
+                      </button>
+                      <button className="text-gray-500 hover:text-gray-700">
+                        <FaEdit />
+                      </button>
+                      <button className="text-green-500 hover:text-green-700">
+                        <FaPaperPlane />
+                      </button>
+                      <button className="text-purple-500 hover:text-purple-700">
+                        <FaFileInvoice />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))} */}
+              {quotes.map((quote) => (
+                <tr key={quote.id} className="hover:bg-gray-50">
+                  <td className="py-3 px-4 border-b text-blue-600 font-medium">{quote.id}</td>
+                  <td className="py-3 px-4 border-b">
+                    {/* <div className="font-medium text-gray-800">{quote.clientName}</div> */}
+                    <div className="text-sm text-gray-500">{quote.client_id}</div>
+                  </td>
+                  <td className="py-3 px-4 border-b text-gray-600">{quote.date}</td>
+                  <td className="py-3 px-4 border-b font-medium">{quote.total_ht.toFixed(2)} €</td>
+                  <td className="py-3 px-4 border-b text-gray-600">{parseFloat(quote.tva).toFixed(2)} €</td>
+                  <td className="py-3 px-4 border-b font-bold text-green-600">{parseFloat(quote.total_ttc).toFixed(2)} €</td>
+                  <td className="py-3 px-4 border-b">{quote.statut}</td>
                   <td className="py-3 px-4 border-b">
                     <div className="flex gap-2">
                       <button className="text-blue-500 hover:text-blue-700">
@@ -158,7 +185,7 @@ console.log(quotes)
       </div>
 
       {/* Empty State */}
-      {filteredQuotes.length === 0 && (
+      {quotes.length === 0 && (
         <div className="bg-white rounded-lg shadow-sm p-12 text-center">
           <div className="text-gray-400 text-6xl mb-4">📄</div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun devis trouvé</h3>
@@ -168,3 +195,5 @@ console.log(quotes)
     </div>
   );
 }
+
+export default QuotesList;

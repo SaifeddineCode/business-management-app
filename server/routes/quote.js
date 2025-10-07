@@ -4,9 +4,6 @@ import db from '../../database/database.js';
 
 
 
-
-
-
 router.get("/", async(req,res)=>{
   const [quotes] = await db.execute("SELECT * FROM quote")
   res.send(quotes)
@@ -50,11 +47,11 @@ router.post('/', async (req, res) => {
         `INSERT INTO quote (client_id, date, total_ht, tva, total_ttc, statut) VALUES (?, ?, ?, ?, ?, ?)`,
         [
           clientID,
-          dateCreated || new Date(),
-          subtotal || 0,
-          taxAmount || 0,
-          totalAmount || 0,
-          status || 'Brouillon'
+          dateCreated ,
+          subtotal,
+          taxAmount,
+          totalAmount,
+          status
         ]
       );
 
@@ -98,13 +95,10 @@ router.post('/', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la création du devis',
-      error: error.message
     });
   }
 });
 
-router.post("/",(req,res)=>{
-  console.log(req.body)
-})
+
 
  export default router
