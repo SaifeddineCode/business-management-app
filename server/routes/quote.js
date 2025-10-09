@@ -5,10 +5,32 @@ import db from '../../database/database.js';
 
 
 router.get("/", async(req,res)=>{
-  const [quotes] = await db.execute("SELECT * FROM quote")
+
+  const query = `
+    SELECT 
+      q.*,                           
+      c.id as customer_id,           
+      c.name as customer_name
+    FROM quote q
+    LEFT JOIN customers c ON q.client_id = c.id
+  `;
+
+
+  const [quotes] = await db.execute(query)
   res.send(quotes)
   console.log(quotes)
 })
+
+// router.get("/", async(req,res)=>{
+//   const query = `
+//     SELECT * FROM quote
+//   `
+//   const [quotes] = await db.execute(query)
+//   res.send(quotes)
+//   console.log(quotes)
+// })
+
+
 
 
 router.post('/', async (req, res) => {
@@ -44,7 +66,7 @@ router.post('/', async (req, res) => {
     try {
       // 1. Insert main quote data into 'devis' table
       const [quoteResult] = await db.execute(
-        `INSERT INTO quote (client_id, date, total_ht, tva, total_ttc, statut) VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO quote (client_id, date, total_ht, tva, total_ttc, status) VALUES (?, ?, ?, ?, ?, ?)`,
         [
           clientID,
           dateCreated ,

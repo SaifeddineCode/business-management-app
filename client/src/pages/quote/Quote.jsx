@@ -1,18 +1,13 @@
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { FaSearch, FaFilter, FaEye, FaEdit, FaCopy, FaPaperPlane, FaFileInvoice, FaTrash } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 function QuotesList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   
-  // Mock data - replace with your API data
-//   const quotes = [
-//     { id: 'DEV-001', clientId: 'CL-001', clientName: 'John Doe', date: '2024-01-15', total_ht: 1000, tva: 200, total_ttc: 1200, status: 'sent' },
-//     { id: 'DEV-002', clientId: 'CL-002', clientName: 'Jane Smith', date: '2024-01-16', total_ht: 1500, tva: 300, total_ttc: 1800, status: 'draft' },
-//     { id: 'DEV-003', clientId: 'CL-003', clientName: 'Mike Johnson', date: '2024-01-17', total_ht: 800, tva: 160, total_ttc: 960, status: 'accepted' },
-//   ];
-
+  
     const [quotes,setQuotes] = useState([])
 
     useEffect(()=>{
@@ -25,23 +20,36 @@ function QuotesList() {
 
     // console.log(quotes)
 
-  // const getStatusBadge = (status) => {
-  //   const statusConfig = {
-  //     draft: { color: 'bg-gray-100 text-gray-800', label: 'Brouillon' },
-  //     sent: { color: 'bg-blue-100 text-blue-800', label: 'Envoye' },
-  //     accepted: { color: 'bg-green-100 text-green-800', label: 'accepte' },
-  //     rejected: { color: 'bg-red-100 text-red-800', label: 'refuse' }
-  //   };
-  //   const config = statusConfig[status] || statusConfig.draft;
-  //   return <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>{config.label}</span>;
-  // };
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      brouillon: { color: 'bg-gray-100 text-gray-800', label: 'Brouillon' },
+      envoye: { color: 'bg-blue-100 text-blue-800', label: 'envoye' },
+      accepte: { color: 'bg-green-100 text-green-800', label: 'accepte' },
+      refuse: { color: 'bg-red-100 text-red-800', label: 'refuse' }
+    };
+    const config = statusConfig[status] || statusConfig.draft;
+    return <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>{config.label}</span>;
+  };
 
-//   const filteredQuotes = quotes.filter(quote => {
-//     const matchesSearch = quote.id.toLowerCase().includes(searchTerm.toLowerCase()) || 
-//                          quote.clientName.toLowerCase().includes(searchTerm.toLowerCase());
-//     const matchesStatus = statusFilter === 'all' || quote.status === statusFilter;
-//     return matchesSearch && matchesStatus;
-//   });
+
+  // filter quotes 
+
+  const filteredQuotes = quotes.filter(quote => {
+
+  const matchesSearch = quote.customer_name?.toLowerCase().includes(searchTerm.toLowerCase());
+  
+  const matchesStatus = 
+    statusFilter === 'all' || 
+    quote.status?.toLowerCase().includes(statusFilter.toLowerCase());
+
+  return matchesSearch && matchesStatus;
+});
+
+
+
+  useEffect(()=>{
+    console.log(searchTerm)
+  },[searchTerm])
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -49,9 +57,9 @@ function QuotesList() {
       <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Liste des Devis</h1>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+          <Link to={"/add-quote"} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
             + Nouveau Devis
-          </button>
+          </Link>
         </div>
 
         {/* Search and Filters */}
@@ -72,10 +80,10 @@ function QuotesList() {
             className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">Tous les statuts</option>
-            <option value="draft">Brouillon</option>
-            <option value="sent">Envoyé</option>
-            <option value="accepted">Accepté</option>
-            <option value="rejected">Refusé</option>
+            <option value="Brouillon">Brouillon</option>
+            <option value="Envoye">Envoyé</option>
+            <option value="accepte">Accepté</option>
+            <option value="refuse">Refusé</option>
           </select>
         </div>
       </div>
@@ -83,15 +91,15 @@ function QuotesList() {
       {/* Stats Summary */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-lg shadow-sm p-4">
-          <div className="text-2xl font-bold text-gray-800">{quotes.length}</div>
+          <div className="text-2xl font-bold text-gray-800">{filteredQuotes.length}</div>
           <div className="text-gray-600">Total Devis</div>
         </div>
         <div className="bg-white rounded-lg shadow-sm p-4">
-          <div className="text-2xl font-bold text-blue-600">{quotes.filter(q => q.status === 'sent').length}</div>
+          <div className="text-2xl font-bold text-blue-600">{filteredQuotes.filter(q => q.status === 'envoye').length}</div>
           <div className="text-gray-600">Envoyés</div>
         </div>
         <div className="bg-white rounded-lg shadow-sm p-4">
-          <div className="text-2xl font-bold text-green-600">{quotes.filter(q => q.status === 'accepted').length}</div>
+          <div className="text-2xl font-bold text-green-600">{filteredQuotes.filter(q => q.status === 'accepte').length}</div>
           <div className="text-gray-600">Acceptés</div>
         </div>
         <div className="bg-white rounded-lg shadow-sm p-4">
@@ -119,48 +127,19 @@ function QuotesList() {
               </tr>
             </thead>
             <tbody>
-              {/* {filteredQuotes.map((quote) => (
-                <tr key={quote.id} className="hover:bg-gray-50">
-                  <td className="py-3 px-4 border-b text-blue-600 font-medium">{quote.id}</td>
-                  <td className="py-3 px-4 border-b">
-                    <div className="font-medium text-gray-800">{quote.clientName}</div>
-                    <div className="text-sm text-gray-500">{quote.clientId}</div>
-                  </td>
-                  <td className="py-3 px-4 border-b text-gray-600">{quote.date}</td>
-                  <td className="py-3 px-4 border-b font-medium">{quote.total_ht.toFixed(2)} €</td>
-                  <td className="py-3 px-4 border-b text-gray-600">{quote.tva.toFixed(2)} €</td>
-                  <td className="py-3 px-4 border-b font-bold text-green-600">{quote.total_ttc.toFixed(2)} €</td>
-                  <td className="py-3 px-4 border-b">{getStatusBadge(quote.status)}</td>
-                  <td className="py-3 px-4 border-b">
-                    <div className="flex gap-2">
-                      <button className="text-blue-500 hover:text-blue-700">
-                        <FaEye />
-                      </button>
-                      <button className="text-gray-500 hover:text-gray-700">
-                        <FaEdit />
-                      </button>
-                      <button className="text-green-500 hover:text-green-700">
-                        <FaPaperPlane />
-                      </button>
-                      <button className="text-purple-500 hover:text-purple-700">
-                        <FaFileInvoice />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))} */}
-              {quotes.map((quote) => (
+              {filteredQuotes.map((quote) => (
                 <tr key={quote.id} className="hover:bg-gray-50">
                   <td className="py-3 px-4 border-b text-blue-600 font-medium">{quote.id}</td>
                   <td className="py-3 px-4 border-b">
                     {/* <div className="font-medium text-gray-800">{quote.clientName}</div> */}
                     <div className="text-sm text-gray-500">{quote.client_id}</div>
+                    <div>{quote.customer_name} </div>
                   </td>
                   <td className="py-3 px-4 border-b text-gray-600">{quote.date}</td>
                   <td className="py-3 px-4 border-b font-medium">{quote.total_ht.toFixed(2)} €</td>
                   <td className="py-3 px-4 border-b text-gray-600">{parseFloat(quote.tva).toFixed(2)} €</td>
                   <td className="py-3 px-4 border-b font-bold text-green-600">{parseFloat(quote.total_ttc).toFixed(2)} €</td>
-                  <td className="py-3 px-4 border-b">{quote.statut}</td>
+                  <td className="py-3 px-4 border-b">{getStatusBadge(quote.status)}</td>
                   <td className="py-3 px-4 border-b">
                     <div className="flex gap-2">
                       <button className="text-blue-500 hover:text-blue-700">

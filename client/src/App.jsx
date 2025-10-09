@@ -22,7 +22,7 @@ function App() {
             <Routes>
               <Route path='' element={<Dashboard/>} />
               <Route path='/sales' element={<Sales/>} />
-              <Route path='/sales/add-quote' element={<AddQuote />} />
+              <Route path='/add-quote' element={<AddQuote />} />
               <Route path="/quote" element={<Quote />} />
               <Route path='/purchases' element={<Purchases/>} />
             </Routes>

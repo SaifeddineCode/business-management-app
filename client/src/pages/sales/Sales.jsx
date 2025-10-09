@@ -76,7 +76,7 @@ const Sales = () => {
         {/* Action Buttons */}
         <div className="flex space-x-3">
           <Link 
-            to={"/sales/add-quote"}
+            to={"/add-quote"}
             className="bg-[#112074] text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">
             <FiPlus size={18} />
             <span>Nouveau Devis</span>
