@@ -132,8 +132,8 @@ function QuotesList() {
                   <td className="py-3 px-4 border-b text-blue-600 font-medium">{quote.id}</td>
                   <td className="py-3 px-4 border-b">
                     {/* <div className="font-medium text-gray-800">{quote.clientName}</div> */}
-                    <div className="text-sm text-gray-500">{quote.client_id}</div>
-                    <div>{quote.customer_name} </div>
+                    {/* <div className="text-sm text-gray-500">{quote.client_id}</div> */}
+                    <div className="font-medium text-gray-800">{quote.customer_name} </div>
                   </td>
                   <td className="py-3 px-4 border-b text-gray-600">{quote.date}</td>
                   <td className="py-3 px-4 border-b font-medium">{quote.total_ht.toFixed(2)} €</td>

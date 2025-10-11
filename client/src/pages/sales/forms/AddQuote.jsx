@@ -35,11 +35,11 @@ function AddQuote({ onClose }) {
         description: '',
         quantity: 1,
         unitPrice: 0,
-        taxRate: 20,
+        taxRate: 0,
         total: 0
       }
     ],
-    
+     
     // // Terms & Conditions - Default values
     // paymentTerms: '30 jours',
     // deliveryConditions: 'Livraison sous 15 jours',
@@ -129,23 +129,47 @@ function AddQuote({ onClose }) {
     }));
   };
 
-  const updateItem = (id, field, value) => {
-    // Update specific item field and recalculate totals if needed
-    setQuoteData(prev => ({
-      ...prev,
-      items: prev.items.map(item => {
-        if (item.id === id) {
-          const updatedItem = { ...item, [field]: value };
-          // Recalculate total when quantity or price changes
-          if (field === 'quantity' || field === 'unitPrice') {
-            updatedItem.total = updatedItem.quantity * updatedItem.unitPrice;
-          }
-          return updatedItem;
+  // const updateItem = (id, field, value) => {
+  //   // Update specific item field and recalculate totals if needed
+  //   setQuoteData(prev => ({
+  //     ...prev,
+  //     items: prev.items.map(item => {
+  //       if (item.id === id) {
+  //         const updatedItem = { ...item, [field]: value };
+  //         // Recalculate total when quantity or price changes
+  //         if (field === 'quantity' || field === 'unitPrice') {
+  //           updatedItem.total = updatedItem.quantity * updatedItem.unitPrice;
+  //         }
+  //         return updatedItem;
+  //       }
+  //       return item;
+  //     })
+  //   }));
+  // };
+
+
+const updateItem = (id, field, value) => {
+  setQuoteData(prev => ({
+    ...prev,
+    items: prev.items.map(item => {
+      if (item.id === id) {
+        const updatedItem = { ...item, [field]: value };
+        
+        // Recalculate total when quantity, price, OR tax rate changes
+        if (field === 'quantity' || field === 'unitPrice' || field === 'taxRate') {
+          const subtotal = updatedItem.quantity * updatedItem.unitPrice;
+          const taxAmount = subtotal * (updatedItem.taxRate / 100);
+          updatedItem.total = subtotal + taxAmount;
         }
-        return item;
-      })
-    }));
-  };
+        return updatedItem;
+      }
+      return item;
+    })
+  }));
+};
+
+
+
 
 
   useEffect(()=>{
@@ -158,9 +182,17 @@ function AddQuote({ onClose }) {
   // CALCULATIONS SECTION
   // IMPORTANT: These values are used in the save operation
   // ===========================================================================
-  const subtotal = quoteData.items.reduce((sum, item) => sum + item.total, 0);
-  const taxAmount = subtotal * 0.2; // 20% TVA - TODO: Make dynamic based on item tax rates
-  const totalAmount = subtotal + taxAmount;
+
+  // const subtotal = quoteData.items.reduce((sum, item) => sum + item.total, 0);
+  // const taxAmount = subtotal * quoteData.items[0].taxRate; // 20% TVA - TODO: Make dynamic based on item tax rates
+  // const totalAmount = subtotal + taxAmount;
+
+
+    const subtotal = quoteData.items.reduce((sum, item) => sum + item.total, 0);
+    const taxAmount = quoteData.items.reduce((sum, item) =>  sum + (item.total * (item.taxRate / 100)), 0);
+  
+    const totalAmount = subtotal + taxAmount;
+
 
   // ===========================================================================
   // SAVE OPERATION SECTION
@@ -222,6 +254,9 @@ function AddQuote({ onClose }) {
       setIsSaving(false);
     }
   };
+
+
+
 
   // ===========================================================================
   // UI RENDERING SECTION
@@ -410,7 +445,7 @@ function AddQuote({ onClose }) {
                 <span>{subtotal.toFixed(2)} €</span>
               </div>
               <div className="flex justify-between">
-                <span>TVA (20%):</span>
+                <span>Montant TVA:</span>
                 <span>{taxAmount.toFixed(2)} €</span>
               </div>
               <div className="flex justify-between border-t pt-2 font-bold text-lg">
