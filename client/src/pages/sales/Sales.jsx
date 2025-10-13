@@ -84,10 +84,10 @@ const Sales = () => {
           <Outlet />
 
           {/* Ajouter un bon de vente */}
-          <button className="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">
+          <Link to={"/add-sales-order"} className="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">
             <FiShoppingCart size={18} />
             <span>Ajouter un bon de vente</span>
-          </button>
+          </Link>
         </div>
       </div>
       {/* Action Buttons */}

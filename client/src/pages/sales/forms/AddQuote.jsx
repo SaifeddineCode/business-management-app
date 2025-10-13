@@ -20,7 +20,7 @@ function AddQuote({ onClose }) {
   // ===========================================================================
   const [quoteData, setQuoteData] = useState({
     clientID: '',
-    
+    libelle:"",
     // Quote Header - Auto-generated values
     quoteNumber: `DEV-${Date.now()}`,
     dateCreated: new Date().toISOString().split('T')[0],
@@ -53,7 +53,7 @@ function AddQuote({ onClose }) {
   // ===========================================================================
   const fetchClients = async () => {
     // TODO: Add error handling for failed API calls
-    const response = await fetch('/api/clients');
+    const response = await fetch('/api/customers');
     const data = await response.json();
     setClients(data);
   };
@@ -85,12 +85,12 @@ function AddQuote({ onClose }) {
     // Find selected product and auto-populate fields
     const selectedProduct = products.find(product => product.id === parseInt(productId));
     if (selectedProduct) {
-      updateItem(itemId, 'productId', productId);
-      updateItem(itemId, 'description', selectedProduct.product_name);
-      updateItem(itemId, 'unitPrice', selectedProduct.product_price);
+      updateItemLine(itemId, 'productId', productId);
+      updateItemLine(itemId, 'description', selectedProduct.product_name);
+      updateItemLine(itemId, 'unitPrice', selectedProduct.product_price);
     }
   };
-
+ 
   const addItem = () => {
     // Add new empty item to the quote
     setQuoteData(prev => ({
@@ -109,6 +109,11 @@ function AddQuote({ onClose }) {
       ]
     }));
   };
+
+
+  
+
+
 
   const removeItem = (id) => {
     
@@ -148,33 +153,74 @@ function AddQuote({ onClose }) {
   // };
 
 
-const updateItem = (id, field, value) => {
-  setQuoteData(prev => ({
-    ...prev,
-    items: prev.items.map(item => {
-      if (item.id === id) {
-        const updatedItem = { ...item, [field]: value };
+// const updateItemLine = (id, field, value) => {
+//   setQuoteData(prev => ({
+//     ...prev,
+//     items: prev.items.map(item => {
+//       if (item.id === id) {
+//         const updatedItem = { ...item, [field]: value };
         
-        // Recalculate total when quantity, price, OR tax rate changes
-        if (field === 'quantity' || field === 'unitPrice' || field === 'taxRate') {
-          const subtotal = updatedItem.quantity * updatedItem.unitPrice;
-          const taxAmount = subtotal * (updatedItem.taxRate / 100);
-          updatedItem.total = subtotal + taxAmount;
-        }
-        return updatedItem;
-      }
-      return item;
-    })
-  }));
-};
+//         // Recalculate total when quantity, price, OR tax rate changes
+//         if (field === 'quantity' || field === 'unitPrice' || field === 'taxRate') {
+//           const subtotal = updatedItem.quantity * updatedItem.unitPrice;
+//           const taxAmount = subtotal * (updatedItem.taxRate / 100);
+//           updatedItem.total = subtotal + taxAmount;
+//         }
+//         return updatedItem;
+//       }
+//       return item;
+//     })
+//   }));
+// };
+
+
+const updateItemLine =(id,field,value)=>{
+  setQuoteData((prev)=>{
+  return (
+    {
+      ...prev,
+      items : prev.items.map((item)=>{
+        if(item.id === id){
+          const updateItem = {...item,[field] : value}
+
+          const amountHT = updateItem.quantity * updateItem.unitPrice
+          const amountTax = amountHT * (updateItem.taxRate / 100); 
+          updateItem.total = amountHT + amountTax
+
+          return updateItem
+        } 
+        return item
+      })
+    }
+  )
+  })
+}
 
 
 
 
+// const updateItemLine = (id, field, value) => {
+//   setQuoteData((prev) => {
+//     return {
+//       ...prev,
+//       items: prev.items.map((item) => {
+//         if (item.id === id) {
+//           const updatedItem = { ...item, [field]: value };
+          
+//           // Use updatedItem instead of mixing with item
+//           const amountHT = updatedItem.quantity * updatedItem.unitPrice;
+//           const amountTax = amountHT * (updatedItem.taxRate / 100); // Don't forget divide by 100!
+//           updatedItem.total = amountHT + amountTax;
+          
+//           return updatedItem;
+//         } 
+//         return item;
+//       })
+//     };
+//   });
+// };
 
-  useEffect(()=>{
-    console.log(quoteData.status)
-  },[quoteData.status])
+
 
  
 
@@ -198,6 +244,38 @@ const updateItem = (id, field, value) => {
   // SAVE OPERATION SECTION
   // CRITICAL: This sends data to the backend API
   // ===========================================================================
+
+
+  const resetNewQuote = () => {
+    setQuoteData(prev => {
+      return ({
+        ...prev,
+        clientID: '',
+        libelle :"",
+    // Quote Header - Auto-generated values
+    quoteNumber: `DEV-${Date.now()}`,
+    dateCreated: new Date().toISOString().split('T')[0],
+    expiryDate: '',
+    status: '',
+    
+    // Products/Services - Dynamic items array
+    items: [
+      {
+        id: prev.items.length + 1,
+        productId: '',
+        description: '',
+        quantity: 1,
+        unitPrice: 0,
+        taxRate: 0,
+        total: 0
+      }
+    ],
+      })
+    })
+  }
+
+
+
   const saveQuote = async () => {
     // Validation - TODO: Enhance with better error messages
     if (!quoteData.clientID) {
@@ -222,7 +300,7 @@ const updateItem = (id, field, value) => {
       };
 
       // API Call - TODO: Add timeout and retry logic
-        const result = await fetch('/api/quote', {
+        const response = await fetch('/api/quote', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -230,7 +308,7 @@ const updateItem = (id, field, value) => {
         body: JSON.stringify(quoteToSave)
       });
 
-      // const result = await response.json();
+      const result = await response.json();
 
       if (result.success) {
         // Success handling - TODO: Add success notification instead of alert
@@ -238,7 +316,7 @@ const updateItem = (id, field, value) => {
         
         // TODO: Implement proper form reset or navigation
         // onClose();
-        // resetForm();
+          resetNewQuote()
         
       } else {
         // Server-side error
@@ -269,7 +347,7 @@ const updateItem = (id, field, value) => {
             HEADER SECTION: Quote information and client selection
         ===================================================================== */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex justify-between items-start">
+          <div className="flex justify-between items-start gap-3">
             {/* Quote Header - Left side with quote details */}
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-gray-800">Nouveau Devis</h1>
@@ -311,30 +389,41 @@ const updateItem = (id, field, value) => {
                 </div>
               </div>
             </div>
-            
-            {/* Client Information - Right side with client selection */}
-            <div className="flex-1 max-w-md">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Client</h2>
-              <div className="space-y-3">
-                <select 
-                  value={quoteData.clientID} 
-                  onChange={(e) => {
-                    setQuoteData(prev => ({
-                      ...prev,
-                      clientID:e.target.value
-                    }));
-                  }}
-                  className="w-full border rounded px-3 py-2"
-                >
-                  <option value="">Sélectionner un client</option>
-                  {clients.map(client => (
-                    <option key={client.id} value={client.id}>
-                      {client.name} 
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className='flex flex-1 flex-col' >
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">Libellé du devis</h2>
+              <input
+                type="text"
+                id="libelle"
+                name="libelle"
+                value={quoteData.libelle || ''}
+                onChange={(e)=>{setQuoteData(prev=>({...prev,libelle:e.target.value}))}}
+                placeholder="Description du devis"
+                className="w-full border rounded px-3 py-2"
+              />
             </div>
+            {/* Client Information - Right side with client selection */}
+              <div className="flex-1 max-w-md">
+                <h2 className="text-lg font-semibold text-gray-800 mb-4">Client</h2>
+                <div className="space-y-3">
+                  <select 
+                    value={quoteData.clientID} 
+                    onChange={(e) => {
+                      setQuoteData(prev => ({
+                        ...prev,
+                        clientID:e.target.value
+                      }));
+                    }}
+                    className="w-full border rounded px-3 py-2"
+                  >
+                    <option value="">Sélectionner un client</option>
+                    {clients.map(client => (
+                      <option key={client.id} value={client.id}>
+                        {client.name} 
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
           </div>
         </div>
 
@@ -371,7 +460,7 @@ const updateItem = (id, field, value) => {
                     <td className="p-3">
                       <select
                         value={item.productId || ""}
-                        onChange={(e) => handleProductChange(item.id, e.target.value)}
+                        onChange={(e) => handleProductChange(item.id,e.target.value)}
                         className="w-full border rounded px-2 py-1"
                       >
                         <option value="">Sélectionner un produit</option>
@@ -386,7 +475,7 @@ const updateItem = (id, field, value) => {
                       <input
                         type="text"
                         value={item.description}
-                        onChange={(e) => updateItem(item.id, 'description', e.target.value)}
+                        onChange={(e) => updateItemLine(item.id, 'description', e.target.value)}
                         className="w-full border rounded px-2 py-1"
                         placeholder="Description de l'article"
                       />
@@ -395,7 +484,7 @@ const updateItem = (id, field, value) => {
                       <input
                         type="number"
                         value={item.quantity}
-                        onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
+                        onChange={(e) => updateItemLine(item.id, 'quantity', parseInt(e.target.value) || 0)}
                         className="w-20 border rounded px-2 py-1"
                         min="1"
                       />
@@ -404,7 +493,7 @@ const updateItem = (id, field, value) => {
                       <input
                         type="number"
                         value={item.unitPrice}
-                        onChange={(e) => updateItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                        onChange={(e) => updateItemLine(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
                         className="w-32 border rounded px-2 py-1"
                         step="0.01"
                       />
@@ -412,7 +501,7 @@ const updateItem = (id, field, value) => {
                     <td className="p-3">
                       <select
                         value={item.taxRate}
-                        onChange={(e) => updateItem(item.id, 'taxRate', parseInt(e.target.value))}
+                        onChange={(e) => updateItemLine(item.id, 'taxRate', parseInt(e.target.value))}
                         className="border rounded px-2 py-1"
                       >
                         <option value="0">0%</option>

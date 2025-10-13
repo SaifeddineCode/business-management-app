@@ -3,24 +3,6 @@ const router = express.Router();
 import db from '../../database/database.js';
 
 
-
-router.get("/", async(req,res)=>{
-
-  const query = `
-    SELECT 
-      q.*,                           
-      c.id as customer_id,           
-      c.name as customer_name
-    FROM quote q
-    LEFT JOIN customers c ON q.client_id = c.id
-  `;
-
-
-  const [quotes] = await db.execute(query)
-  res.send(quotes)
-  console.log(quotes)
-})
-
 // router.get("/", async(req,res)=>{
 //   const query = `
 //     SELECT * FROM quote
@@ -31,6 +13,28 @@ router.get("/", async(req,res)=>{
 // })
 
 
+router.get("/", async (req,res)=>{
+  try {
+  const query = `
+    SELECT 
+      q.*,                           
+      c.id as customer_id,           
+      c.name as customer_name
+    FROM quote q
+    LEFT JOIN customers c ON q.client_id = c.id
+    ORDER BY id DESC
+  `;
+  const [quotes] = await db.execute(query)
+  res.status(200).json(quotes)
+
+  }catch(err){  
+    res.status(500)
+  }
+})
+
+
+
+
 
 
 router.post('/', async (req, res) => {
@@ -39,6 +43,7 @@ router.post('/', async (req, res) => {
       clientID,
       quoteNumber,
       dateCreated,
+      libelle,
       status,
       items,
       subtotal,
@@ -49,10 +54,17 @@ router.post('/', async (req, res) => {
     console.log('Received data:', req.body);
 
     // Validate required fields
-    if (!clientID) {
+    if (!clientID ) {
       return res.status(400).json({
         success: false,
         message: 'Client ID est requis'
+      });
+    }
+
+    if (!libelle ) {
+      return res.status(400).json({
+        success: false,
+        message: 'libelle est requis'
       });
     }
 
@@ -66,9 +78,10 @@ router.post('/', async (req, res) => {
     try {
       // 1. Insert main quote data into 'devis' table
       const [quoteResult] = await db.execute(
-        `INSERT INTO quote (client_id, date, total_ht, tva, total_ttc, status) VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO quote (client_id,libelle, date, total_ht, tva, total_ttc, status) VALUES (?,?,?, ?, ?, ?, ?)`,
         [
           clientID,
+          libelle,
           dateCreated ,
           subtotal,
           taxAmount,

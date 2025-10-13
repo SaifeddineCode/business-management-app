@@ -1,9 +1,11 @@
 
 import express from "express";
 import db from "../database/database.js";
-import clients from './routes/clients.js'
+import customers from './routes/customers.js'
 import products from "./routes/products.js"
 import quote from "./routes/quote.js"
+import salesOrders from "./routes/salesOrders.js"
+
 
 
 const app = express();
@@ -14,9 +16,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.use("/api/clients",clients)
+app.use("/api/customers",customers)
 app.use("/api/products",products)
 app.use('/api/quote', quote);
+app.use('/api/salesOrders',salesOrders);
 
 
 app.get("/",(req,res)=>{
