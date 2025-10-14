@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaSearch, FaPaperPlane, FaPrint, FaCheck, FaPlus, FaTrash } from 'react-icons/fa';
 
 export default function AddSalesOrder() {
   // ========== STATE MANAGEMENT ==========
   const [salesOrders, setSalesOrders] = useState([
     {
-      id: 'BL1025-0364',
-      date: '2024-01-15',
+      id: '',
+      date: '',
       customer: { name: 'ebtikarweb', phone: '+212669708949' },
       subject: 'BON DE LIVRAISON SYSTÈME',
       totalHT: 632.40,
@@ -15,23 +15,31 @@ export default function AddSalesOrder() {
       status: 'Non Payé',
       vendor: 'demo',
       products: [
-        { id: 1, name: 'Produit A', quantity: 2, price: 100, discount: 10, tva: 20 }
+        { id: 1, name: '', quantity: 1, price: "", discount: "", tva: "" }
       ]
     }
   ]);
 
-  const [products, setProducts] = useState([
-    { id: 1, name: 'Produit A', price: 100, stock: 50 },
-    { id: 2, name: 'Produit B', price: 200, stock: 30 }
-  ]);
+  const [products, setProducts] = useState([]);
 
-  const [clients, setClients] = useState([
-    { id: 1, name: 'ebtikarweb', phone: '+212669708949' },
-    { id: 2, name: 'Client B', phone: '+212612345678' }
-  ]);
+  const [clients, setClients] = useState([]);
 
   const [selectedOrder, setSelectedOrder] = useState(salesOrders[0]);
-  const [searchTerm, setSearchTerm] = useState('');
+
+
+  // fetch clients and products, 
+  useEffect(()=>{
+    fetch("/api/customers")
+    .then(res => res.json())
+    .then(customersFetched => setClients(customersFetched))
+  },[])
+
+
+  useEffect(()=>{
+    fetch("/api/products")
+    .then(res => res.json())
+    .then(productsFetched => setProducts(productsFetched))
+  },[])
 
   // ========== HANDLERS ==========
   const handleAddProduct = () => {
@@ -59,10 +67,14 @@ export default function AddSalesOrder() {
   };
 
   // ========== CALCULATIONS ==========
+
+  
   const calculateProductTotal = (product) => {
     const discountedPrice = product.price * (1 - product.discount / 100);
     return discountedPrice * product.quantity;
   };
+
+
 
   const subtotal = selectedOrder.products.reduce((sum, product) => sum + calculateProductTotal(product), 0);
   const totalTVA = selectedOrder.products.reduce((sum, product) => sum + (calculateProductTotal(product) * product.tva / 100), 0);
@@ -70,25 +82,28 @@ export default function AddSalesOrder() {
 
 
 
-const addingSalesOrder = async () => {
-  try {
-    const response = await fetch("/api/salesOrders", {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(salesOrders)  // 👈 Pass your actual data here
-    });
+
+
+
+// const addingSalesOrder = async () => {
+//   try {
+//     const response = await fetch("/api/salesOrders", {
+//       method: "POST",
+//       headers: {
+//         'Content-Type': 'application/json'
+//       },
+//       body: JSON.stringify(salesOrders)  // 👈 Pass your actual data here
+//     });
     
-    if (!response.ok) throw new Error('Failed to create order');
+//     if (!response.ok) throw new Error('Failed to create order');
     
-    const result = await response.json();
-    return result;
+//     const result = await response.json();
+//     return result;
     
-  } catch(err) {
-    console.log('Error creating sales order:', err);
-  }
-}
+//   } catch(err) {
+//     console.log('Error creating sales order:', err);
+//   }
+// }
 
 
 
@@ -97,18 +112,18 @@ const addingSalesOrder = async () => {
     <div className="min-h-screen bg-gray-50 p-6">
       
       {/* ========== HEADER SECTION ========== */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <div className="flex justify-between items-center mb-6">
+       <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        {/* <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Bons de Livraison</h1>
           <button 
             onClick={()=>addingSalesOrder()}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2">
             <FaPlus /> Ajouter Bon
           </button>
-        </div>
+        </div>  */}
 
         {/* Search Bar */}
-        <div className="flex gap-4 mb-4">
+        {/* <div className="flex gap-4 mb-4">
           <div className="flex-1 relative">
             <FaSearch className="absolute left-3 top-3 text-gray-400" />
             <input
@@ -119,10 +134,10 @@ const addingSalesOrder = async () => {
               className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Action Buttons */}
-        <div className="flex gap-2">
+        {/* <div className="flex gap-2">
           <button className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
             <FaPaperPlane /> Envoyer par email
           </button>
@@ -132,7 +147,7 @@ const addingSalesOrder = async () => {
           <button className="flex items-center gap-2 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
             <FaCheck /> Valider
           </button>
-        </div>
+        </div> */}
       </div>
 
       <div className="grid grid-cols-3 gap-6">
@@ -162,7 +177,7 @@ const addingSalesOrder = async () => {
                 <option value="">Sélectionner le Client</option>
                 {clients.map(client => (
                   <option key={client.id} value={client.id}>
-                    {client.name} - {client.phone}
+                    {client.name} - {client.telephone}
                   </option>
                 ))}
               </select>
@@ -223,13 +238,13 @@ const addingSalesOrder = async () => {
                     <tr key={product.id} className="border-b">
                       <td className="p-3">
                         <select 
-                          value={product.name}
-                          onChange={(e) => handleProductChange(product.id, 'name', e.target.value)}
+                          value={product.product_name}
+                          onChange={(e) => handleProductChange(product.id, 'product_name', e.target.value)}
                           className="w-full border rounded px-2 py-1"
                         >
                           <option value="">Sélectionner produit</option>
                           {products.map(p => (
-                            <option key={p.id} value={p.name}>{p.name}</option>
+                            <option key={p.id} value={p.product_name}>{p.product_name}</option>
                           ))}
                         </select>
                       </td>
@@ -244,8 +259,8 @@ const addingSalesOrder = async () => {
                       <td className="p-3">
                         <input
                           type="number"
-                          value={product.price}
-                          onChange={(e) => handleProductChange(product.id, 'price', parseFloat(e.target.value))}
+                          value={product.product_price}
+                          onChange={(e) => handleProductChange(product.id, 'product_price', parseFloat(e.target.value))}
                           className="w-24 border rounded px-2 py-1"
                         />
                       </td>
