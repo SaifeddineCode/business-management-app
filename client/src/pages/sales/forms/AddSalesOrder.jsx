@@ -3,35 +3,33 @@ import { FaSearch, FaPaperPlane, FaPrint, FaCheck, FaPlus, FaTrash } from 'react
 
 export default function AddSalesOrder() {
   // ========== STATE MANAGEMENT ==========
-  const [salesOrders, setSalesOrders] = useState([
+  const [salesOrders, setSalesOrders] = useState(
     {
-      id: '',
+      id: `BL${new Date().getSeconds()}`,
       date: '',
-      customer: { name: 'ebtikarweb', phone: '+212669708949' },
-      subject: 'BON DE LIVRAISON SYSTÈME',
+      quoteID: '',
       totalHT: 632.40,
       tva: 126.48,
       totalTTC: 758.88,
       status: 'Non Payé',
-      vendor: 'demo',
-      products: [
+      items: [
         { id: 1, name: '', quantity: 1, price: "", discount: "", tva: "" }
       ]
     }
-  ]);
+  );
 
   const [products, setProducts] = useState([]);
+  // const [clients, setClients] = useState([]);
+  const [quotes, setQuotes] = useState([]);
 
-  const [clients, setClients] = useState([]);
-
-  const [selectedOrder, setSelectedOrder] = useState(salesOrders[0]);
+  
 
 
   // fetch clients and products, 
   useEffect(()=>{
-    fetch("/api/customers")
+    fetch("/api/quote")
     .then(res => res.json())
-    .then(customersFetched => setClients(customersFetched))
+    .then(listOfQuotes => setQuotes(listOfQuotes))
   },[])
 
 
@@ -41,44 +39,51 @@ export default function AddSalesOrder() {
     .then(productsFetched => setProducts(productsFetched))
   },[])
 
+
+
+  // useEffect(()=>{
+  //   console.log({...salesOrders})
+  // },[salesOrders])
+
+
   // ========== HANDLERS ==========
-  const handleAddProduct = () => {
-    const newProduct = { id: Date.now(), name: '', quantity: 1, price: 0, discount: 0, tva: 20 };
-    setSelectedOrder(prev => ({
-      ...prev,
-      products: [...prev.products, newProduct]
-    }));
-  };
+  // const handleAddProduct = () => {
+  //   const newProduct = { id: Date.now(), name: '', quantity: 1, price: 0, discount: 0, tva: 20 };
+  //   setSelectedOrder(prev => ({
+  //     ...prev,
+  //     products: [...prev.products, newProduct]
+  //   }));
+  // };
 
-  const handleRemoveProduct = (productId) => {
-    setSelectedOrder(prev => ({
-      ...prev,
-      products: prev.products.filter(p => p.id !== productId)
-    }));
-  };
+  // const handleRemoveProduct = (productId) => {
+  //   setSelectedOrder(prev => ({
+  //     ...prev,
+  //     products: prev.products.filter(p => p.id !== productId)
+  //   }));
+  // };
 
-  const handleProductChange = (productId, field, value) => {
-    setSelectedOrder(prev => ({
-      ...prev,
-      products: prev.products.map(p => 
-        p.id === productId ? { ...p, [field]: value } : p
-      )
-    }));
-  };
+  // const handleProductChange = (productId, field, value) => {
+  //   setSelectedOrder(prev => ({
+  //     ...prev,
+  //     products: prev.products.map(p => 
+  //       p.id === productId ? { ...p, [field]: value } : p
+  //     )
+  //   }));
+  // };
 
   // ========== CALCULATIONS ==========
 
   
-  const calculateProductTotal = (product) => {
-    const discountedPrice = product.price * (1 - product.discount / 100);
-    return discountedPrice * product.quantity;
-  };
+  // const calculateProductTotal = (product) => {
+  //   const discountedPrice = product.price * (1 - product.discount / 100);
+  //   return discountedPrice * product.quantity;
+  // };
 
 
 
-  const subtotal = selectedOrder.products.reduce((sum, product) => sum + calculateProductTotal(product), 0);
-  const totalTVA = selectedOrder.products.reduce((sum, product) => sum + (calculateProductTotal(product) * product.tva / 100), 0);
-  const totalTTC = subtotal + totalTVA;
+  // const subtotal = selectedOrder.products.reduce((sum, product) => sum + calculateProductTotal(product), 0);
+  // const totalTVA = selectedOrder.products.reduce((sum, product) => sum + (calculateProductTotal(product) * product.tva / 100), 0);
+  // const totalTTC = subtotal + totalTVA;
 
 
 
@@ -104,6 +109,29 @@ export default function AddSalesOrder() {
 //     console.log('Error creating sales order:', err);
 //   }
 // }
+
+  // const selectedQuote = (quoteSelectdId) => {
+  //   const targetQuote = quotes.find((quote)=>{
+  //      quote.id === quoteSelectdId
+  //   })
+  //   return console.log(targetQuote)
+
+  // }
+
+  const [quoteSelected,setQuoteSelected] = useState({})
+
+  const handleQuoteChange = (value) => {
+      setSalesOrders((prev)=>({
+        ...prev,
+        quoteID:value
+      }))
+
+      const selectedQuote = quotes.find( quote => quote.id === parseFloat(value) )
+
+      return setQuoteSelected(selectedQuote)
+}
+
+
 
 
 
@@ -159,28 +187,29 @@ export default function AddSalesOrder() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <div className="text-sm text-gray-600">BON DE LIVRAISON</div>
-                <div className="text-lg font-bold">{selectedOrder.id}</div>
-                <div className="text-sm text-gray-600">{selectedOrder.subject}</div>
+                <div className="text-sm text-gray-600">BON DE VENTE</div>
+                <div className="text-lg font-bold"></div>
+                <div className="text-sm text-gray-600"></div>
               </div>
               <div className="text-right">
                 <div className="text-sm text-gray-600">Date</div>
-                <div className="font-semibold">{selectedOrder.date}</div>
-                <div className="text-sm text-red-600 font-semibold">{selectedOrder.status}</div>
+                <div className="font-semibold"></div>
+                <div className="text-sm text-red-600 font-semibold"></div>
               </div>
             </div>
 
             {/* Client Selection */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Client</label>
-              <select className="w-full border rounded px-3 py-2">
-                <option value="">Sélectionner le Client</option>
-                {clients.map(client => (
-                  <option key={client.id} value={client.id}>
-                    {client.name} - {client.telephone}
+              <label className="block text-sm font-medium text-gray-700 mb-2">Devis</label>
+              <select onChange={(e)=>handleQuoteChange(e.target.value)} className="w-full border rounded px-3 py-2">
+                <option value="">Sélectionner le devis</option>
+                {quotes.map(quote => (
+                  <option key={quote.id} value={quote.id}>
+                    {quote.libelle}
                   </option>
                 ))}
               </select>
+              <div> client : {quoteSelected.customer_name} </div>
             </div>
 
             {/* Order Details */}
@@ -188,17 +217,17 @@ export default function AddSalesOrder() {
               <div>
                 <div className="flex justify-between py-1">
                   <span>Total HT:</span>
-                  <span>{subtotal.toFixed(2)} DH</span>
+                  {/* <span>{subtotal.toFixed(2)} DH</span> */}
                 </div>
                 <div className="flex justify-between py-1">
                   <span>Montant TVA:</span>
-                  <span>{totalTVA.toFixed(2)} DH</span>
+                  {/* <span>{totalTVA.toFixed(2)} DH</span> */}
                 </div>
               </div>
               <div>
                 <div className="flex justify-between py-1 font-semibold">
                   <span>Total A Payer:</span>
-                  <span className="text-green-600">{totalTTC.toFixed(2)} DH</span>
+                  {/* <span className="text-green-600">{totalTTC.toFixed(2)} DH</span> */}
                 </div>
                 <div className="flex justify-between py-1">
                   <span>Montant en lettres:</span>
@@ -213,7 +242,7 @@ export default function AddSalesOrder() {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold">Détail Bon Vente</h2>
               <button 
-                onClick={handleAddProduct}
+                // onClick={handleAddProduct}
                 className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               >
                 <FaPlus /> Ajouter les Produits
@@ -234,12 +263,12 @@ export default function AddSalesOrder() {
                   </tr>
                 </thead>
                 <tbody>
-                  {selectedOrder.products.map((product) => (
+                  {salesOrders.products?.map((product) => (
                     <tr key={product.id} className="border-b">
                       <td className="p-3">
                         <select 
                           value={product.product_name}
-                          onChange={(e) => handleProductChange(product.id, 'product_name', e.target.value)}
+                          // onChange={(e) => handleProductChange(product.id, 'product_name', e.target.value)}
                           className="w-full border rounded px-2 py-1"
                         >
                           <option value="">Sélectionner produit</option>
@@ -252,7 +281,7 @@ export default function AddSalesOrder() {
                         <input
                           type="number"
                           value={product.quantity}
-                          onChange={(e) => handleProductChange(product.id, 'quantity', parseInt(e.target.value))}
+                          // onChange={(e) => handleProductChange(product.id, 'quantity', parseInt(e.target.value))}
                           className="w-20 border rounded px-2 py-1"
                         />
                       </td>
@@ -260,7 +289,7 @@ export default function AddSalesOrder() {
                         <input
                           type="number"
                           value={product.product_price}
-                          onChange={(e) => handleProductChange(product.id, 'product_price', parseFloat(e.target.value))}
+                          // onChange={(e) => handleProductChange(product.id, 'product_price', parseFloat(e.target.value))}
                           className="w-24 border rounded px-2 py-1"
                         />
                       </td>
@@ -268,7 +297,7 @@ export default function AddSalesOrder() {
                         <input
                           type="number"
                           value={product.discount}
-                          onChange={(e) => handleProductChange(product.id, 'discount', parseFloat(e.target.value))}
+                          // onChange={(e) => handleProductChange(product.id, 'discount', parseFloat(e.target.value))}
                           className="w-20 border rounded px-2 py-1"
                         />
                       </td>
@@ -276,16 +305,16 @@ export default function AddSalesOrder() {
                         <input
                           type="number"
                           value={product.tva}
-                          onChange={(e) => handleProductChange(product.id, 'tva', parseFloat(e.target.value))}
+                          // onChange={(e) => handleProductChange(product.id, 'tva', parseFloat(e.target.value))}
                           className="w-20 border rounded px-2 py-1"
                         />
                       </td>
                       <td className="p-3 font-semibold">
-                        {calculateProductTotal(product).toFixed(2)} DH
+                        {/* {calculateProductTotal(product).toFixed(2)} DH */}
                       </td>
                       <td className="p-3">
                         <button 
-                          onClick={() => handleRemoveProduct(product.id)}
+                          // onClick={() => handleRemoveProduct(product.id)}
                           className="text-red-500 hover:text-red-700"
                         >
                           <FaTrash />
@@ -308,7 +337,7 @@ export default function AddSalesOrder() {
             <div className="space-y-3">
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Le solde</label>
-                <div className="font-bold text-lg text-green-600">{totalTTC.toFixed(2)} DH</div>
+                {/* <div className="font-bold text-lg text-green-600">{totalTTC.toFixed(2)} DH</div> */}
               </div>
               <button className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
                 Enregistrer Paiement
@@ -321,7 +350,7 @@ export default function AddSalesOrder() {
             <div className="space-y-3">
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Vendeur</label>
-                <div className="font-medium">{selectedOrder.vendor}</div>
+                {/* <div className="font-medium">{selectedOrder.vendor}</div> */}
               </div>
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Date commande</label>
