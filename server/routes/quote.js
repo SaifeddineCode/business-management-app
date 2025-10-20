@@ -19,7 +19,10 @@ router.get("/", async (req,res)=>{
     SELECT 
       q.*,                           
       c.id as customer_id,           
-      c.name as customer_name
+      c.name as customer_name,
+      c.email as customer_email,
+      c.telephone as customer_telephone,
+      c.adresse as customer_adresse
     FROM quote q
     LEFT JOIN customers c ON q.client_id = c.id
     ORDER BY id DESC
@@ -31,6 +34,8 @@ router.get("/", async (req,res)=>{
     res.status(500)
   }
 })
+
+
 
 
 

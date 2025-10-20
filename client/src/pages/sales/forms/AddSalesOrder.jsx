@@ -1,385 +1,401 @@
-import { useEffect, useState } from 'react';
-import { FaSearch, FaPaperPlane, FaPrint, FaCheck, FaPlus, FaTrash } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import { FaUser, FaFileInvoice, FaShoppingCart, FaCalendarAlt, FaMoneyBillWave, FaTruck, FaPlus, FaTrash } from 'react-icons/fa';
 
-export default function AddSalesOrder() {
-  // ========== STATE MANAGEMENT ==========
-  const [salesOrders, setSalesOrders] = useState(
-    {
-      id: `BL${new Date().getSeconds()}`,
-      date: '',
-      quoteID: '',
-      totalHT: 632.40,
-      tva: 126.48,
-      totalTTC: 758.88,
-      status: 'Non Payé',
-      items: [
-        { id: 1, name: '', quantity: 1, price: "", discount: "", tva: "" }
-      ]
-    }
-  );
-
-  const [products, setProducts] = useState([]);
-  // const [clients, setClients] = useState([]);
-  const [quotes, setQuotes] = useState([]);
-
+const AddSalesOrder = () => {
   
 
+  const [saleOrderData,setSaleOrderData] = useState({
+    quoteID : "",
+    clientID : "",
+    orderNumber : `SO-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`,
+    orderDate:"",
+    deliveryDate:"",
+    deliveryAdress:"",
+    vendorId:"",
+    totalHt:"",
+    tva:"",
+    totalTTC:"",
+    status:""
+  })
 
-  // fetch clients and products, 
+
+
+  const [quotes,setQuotes] = useState([])
+
+
+
+  // const [products,setProducts] = useState([])
+
+  const orderedProducts = [
+    { id: 1, productId: 1, name: 'Laptop Dell XPS 13', quantity: 2, unitPrice: 1200, discount: 0, total: 2400 },
+    { id: 2, productId: 2, name: 'Wireless Mouse', quantity: 5, unitPrice: 25, discount: 10, total: 112.5 },
+  ];
+
+  const orderSummary = {
+    subtotal: 2512.5,
+    globalDiscount: 100,
+    tax: 482.5,
+    shipping: 50,
+    total: 2945
+  };
+
+
+
   useEffect(()=>{
+
     fetch("/api/quote")
-    .then(res => res.json())
-    .then(listOfQuotes => setQuotes(listOfQuotes))
+    .then(result => result.json())
+    .then (data => setQuotes(data))
+
+    // fetch("/api/products")
+    // .then(result => result.json())
+    // .then (data => setProducts(data))
+
   },[])
 
-
-  useEffect(()=>{
-    fetch("/api/products")
-    .then(res => res.json())
-    .then(productsFetched => setProducts(productsFetched))
-  },[])
+  const [selectedQuote,setSelectedQuote] = useState({customer_name:' ------'})
 
 
 
-  // useEffect(()=>{
-  //   console.log({...salesOrders})
-  // },[salesOrders])
+  const handleQuoteChange = (value) =>{
 
-
-  // ========== HANDLERS ==========
-  // const handleAddProduct = () => {
-  //   const newProduct = { id: Date.now(), name: '', quantity: 1, price: 0, discount: 0, tva: 20 };
-  //   setSelectedOrder(prev => ({
-  //     ...prev,
-  //     products: [...prev.products, newProduct]
-  //   }));
-  // };
-
-  // const handleRemoveProduct = (productId) => {
-  //   setSelectedOrder(prev => ({
-  //     ...prev,
-  //     products: prev.products.filter(p => p.id !== productId)
-  //   }));
-  // };
-
-  // const handleProductChange = (productId, field, value) => {
-  //   setSelectedOrder(prev => ({
-  //     ...prev,
-  //     products: prev.products.map(p => 
-  //       p.id === productId ? { ...p, [field]: value } : p
-  //     )
-  //   }));
-  // };
-
-  // ========== CALCULATIONS ==========
-
-  
-  // const calculateProductTotal = (product) => {
-  //   const discountedPrice = product.price * (1 - product.discount / 100);
-  //   return discountedPrice * product.quantity;
-  // };
-
-
-
-  // const subtotal = selectedOrder.products.reduce((sum, product) => sum + calculateProductTotal(product), 0);
-  // const totalTVA = selectedOrder.products.reduce((sum, product) => sum + (calculateProductTotal(product) * product.tva / 100), 0);
-  // const totalTTC = subtotal + totalTVA;
-
-
-
-
-
-
-// const addingSalesOrder = async () => {
-//   try {
-//     const response = await fetch("/api/salesOrders", {
-//       method: "POST",
-//       headers: {
-//         'Content-Type': 'application/json'
-//       },
-//       body: JSON.stringify(salesOrders)  // 👈 Pass your actual data here
-//     });
-    
-//     if (!response.ok) throw new Error('Failed to create order');
-    
-//     const result = await response.json();
-//     return result;
-    
-//   } catch(err) {
-//     console.log('Error creating sales order:', err);
-//   }
-// }
-
-  // const selectedQuote = (quoteSelectdId) => {
-  //   const targetQuote = quotes.find((quote)=>{
-  //      quote.id === quoteSelectdId
-  //   })
-  //   return console.log(targetQuote)
-
-  // }
-
-  const [quoteSelected,setQuoteSelected] = useState({})
-
-  const handleQuoteChange = (value) => {
-      setSalesOrders((prev)=>({
+    setSaleOrderData((prev)=>({
         ...prev,
-        quoteID:value
-      }))
-
-      const selectedQuote = quotes.find( quote => quote.id === parseFloat(value) )
-
-      return setQuoteSelected(selectedQuote)
-}
+        quoteID : value
+    }))
 
 
+  const currentQuote=quotes.find(quote => quote.id === parseFloat(value) )
+  setSelectedQuote(currentQuote)
+
+  }
+
+
+useEffect(()=>{
+
+  fetch("/api/quote_item")
+  .then(result => result.json())
+  .then(data => console.log(data))
+  
+},[])
+ 
 
 
 
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      
-      {/* ========== HEADER SECTION ========== */}
-       <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        {/* <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Bons de Livraison</h1>
-          <button 
-            onClick={()=>addingSalesOrder()}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2">
-            <FaPlus /> Ajouter Bon
-          </button>
-        </div>  */}
-
-        {/* Search Bar */}
-        {/* <div className="flex gap-4 mb-4">
-          <div className="flex-1 relative">
-            <FaSearch className="absolute left-3 top-3 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Recherche rapide..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </div> */}
-
-        {/* Action Buttons */}
-        {/* <div className="flex gap-2">
-          <button className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-            <FaPaperPlane /> Envoyer par email
-          </button>
-          <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            <FaPrint /> Imprimer le bon de livraison
-          </button>
-          <button className="flex items-center gap-2 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
-            <FaCheck /> Valider
-          </button>
-        </div> */}
-      </div>
-
-      <div className="grid grid-cols-3 gap-6">
-        
-        {/* ========== LEFT COLUMN - ORDER INFO ========== */}
-        <div className="col-span-2 space-y-6">
-          
-          {/* Order Header Card */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <div className="text-sm text-gray-600">BON DE VENTE</div>
-                <div className="text-lg font-bold"></div>
-                <div className="text-sm text-gray-600"></div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm text-gray-600">Date</div>
-                <div className="font-semibold"></div>
-                <div className="text-sm text-red-600 font-semibold"></div>
-              </div>
-            </div>
-
-            {/* Client Selection */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Devis</label>
-              <select onChange={(e)=>handleQuoteChange(e.target.value)} className="w-full border rounded px-3 py-2">
-                <option value="">Sélectionner le devis</option>
-                {quotes.map(quote => (
-                  <option key={quote.id} value={quote.id}>
-                    {quote.libelle}
-                  </option>
-                ))}
-              </select>
-              <div> client : {quoteSelected.customer_name} </div>
-            </div>
-
-            {/* Order Details */}
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <div className="flex justify-between py-1">
-                  <span>Total HT:</span>
-                  {/* <span>{subtotal.toFixed(2)} DH</span> */}
-                </div>
-                <div className="flex justify-between py-1">
-                  <span>Montant TVA:</span>
-                  {/* <span>{totalTVA.toFixed(2)} DH</span> */}
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between py-1 font-semibold">
-                  <span>Total A Payer:</span>
-                  {/* <span className="text-green-600">{totalTTC.toFixed(2)} DH</span> */}
-                </div>
-                <div className="flex justify-between py-1">
-                  <span>Montant en lettres:</span>
-                  <span className="text-gray-600">Sept cent cinquante-huit DH</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ========== PRODUCTS TABLE ========== */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Détail Bon Vente</h2>
-              <button 
-                // onClick={handleAddProduct}
-                className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                <FaPlus /> Ajouter les Produits
-              </button>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="text-left p-3">Produit</th>
-                    <th className="text-left p-3">Quantité</th>
-                    <th className="text-left p-3">Prix</th>
-                    <th className="text-left p-3">Remise %</th>
-                    <th className="text-left p-3">TVA %</th>
-                    <th className="text-left p-3">Montant</th>
-                    <th className="text-left p-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {salesOrders.products?.map((product) => (
-                    <tr key={product.id} className="border-b">
-                      <td className="p-3">
-                        <select 
-                          value={product.product_name}
-                          // onChange={(e) => handleProductChange(product.id, 'product_name', e.target.value)}
-                          className="w-full border rounded px-2 py-1"
-                        >
-                          <option value="">Sélectionner produit</option>
-                          {products.map(p => (
-                            <option key={p.id} value={p.product_name}>{p.product_name}</option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="p-3">
-                        <input
-                          type="number"
-                          value={product.quantity}
-                          // onChange={(e) => handleProductChange(product.id, 'quantity', parseInt(e.target.value))}
-                          className="w-20 border rounded px-2 py-1"
-                        />
-                      </td>
-                      <td className="p-3">
-                        <input
-                          type="number"
-                          value={product.product_price}
-                          // onChange={(e) => handleProductChange(product.id, 'product_price', parseFloat(e.target.value))}
-                          className="w-24 border rounded px-2 py-1"
-                        />
-                      </td>
-                      <td className="p-3">
-                        <input
-                          type="number"
-                          value={product.discount}
-                          // onChange={(e) => handleProductChange(product.id, 'discount', parseFloat(e.target.value))}
-                          className="w-20 border rounded px-2 py-1"
-                        />
-                      </td>
-                      <td className="p-3">
-                        <input
-                          type="number"
-                          value={product.tva}
-                          // onChange={(e) => handleProductChange(product.id, 'tva', parseFloat(e.target.value))}
-                          className="w-20 border rounded px-2 py-1"
-                        />
-                      </td>
-                      <td className="p-3 font-semibold">
-                        {/* {calculateProductTotal(product).toFixed(2)} DH */}
-                      </td>
-                      <td className="p-3">
-                        <button 
-                          // onClick={() => handleRemoveProduct(product.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <FaTrash />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Ajouter un Bon de Vente</h1>
+          <p className="text-gray-600 mt-2">Créer une nouvelle commande client</p>
         </div>
 
-        {/* ========== RIGHT COLUMN - SIDE INFO ========== */}
-        <div className="space-y-6">
-          
-          {/* Payment Section */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="font-semibold mb-4">Ajouter un règlement</h3>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">Le solde</label>
-                {/* <div className="font-bold text-lg text-green-600">{totalTTC.toFixed(2)} DH</div> */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Order Details */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Quote Selection Card */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center mb-4">
+                <FaFileInvoice className="text-blue-600 mr-3" />
+                <h2 className="text-lg font-semibold text-gray-900">Sélectionner un Devis</h2>
               </div>
-              <button className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
-                Enregistrer Paiement
-              </button>
-            </div>
-          </div>
-
-          {/* Additional Info */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">Vendeur</label>
-                {/* <div className="font-medium">{selectedOrder.vendor}</div> */}
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">Date commande</label>
-                <input type="date" className="w-full border rounded px-3 py-2" />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">Date de livraison</label>
-                <input type="date" className="w-full border rounded px-3 py-2" />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-600 mb-1">Lieu de livraison</label>
-                <textarea className="w-full border rounded px-3 py-2" rows="2" />
-              </div>
-            </div>
-          </div>
-
-          {/* Stock Info */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="font-semibold mb-4">Information Stock</h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span>QT EN STOCK:</span>
-                <span className="font-semibold">50</span>
-              </div>
-              <div>
-                <label className="block text-gray-600 mb-1">Entrepôt</label>
-                <select className="w-full border rounded px-2 py-1">
-                  <option>TOP6-09</option>
+              <div className="space-y-4">
+                <select 
+                onChange={(e)=>handleQuoteChange(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="">Choisir un devis...</option>
+                  {quotes.map(quote => (
+                    <option key={quote.id} value={quote.id}>
+                      {quote.libelle} - {quote.customer_name} - {quote.total_ttc}€
+                    </option>
+                  ))}
                 </select>
+                
+                {/* Quote Preview */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium">Client:</span>
+                      <p className="text-gray-700"> {selectedQuote.customer_name}</p>
+                    </div>
+                    <div>
+                      <span className="font-medium">Total Devis TTC:</span>
+                      <p className="text-gray-700">{selectedQuote.total_ttc} €</p>
+                    </div>
+                    <div>
+                      <span className="font-medium">Validité:</span>
+                      <p className="text-gray-700">31/12/2024</p>
+                    </div>
+                    <div>
+                      <span className="font-medium">Numéro:</span>
+                      <p className="text-gray-700">{saleOrderData.orderNumber}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Client Information Card */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center mb-4">
+                <FaUser className="text-green-600 mr-3" />
+                <h2 className="text-lg font-semibold text-gray-900">Informations Client</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Nom du Client</label>
+                  <input 
+                    type="text" 
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    value={selectedQuote.customer_name}
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <input 
+                    type="email" 
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    value={selectedQuote.customer_email}
+                    readOnly
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Adresse de Livraison</label>
+                  <textarea 
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    rows="3"
+                    value={selectedQuote.customer_adresse}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Products Section */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
+                  <FaShoppingCart className="text-purple-600 mr-3" />
+                  <h2 className="text-lg font-semibold text-gray-900">Produits</h2>
+                </div>
+                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                  <FaPlus className="mr-2" />
+                  Ajouter Produit
+                </button>
+              </div>
+
+              {/* Products Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-3 font-medium text-gray-700">Produit</th>
+                      <th className="text-left py-3 font-medium text-gray-700">Quantité</th>
+                      <th className="text-left py-3 font-medium text-gray-700">Prix Unitaire</th>
+                      <th className="text-left py-3 font-medium text-gray-700">Remise</th>
+                      <th className="text-left py-3 font-medium text-gray-700">Total</th>
+                      <th className="text-left py-3 font-medium text-gray-700">Actions</th>
+                    </tr>
+                  </thead>
+                  {/* <tbody>
+                    <tr className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="py-3">
+                        <select className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                          <option value="">Selectionner un produit</option>
+                          {products.map((product,index)=>{
+                            return (
+                              <option key={index} value={product.id}> {product.product_name} </option>
+                            )
+                          })}
+                        </select>
+                      </td>
+                       <td className="py-3">
+                          <input 
+                            type="number" 
+                            className="w-20 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
+                            value={product.quantity}
+                          />
+                        </td>
+                        <td className="py-3">
+                          <input 
+                            type="number" 
+                            className="w-24 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
+                            value={product.unitPrice}
+                          />
+                        </td>
+                        <td className="py-3">
+                          <input 
+                            type="number" 
+                            className="w-20 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
+                            value={product.discount}
+                          />
+                        </td>
+                        <td className="py-3 font-medium">{product.total} €</td>
+                        <td className="py-3">
+                          <button className="text-red-600 hover:text-red-800">
+                            <FaTrash />
+                          </button>
+                        </td>
+                    </tr>
+                  </tbody> */}
+                   <tbody>
+                    {orderedProducts.map(product => (
+                      <tr key={product.id} className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="py-3">
+                          <select className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500">
+                            <option>{product.name}</option>
+                          </select>
+                        </td>
+                        <td className="py-3">
+                          <input 
+                            type="number" 
+                            className="w-20 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
+                            value={product.quantity}
+                          />
+                        </td>
+                        <td className="py-3">
+                          <input 
+                            type="number" 
+                            className="w-24 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
+                            value={product.unitPrice}
+                          />
+                        </td>
+                        <td className="py-3">
+                          <input 
+                            type="number" 
+                            className="w-20 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
+                            value={product.discount}
+                          />
+                        </td>
+                        <td className="py-3 font-medium">{product.total} €</td>
+                        <td className="py-3">
+                          <button className="text-red-600 hover:text-red-800">
+                            <FaTrash />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Order Summary & Actions */}
+          <div className="space-y-6">
+            {/* Order Information */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center mb-4">
+                <FaCalendarAlt className="text-orange-600 mr-3" />
+                <h2 className="text-lg font-semibold text-gray-900">Informations Commande</h2>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Date de Commande</label>
+                  <input 
+                    type="date" 
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                    value="2024-01-15"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Date de Livraison</label>
+                  <input 
+                    type="date" 
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                    value="2024-01-20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Numéro de Commande</label>
+                  <input 
+                    type="text" 
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                    value="SO-2024-001"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                  <select className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                    <option value="draft">Brouillon</option>
+                    <option value="confirmed">Confirmé</option>
+                    <option value="delivered">Livré</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Order Summary */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center mb-4">
+                <FaMoneyBillWave className="text-green-600 mr-3" />
+                <h2 className="text-lg font-semibold text-gray-900">Récapitulatif</h2>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Sous-total:</span>
+                  <span className="font-medium">{orderSummary.subtotal} €</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Remise globale:</span>
+                  <span className="font-medium text-red-600">-{orderSummary.globalDiscount} €</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">TVA (20%):</span>
+                  <span className="font-medium">{orderSummary.tax} €</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Frais de livraison:</span>
+                  <span className="font-medium">{orderSummary.shipping} €</span>
+                </div>
+                <div className="border-t border-gray-200 pt-3 flex justify-between text-lg font-bold">
+                  <span>Total:</span>
+                  <span className="text-blue-600">{orderSummary.total} €</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment & Shipping */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center mb-4">
+                <FaTruck className="text-indigo-600 mr-3" />
+                <h2 className="text-lg font-semibold text-gray-900">Paiement & Livraison</h2>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Mode de Paiement</label>
+                  <select className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                    <option value="cash">Espèces</option>
+                    <option value="card">Carte Bancaire</option>
+                    <option value="transfer">Virement</option>
+                    <option value="check">Chèque</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Notes Internes</label>
+                  <textarea 
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    rows="3"
+                    placeholder="Notes supplémentaires..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                  Enregistrer le Bon de Vente
+                </button>
+                <button className="flex-1 bg-gray-500 text-white py-3 px-4 rounded-lg hover:bg-gray-600 transition-colors font-medium">
+                  Enregistrer Brouillon
+                </button>
+                <button className="flex-1 bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-colors font-medium">
+                  Annuler
+                </button>
               </div>
             </div>
           </div>
@@ -387,4 +403,6 @@ export default function AddSalesOrder() {
       </div>
     </div>
   );
-}
+};
+
+export default AddSalesOrder;
