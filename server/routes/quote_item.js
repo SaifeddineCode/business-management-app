@@ -1,17 +1,48 @@
 import express from "express"
-import db from "../../database/database"
+import db from "../../database/database.js"
 
 const router = express.Router()
 
 
-router.get("/",(req,res)=>{
+router.get("/",async (req,res)=>{
     
-    const query = `
-    SELECT * FROM quote_item
-    `
+    try{
+        // const query = `SELECT * FROM quote_item`
 
-    const quote_item = db.execute(query)
+        const query = `
+        select * from quote_item as q_i
+        JOIN products as p 
+            ON q_i.product_ID = p.id
+        
+        `
 
-    res.send(quote_item)
+
+        const [quoteItem]= await db.execute(query)
+
+        if(quoteItem.length === 0){
+            return res.status(200).json({
+                success : true,
+                message : "No quote items found",
+                data:[]
+            });
+        }
+
+        return res.status(200).json({
+            success:true,
+            data : quoteItem
+        });
+
+
+
+    } catch (error){
+        console.log(error)
+        return res.status(500).json({
+            success:false,
+            message:"Failed to fetch quote items",
+            error : error.message
+        })
+    }
     
 })
+
+export default router

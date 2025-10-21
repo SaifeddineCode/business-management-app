@@ -7,7 +7,7 @@ const AddSalesOrder = () => {
   const [saleOrderData,setSaleOrderData] = useState({
     quoteID : "",
     clientID : "",
-    orderNumber : `SO-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`,
+    orderNumber :`SO-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`,
     orderDate:"",
     deliveryDate:"",
     deliveryAdress:"",
@@ -26,10 +26,10 @@ const AddSalesOrder = () => {
 
   // const [products,setProducts] = useState([])
 
-  const orderedProducts = [
-    { id: 1, productId: 1, name: 'Laptop Dell XPS 13', quantity: 2, unitPrice: 1200, discount: 0, total: 2400 },
-    { id: 2, productId: 2, name: 'Wireless Mouse', quantity: 5, unitPrice: 25, discount: 10, total: 112.5 },
-  ];
+  // const orderedProducts = [
+  //   { id: 1, productId: 1, name: 'Laptop Dell XPS 13', quantity: 2, unitPrice: 1200, discount: 0, total: 2400 },
+  //   { id: 2, productId: 2, name: 'Wireless Mouse', quantity: 5, unitPrice: 25, discount: 10, total: 112.5 },
+  // ];
 
   const orderSummary = {
     subtotal: 2512.5,
@@ -40,46 +40,122 @@ const AddSalesOrder = () => {
   };
 
 
+  const [selectedQuote,setSelectedQuote] = useState({customer_name:' ------'})
+  const [orderedItems,setOrderedItems] = useState([])
+  const [quoteItems,setQuoteItems] = useState([])
+  const [products,setProducts] = useState([])
 
-  useEffect(()=>{
+
+ useEffect(()=>{
 
     fetch("/api/quote")
     .then(result => result.json())
     .then (data => setQuotes(data))
 
-    // fetch("/api/products")
-    // .then(result => result.json())
-    // .then (data => setProducts(data))
+    fetch("/api/products")
+    .then(result => result.json())
+    .then (data => setProducts(data))
 
   },[])
 
-  const [selectedQuote,setSelectedQuote] = useState({customer_name:' ------'})
 
 
 
-  const handleQuoteChange = (value) =>{
 
-    setSaleOrderData((prev)=>({
-        ...prev,
-        quoteID : value
-    }))
+useEffect( ()=>{
+  const fetchingQuoteItems = async () =>{
+    
+    try{
+
+      const response = await fetch("/api/quote_item")
+      
+      if(!response.ok){
+        console.log(response.message)
+      }
+
+      const result = await response.json()
+      return setQuoteItems(result.data)
 
 
-  const currentQuote=quotes.find(quote => quote.id === parseFloat(value) )
-  setSelectedQuote(currentQuote)
-
+    }catch(error){
+      console.log(error)
+    }
+    
   }
 
-
-useEffect(()=>{
-
-  fetch("/api/quote_item")
-  .then(result => result.json())
-  .then(data => console.log(data))
-  
+  fetchingQuoteItems()  
 },[])
- 
 
+
+
+// const handleQuoteChange = (value) =>{
+
+//     setSaleOrderData((prev)=>({
+//         ...prev,
+//         quoteID : value
+//     }))
+
+
+//   const currentQuote=quotes.find(quote => quote.id === parseFloat(value) )
+//   setSelectedQuote(currentQuote)
+
+//   const currentOrderedProducts = quoteItems.find((quoteItem)=> quoteItem.quote_ID === parseFloat(value) )
+//   setOrderedProducts((prev)=>([...prev,currentOrderedProducts]))
+
+//   }
+
+
+const handleQuoteChange = (value) => {
+  
+  const quoteId = parseInt(value, 10);
+  
+  
+  setSaleOrderData((prev) => ({
+    ...prev,
+    quoteID: quoteId
+  }));
+
+  
+  const currentQuote = quotes.find(quote => quote.id === quoteId);
+  
+  if (!currentQuote) {
+    console.error(`Quote with ID ${quoteId} not found`);
+    setSelectedQuote(null);
+    setOrderedItems([]);
+    return;
+  }
+  
+  setSelectedQuote(currentQuote);
+
+  const currentOrderedProducts = quoteItems.filter(
+    (quoteItem) => quoteItem.quote_ID === quoteId
+  );
+  
+  setOrderedItems(currentOrderedProducts);
+};
+
+
+
+const handleAddProduct = () =>{
+
+
+
+  setOrderedItems((prev)=>(
+    
+    [
+    ...prev,
+    {
+      product_id:"",
+      product_name:"",
+      quantity:1,
+      unit_price:"",
+      discount:"",
+      total:""
+    }
+    ]
+  ))
+
+}
 
 
 
@@ -108,7 +184,7 @@ useEffect(()=>{
                   <option value="">Choisir un devis...</option>
                   {quotes.map(quote => (
                     <option key={quote.id} value={quote.id}>
-                      {quote.libelle} - {quote.customer_name} - {quote.total_ttc}€
+                      {quote.libelle}
                     </option>
                   ))}
                 </select>
@@ -180,7 +256,9 @@ useEffect(()=>{
                   <FaShoppingCart className="text-purple-600 mr-3" />
                   <h2 className="text-lg font-semibold text-gray-900">Produits</h2>
                 </div>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                <button
+                onClick={()=>handleAddProduct()}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
                   <FaPlus className="mr-2" />
                   Ajouter Produit
                 </button>
@@ -241,35 +319,36 @@ useEffect(()=>{
                     </tr>
                   </tbody> */}
                    <tbody>
-                    {orderedProducts.map(product => (
-                      <tr key={product.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    {orderedItems.map(item => (
+                      <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
                         <td className="py-3">
                           <select className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500">
-                            <option>{product.name}</option>
+                            <option>{item.product_name}</option>
                           </select>
+                         
                         </td>
                         <td className="py-3">
                           <input 
                             type="number" 
                             className="w-20 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
-                            value={product.quantity}
+                            value={item.quantity}
                           />
                         </td>
                         <td className="py-3">
                           <input 
                             type="number" 
                             className="w-24 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
-                            value={product.unitPrice}
+                            value={item.unit_price}
                           />
                         </td>
                         <td className="py-3">
                           <input 
                             type="number" 
                             className="w-20 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
-                            value={product.discount}
+                            value={item.discount}
                           />
                         </td>
-                        <td className="py-3 font-medium">{product.total} €</td>
+                        <td className="py-3 font-medium">{item.total} €</td>
                         <td className="py-3">
                           <button className="text-red-600 hover:text-red-800">
                             <FaTrash />
@@ -277,6 +356,8 @@ useEffect(()=>{
                         </td>
                       </tr>
                     ))}
+
+                    
                   </tbody>
                 </table>
               </div>
@@ -295,6 +376,7 @@ useEffect(()=>{
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Date de Commande</label>
                   <input 
+                    onChange={(e)=>setSaleOrderData(prev=> ({...prev,orderDate : e.target.value})  )}
                     type="date" 
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                     value="2024-01-15"
@@ -303,6 +385,7 @@ useEffect(()=>{
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Date de Livraison</label>
                   <input 
+                    onChange={(e)=>setSaleOrderData(prev => ({...prev,deliveryDate : e.target.value}) )}
                     type="date" 
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                     value="2024-01-20"
@@ -313,16 +396,17 @@ useEffect(()=>{
                   <input 
                     type="text" 
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                    value="SO-2024-001"
+                    value={saleOrderData.orderNumber}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Statut</label>
-                  <select className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                  {/* <select className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                     <option value="draft">Brouillon</option>
                     <option value="confirmed">Confirmé</option>
                     <option value="delivered">Livré</option>
-                  </select>
+                  </select> */}
+                  <input type='text' value={selectedQuote.status} />
                 </div>
               </div>
             </div>
