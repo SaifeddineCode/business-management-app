@@ -128,10 +128,10 @@ function AddQuote({ onClose }) {
     }
     
     // Remove item by id - TODO: Add validation for minimum items
-    setQuoteData(prev => ({
-      ...prev,
-      items: prev.items.filter(item => item.id !== id)
-    }));
+    // setQuoteData(prev => ({
+    //   ...prev,
+    //   items: prev.items.filter(item => item.id !== id)
+    // }));
   };
 
   // const updateItem = (id, field, value) => {

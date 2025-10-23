@@ -138,24 +138,59 @@ const handleQuoteChange = (value) => {
 
 const handleAddProduct = () =>{
 
-
-
-  setOrderedItems((prev)=>(
-    
+  setOrderedItems((prev)=>(  
     [
     ...prev,
     {
+      id: Math.floor(Math.random() * 1_000_000_0000),
       product_id:"",
       product_name:"",
       quantity:1,
       unit_price:"",
       discount:"",
-      total:""
+      total:"",
+      is_new:true
     }
     ]
   ))
+}
+
+
+
+
+
+const handleRemoveProduct = (productID) => {
+
+  const updateItems = orderedItems.filter(item => item.id !== parseFloat(productID))
+  return setOrderedItems(updateItems)  
 
 }
+
+
+
+const handleChangeProduct = (productID) =>{
+
+  const target = products.find((item)=> item.id === parseFloat(productID))
+
+  setOrderedItems(prev => prev.map((item)=>{
+    if(parseFloat(item.product_id) === parseFloat(target.id)){
+      return {
+        ...item,
+        total : item.quantity * target.product_price 
+      }
+      
+    }else {
+      console.log(prev)
+    }
+
+  }))
+
+}
+
+
+
+
+
 
 
 
@@ -241,6 +276,7 @@ const handleAddProduct = () =>{
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Adresse de Livraison</label>
                   <textarea 
+                    readOnly
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     rows="3"
                     value={selectedQuote.customer_adresse}
@@ -321,11 +357,34 @@ const handleAddProduct = () =>{
                    <tbody>
                     {orderedItems.map(item => (
                       <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="py-3">
+                        {/* <td className="py-3">
                           <select className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500">
                             <option>{item.product_name}</option>
                           </select>
                          
+                        </td> */}
+                         <td className="py-3">
+                          {item.is_new ? (
+                            <select 
+                            onChange={(e)=>handleChangeProduct(e.target.value)}
+                              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
+                              value={item.product_id}
+                            >
+                              <option value="">Select Product</option>
+                              {products.map(product => (
+                                <option key={product.id} value={product.id}>
+                                  {product.product_name}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input 
+                              type="text" 
+                              className="w-full p-2 border border-gray-300 rounded bg-gray-50"
+                              value={item.product_name}
+                              readOnly 
+                            />
+                          )}
                         </td>
                         <td className="py-3">
                           <input 
@@ -350,7 +409,9 @@ const handleAddProduct = () =>{
                         </td>
                         <td className="py-3 font-medium">{item.total} €</td>
                         <td className="py-3">
-                          <button className="text-red-600 hover:text-red-800">
+                          <button
+                          onClick={()=>handleRemoveProduct(item.id)}
+                          className="text-red-600 hover:text-red-800">
                             <FaTrash />
                           </button>
                         </td>
@@ -394,6 +455,7 @@ const handleAddProduct = () =>{
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Numéro de Commande</label>
                   <input 
+                    readOnly
                     type="text" 
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
                     value={saleOrderData.orderNumber}

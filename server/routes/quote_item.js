@@ -13,7 +13,6 @@ router.get("/",async (req,res)=>{
         select * from quote_item as q_i
         JOIN products as p 
             ON q_i.product_ID = p.id
-        
         `
 
 
