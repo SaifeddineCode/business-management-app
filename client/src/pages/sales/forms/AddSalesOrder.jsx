@@ -168,21 +168,41 @@ const handleRemoveProduct = (productID) => {
 
 
 
-const handleChangeProduct = (productID) =>{
+const handleChangeProduct = (orderedPID,value,field) =>{
 
-  const target = products.find((item)=> item.id === parseFloat(productID))
+  const target = products.find(item => item.id === parseFloat(value))
 
-  setOrderedItems(prev => prev.map((item)=>{
-    if(parseFloat(item.product_id) === parseFloat(target.id)){
-      return {
+  setOrderedItems((prev)=>prev.map((item)=>{
+
+    const updatedTotal = item.quantity * target.product_price
+
+    if(item.id === orderedPID){
+
+      if(field == "product_id") {
+        return {
         ...item,
-        total : item.quantity * target.product_price 
+        product_id:parseFloat(value),
+        unit_price:target.product_price,
+        total : updatedTotal
       }
-      
-    }else {
-      console.log(prev)
-    }
+      }else if(field == "quantity") {
+        const newTotal = value * target.product_price
+        return {
+        ...item,
+        quantity : value,
+        total : newTotal
+      } 
 
+      } else if(field == "discount") {
+        // const newTotal = value
+        return {
+        ...item,
+        total : value
+      } 
+      } 
+
+    }
+    return item
   }))
 
 }
@@ -366,7 +386,7 @@ const handleChangeProduct = (productID) =>{
                          <td className="py-3">
                           {item.is_new ? (
                             <select 
-                            onChange={(e)=>handleChangeProduct(e.target.value)}
+                            onChange={(e)=>handleChangeProduct(item.id,e.target.value,'product_id')}
                               className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
                               value={item.product_id}
                             >
@@ -388,6 +408,7 @@ const handleChangeProduct = (productID) =>{
                         </td>
                         <td className="py-3">
                           <input 
+                           onChange={(e)=>handleChangeProduct(item.id,e.target.value,'quantity')}
                             type="number" 
                             className="w-20 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
                             value={item.quantity}
@@ -395,17 +416,28 @@ const handleChangeProduct = (productID) =>{
                         </td>
                         <td className="py-3">
                           <input 
+                          readOnly
+                          //  onChange={(e)=>handleChangeProduct(item.id,e.target.value,'unit_price')}
                             type="number" 
                             className="w-24 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
                             value={item.unit_price}
                           />
                         </td>
                         <td className="py-3">
-                          <input 
+                          {/* <input 
+                            onChange={(e)=>handleChangeProduct(item.id,e.target.value,'discount')}
                             type="number" 
                             className="w-20 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
                             value={item.discount}
-                          />
+                          /> */}
+                          <select 
+                            onChange={(e)=>handleChangeProduct(item.id,e.target.value,'discount')}
+                            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
+                          >
+                            <option value="" >select remise</option>
+                            <option value="0.03" >0.03</option>
+                            <option value="0.04" >0.04</option>
+                          </select>
                         </td>
                         <td className="py-3 font-medium">{item.total} €</td>
                         <td className="py-3">
