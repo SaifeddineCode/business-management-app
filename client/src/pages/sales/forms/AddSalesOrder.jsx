@@ -170,44 +170,45 @@ const handleRemoveProduct = (productID) => {
 
 const handleChangeProduct = (orderedPID,value,field) =>{
 
-  const target = products.find(item => item.id === parseFloat(value))
 
-  setOrderedItems((prev)=>prev.map((item)=>{
+  setOrderedItems((prev) => prev.map((orderItem)=>{
+    if(orderItem.id === parseFloat(orderedPID)){
 
-    const updatedTotal = item.quantity * target.product_price
-
-    if(item.id === orderedPID){
-
-      if(field == "product_id") {
+      if (field === "product_id") {
+        const selectedProduct = products.find(product => product.id === parseFloat(value));
+        
+        const updatedItem =  {
+          ...orderItem,
+          [field]: value,
+          unit_price: selectedProduct?.product_price || orderItem.unit_price,
+        };
         return {
-        ...item,
-        product_id:parseFloat(value),
-        unit_price:target.product_price,
-        total : updatedTotal
+          ...updatedItem,
+          total : updatedItem.unit_price * updatedItem.quantity
+        }
       }
-      }else if(field == "quantity") {
-        const newTotal = value * target.product_price
-        return {
-        ...item,
-        quantity : value,
-        total : newTotal
-      } 
 
-      } else if(field == "discount") {
-        // const newTotal = value
+      if (field === "quantity" || field === "unit_price" || field === "discount") {
+        
+        const updatedItem = {
+          ...orderItem,
+          [field]: value
+        };
         return {
-        ...item,
-        total : value
-      } 
-      } 
-
+          ...updatedItem,
+          total : updatedItem.unit_price * updatedItem.quantity * (1 - updatedItem.discount)
+        }
+      }
     }
-    return item
-  }))
+    
+    return orderItem;
+}))
 
 }
 
-
+useEffect(()=>{
+  console.log(orderedItems)
+},[orderedItems])
 
 
 
@@ -417,7 +418,7 @@ const handleChangeProduct = (orderedPID,value,field) =>{
                         <td className="py-3">
                           <input 
                           readOnly
-                          //  onChange={(e)=>handleChangeProduct(item.id,e.target.value,'unit_price')}
+                           onChange={(e)=>handleChangeProduct(item.id,e.target.value,'unit_price')}
                             type="number" 
                             className="w-24 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
                             value={item.unit_price}
@@ -433,10 +434,11 @@ const handleChangeProduct = (orderedPID,value,field) =>{
                           <select 
                             onChange={(e)=>handleChangeProduct(item.id,e.target.value,'discount')}
                             className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
+                            value={item.discount}
                           >
                             <option value="" >select remise</option>
-                            <option value="0.03" >0.03</option>
-                            <option value="0.04" >0.04</option>
+                            <option  value="0.03" >0.03</option>
+                            <option  value="0.04" >0.04</option>
                           </select>
                         </td>
                         <td className="py-3 font-medium">{item.total} €</td>
