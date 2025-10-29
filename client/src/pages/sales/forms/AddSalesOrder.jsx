@@ -31,13 +31,7 @@ const AddSalesOrder = () => {
   //   { id: 2, productId: 2, name: 'Wireless Mouse', quantity: 5, unitPrice: 25, discount: 10, total: 112.5 },
   // ];
 
-  const orderSummary = {
-    subtotal: 2512.5,
-    globalDiscount: 100,
-    tax: 482.5,
-    shipping: 50,
-    total: 2945
-  };
+
 
 
   const [selectedQuote,setSelectedQuote] = useState({customer_name:' ------'})
@@ -132,6 +126,11 @@ const handleQuoteChange = (value) => {
   );
   
   setOrderedItems(currentOrderedProducts);
+  setSaleOrderData(prev=>({
+    ...prev,
+    clientID : currentQuote.client_id,
+    deliveryAdress:currentQuote.customer_adresse
+  }))
 };
 
 
@@ -169,8 +168,7 @@ const handleRemoveProduct = (productID) => {
 
 
 const handleChangeProduct = (orderedPID,value,field) =>{
-
-
+ 
   setOrderedItems((prev) => prev.map((orderItem)=>{
     if(orderItem.id === parseFloat(orderedPID)){
 
@@ -192,11 +190,11 @@ const handleChangeProduct = (orderedPID,value,field) =>{
         
         const updatedItem = {
           ...orderItem,
-          [field]: value
+          [field]: parseFloat(value)
         };
         return {
           ...updatedItem,
-          total : updatedItem.unit_price * updatedItem.quantity * (1 - updatedItem.discount)
+          total : parseFloat((updatedItem.unit_price * updatedItem.quantity * (1 - updatedItem.discount)).toFixed(2))
         }
       }
     }
@@ -206,9 +204,16 @@ const handleChangeProduct = (orderedPID,value,field) =>{
 
 }
 
-useEffect(()=>{
-  console.log(orderedItems)
-},[orderedItems])
+// useEffect(()=>{
+//   console.log(saleOrderData)
+// },[saleOrderData])
+
+
+
+const totalHT = orderedItems.reduce((acc,item)=>{
+  return acc + item.total
+},0)
+
 
 
 
@@ -474,7 +479,7 @@ useEffect(()=>{
                     onChange={(e)=>setSaleOrderData(prev=> ({...prev,orderDate : e.target.value})  )}
                     type="date" 
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                    value="2024-01-15"
+                    value={saleOrderData.orderDate}
                   />
                 </div>
                 <div>
@@ -483,7 +488,7 @@ useEffect(()=>{
                     onChange={(e)=>setSaleOrderData(prev => ({...prev,deliveryDate : e.target.value}) )}
                     type="date" 
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                    value="2024-01-20"
+                    value={saleOrderData.deliveryDate}
                   />
                 </div>
                 <div>
@@ -516,23 +521,23 @@ useEffect(()=>{
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Sous-total:</span>
-                  <span className="font-medium">{orderSummary.subtotal} €</span>
+                  <span className="font-medium">{totalHT} MAD</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Remise globale:</span>
-                  <span className="font-medium text-red-600">-{orderSummary.globalDiscount} €</span>
+                  <span className="font-medium text-red-600">-{} MAD</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">TVA (20%):</span>
-                  <span className="font-medium">{orderSummary.tax} €</span>
+                  <span className="font-medium">{} MAD</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Frais de livraison:</span>
-                  <span className="font-medium">{orderSummary.shipping} €</span>
+                  <span className="font-medium">{} MAD</span>
                 </div>
                 <div className="border-t border-gray-200 pt-3 flex justify-between text-lg font-bold">
                   <span>Total:</span>
-                  <span className="text-blue-600">{orderSummary.total} €</span>
+                  <span className="text-blue-600">{} MAD</span>
                 </div>
               </div>
             </div>
