@@ -17,7 +17,9 @@ const AddSalesOrder = () => {
     tvaAmount:"",
     disountAmount:"",
     totalTTC:"",
-    status:""
+    status:"",
+    paymentMethod:"",
+    notes:""
   })
 
 
@@ -315,9 +317,35 @@ setSaleOrderData(prev => ({
 
 },[orderedItems])
 
-useEffect(()=>{
-  console.log(saleOrderData)
-},[saleOrderData])
+
+
+
+
+const addSaleOrder = async() =>{
+  try{
+
+    if(!saleOrderData.quoteID){
+      return alert("washrif wa zid allah yhdik shi quote")
+    }
+
+    const result = await fetch("/api/salesOrders",{
+      method :"POST",
+      headers :{
+        "Content-Type" :"application/json"
+      },
+      body:JSON.stringify(saleOrderData)
+    })
+    
+    console.log(result.status,result.statusText)
+  }catch(err){
+    console.log(err)
+  }
+}
+
+
+// useEffect(()=>{
+//   console.log(saleOrderData)
+// },[saleOrderData])
 
 
   return (
@@ -615,9 +643,10 @@ useEffect(()=>{
                   <select 
                   onChange={(e)=>setSaleOrderData(prev => ({...prev,status:e.target.value}))}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
-                    <option value="Brouillon">Brouillon</option>
-                    <option value="Confirmé">Confirmé</option>
-                    <option value="Livré">Livré</option>
+                    <option value="en_attente">Brouillon</option>
+                    <option value="annule">annule</option>
+                    <option value="facture">facture</option>
+                    <option value="livre">Livré</option>
                   </select>
                   {/* <input type='text' value={selectedQuote.status} /> */}
                 </div>
@@ -659,16 +688,19 @@ useEffect(()=>{
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Mode de Paiement</label>
-                  <select className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
-                    <option value="cash">Espèces</option>
-                    <option value="card">Carte Bancaire</option>
-                    <option value="transfer">Virement</option>
-                    <option value="check">Chèque</option>
+                  <select 
+                    onChange={(e)=>setSaleOrderData(prev=>({...prev,paymentMethod:e.target.value}))}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                    <option value="Espèces">Espèces</option>
+                    <option value="CarteBancaire">Carte Bancaire</option>
+                    <option value="Virement">Virement</option>
+                    <option value="Chèque">Chèque</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Notes Internes</label>
                   <textarea 
+                  onChange={(e)=>setSaleOrderData(prev=>({...prev,notes:e.target.value}))}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
                     rows="3"
                     placeholder="Notes supplémentaires..."
@@ -680,11 +712,10 @@ useEffect(()=>{
             {/* Action Buttons */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex flex-col sm:flex-row gap-3">
-                <button className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                  Enregistrer le Bon de Vente
-                </button>
-                <button className="flex-1 bg-gray-500 text-white py-3 px-4 rounded-lg hover:bg-gray-600 transition-colors font-medium">
-                  Enregistrer Brouillon
+                <button 
+                onClick={()=>addSaleOrder()}
+                className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                  Ajouter le Bon
                 </button>
                 <button className="flex-1 bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-colors font-medium">
                   Annuler
