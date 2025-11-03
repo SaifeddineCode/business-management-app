@@ -19,7 +19,8 @@ const AddSalesOrder = () => {
     totalTTC:"",
     status:"",
     paymentMethod:"",
-    notes:""
+    notes:"",
+    orderItems:[]
   })
 
 
@@ -39,7 +40,7 @@ const AddSalesOrder = () => {
 
 
   const [selectedQuote,setSelectedQuote] = useState({customer_name:' ------'})
-  const [orderedItems,setOrderedItems] = useState([])
+  // const [orderedItems,setOrderedItems] = useState([])
   const [quoteItems,setQuoteItems] = useState([])
   const [products,setProducts] = useState([])
 
@@ -119,7 +120,8 @@ const handleQuoteChange = (value) => {
   if (!currentQuote) {
     console.error(`Quote with ID ${quoteId} not found`);
     setSelectedQuote(null);
-    setOrderedItems([]);
+    // setOrderedItems([]);
+    setSaleOrderData(prev=>({...prev,orderItems:[]}))
     return;
   }
   
@@ -129,7 +131,8 @@ const handleQuoteChange = (value) => {
     (quoteItem) => quoteItem.quote_ID === quoteId
   );
   
-  setOrderedItems(currentOrderedProducts);
+  // setOrderedItems(currentOrderedProducts);
+  setSaleOrderData(prev=>({...prev,orderItems:currentOrderedProducts}))
   setSaleOrderData(prev=>({
     ...prev,
     clientID : currentQuote.client_id,
@@ -141,12 +144,27 @@ const handleQuoteChange = (value) => {
 
 const handleAddProduct = () =>{
 
-  setOrderedItems((prev)=>(  
-    [
-    ...prev,
-    {
-      id: Math.floor(Math.random() * 1_000_000_0000),
-      product_id:"",
+  // setOrderedItems((prev)=>(  
+  //   [
+  //   ...prev,
+  //   {
+  //     id: Math.floor(Math.random() * 1_000_000_0000),
+  //     product_id:"",
+  //     product_name:"",
+  //     quantity:1,
+  //     unit_price:"",
+  //     tva:0.1,
+  //     discount:"",
+  //     total:"",
+  //     is_new:true
+  //   }
+  //   ]
+  // ))
+
+
+  setSaleOrderData(prev=>({...prev,orderItems:[...prev.orderItems,{
+     id: Math.floor(Math.random() * 1_000_000_0000),
+      product_ID:"",
       product_name:"",
       quantity:1,
       unit_price:"",
@@ -154,9 +172,9 @@ const handleAddProduct = () =>{
       discount:"",
       total:"",
       is_new:true
-    }
-    ]
-  ))
+  }]}))
+
+
 }
 
 
@@ -165,8 +183,10 @@ const handleAddProduct = () =>{
 
 const handleRemoveProduct = (productID) => {
 
-  const updateItems = orderedItems.filter(item => item.id !== parseFloat(productID))
-  return setOrderedItems(updateItems)  
+  // const updateItems = orderedItems.filter(item => item.id !== parseFloat(productID))
+  const updateItems = saleOrderData.orderItems.filter(item => item.id !== parseFloat(productID))
+  // return setOrderedItems(updateItems)  
+  return setSaleOrderData(prev=>({...prev,orderItems:updateItems}))
 
 }
 
@@ -174,15 +194,17 @@ const handleRemoveProduct = (productID) => {
 
 const handleChangeProduct = (orderedPID,value,field) =>{
  
-  setOrderedItems((prev) => prev.map((orderItem)=>{
-    if(orderItem.id === parseFloat(orderedPID)){
+      setSaleOrderData( (prev) => ({
+      ...prev,
+      orderItems: prev.orderItems.map((orderItem) => {  
+      if(orderItem.id === parseFloat(orderedPID)){
 
-      if (field === "product_id") {
+      if (field === "product_ID") {
         const selectedProduct = products.find(product => product.id === parseFloat(value));
         
         const updatedItem =  {
           ...orderItem,
-          [field]: value,
+          [field]: parseFloat(value),
           unit_price: selectedProduct?.product_price || orderItem.unit_price,
         };
         return {
@@ -216,11 +238,57 @@ const handleChangeProduct = (orderedPID,value,field) =>{
     }
     
     return orderItem;
-}))
+})})
+)
+
+
+//   setOrderedItems((prev) => prev.map((orderItem)=>{
+//     if(orderItem.id === parseFloat(orderedPID)){
+
+//       if (field === "product_id") {
+//         const selectedProduct = products.find(product => product.id === parseFloat(value));
+        
+//         const updatedItem =  {
+//           ...orderItem,
+//           [field]: value,
+//           unit_price: selectedProduct?.product_price || orderItem.unit_price,
+//         };
+//         return {
+//           ...updatedItem,
+//           // total : updatedItem.unit_price * updatedItem.quantity
+//           total: parseFloat((updatedItem.quantity * updatedItem.unit_price) + (updatedItem.quantity * updatedItem.unit_price)*updatedItem.tva)
+//         }
+//       }
+
+//       if (field === "quantity" || field === "unit_price") {
+        
+//         const updatedItem = {
+//           ...orderItem,
+//           [field]: parseFloat(value)
+//         };
+//         return {
+//           ...updatedItem,
+//           total : parseFloat((updatedItem.unit_price * updatedItem.quantity ))
+//         }
+//       }
+//       if(field === "discount"){
+//         const updatedItem = {
+//           ...orderItem,
+//           [field]: parseFloat(value)
+//         };
+//         return {
+//           ...updatedItem,
+//           total : parseFloat((updatedItem.unit_price * updatedItem.quantity * (1 - updatedItem.discount)).toFixed(2))
+//         }
+//       }
+//     }
+    
+//     return orderItem;
+// }))
+
+// )}
 
 }
-
-
 
 
 
@@ -284,12 +352,14 @@ const handleChangeProduct = (orderedPID,value,field) =>{
 
 
 useEffect(()=>{
-  const totalHT = orderedItems.reduce((acc,item)=>{
+
+  // const totalHT = orderedItems.reduce((acc,item)=>{
+  const totalHT = saleOrderData.orderItems.reduce((acc,item)=>{
   return acc + (item.quantity * item.unit_price);
   },0)
 
 
-const totalAmountDiscount = orderedItems.reduce((acc, item) => {
+const totalAmountDiscount = saleOrderData.orderItems.reduce((acc, item) => {
   const subtotal = item.quantity * item.unit_price;
   const discountAmount = subtotal * (item.discount || 0);
   
@@ -297,7 +367,7 @@ const totalAmountDiscount = orderedItems.reduce((acc, item) => {
 }, 0).toFixed(2);
 
 
-const totalAmountTva = orderedItems.reduce((acc, item) => {
+const totalAmountTva = saleOrderData.orderItems.reduce((acc, item) => {
   const subtotal = item.quantity * item.unit_price;
   const discountedSubtotal = subtotal * (1 - (item.discount || 0));
   const tvaAmount = discountedSubtotal * (item.tva || 0);
@@ -315,7 +385,7 @@ setSaleOrderData(prev => ({
   disountAmount:totalAmountDiscount
 }))
 
-},[orderedItems])
+},[saleOrderData.orderItems])
 
 
 
@@ -324,28 +394,35 @@ setSaleOrderData(prev => ({
 const addSaleOrder = async() =>{
   try{
 
-    if(!saleOrderData.quoteID){
-      return alert("washrif wa zid allah yhdik shi quote")
+    if(!saleOrderData.quoteID || !saleOrderData.orderDate || !saleOrderData.status){
+      throw new Error("Please check the required fields");
     }
 
-    const result = await fetch("/api/salesOrders",{
+    const response = await fetch("/api/salesOrders",{
       method :"POST",
       headers :{
         "Content-Type" :"application/json"
       },
       body:JSON.stringify(saleOrderData)
     })
+
+    // Parse the successful response
+    const result = await response.json();
     
-    console.log(result.status,result.statusText)
+    return result;
+    
   }catch(err){
-    console.log(err)
+    console.error(err.message);
+    
+    // Re-throw the error so the caller can handle it
+    throw err;
   }
 }
 
 
-// useEffect(()=>{
-//   console.log(saleOrderData)
-// },[saleOrderData])
+useEffect(()=>{
+  console.log(saleOrderData.orderItems)
+},[saleOrderData.orderItems])
 
 
   return (
@@ -510,7 +587,7 @@ const addSaleOrder = async() =>{
                     </tr>
                   </tbody> */}
                    <tbody>
-                    {orderedItems.map(item => (
+                    {saleOrderData.orderItems.map(item => (
                       <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
                         {/* <td className="py-3">
                           <select className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500">
@@ -521,9 +598,9 @@ const addSaleOrder = async() =>{
                          <td className="py-3">
                           {item.is_new ? (
                             <select 
-                            onChange={(e)=>handleChangeProduct(item.id,e.target.value,'product_id')}
+                            onChange={(e)=>handleChangeProduct(item.id,e.target.value,'product_ID')}
                               className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
-                              value={item.product_id}
+                              value={item.product_ID}
                             >
                               <option value="">Select Product</option>
                               {products.map(product => (

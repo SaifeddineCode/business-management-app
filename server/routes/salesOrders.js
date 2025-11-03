@@ -83,44 +83,77 @@ const router = express.Router()
 
 router.post("/", async(req,res)=>{
 
+
   try{
 
     const {
-    quoteID ,
-    clientID ,
-    orderNumber,
-    orderDate,
-    deliveryDate,
-    deliveryAdress,
-    vendorId,
-    totalHt,
-    tva,
-    tvaAmount,
-    disountAmount,
-    totalTTC,
-    status,
-    paymentMethod,
-    notes
-  } = req.body
+      quoteID ,
+      clientID ,
+      orderNumber,
+      orderDate,
+      deliveryDate,
+      deliveryAdress,
+      vendorId,
+      totalHt,
+      tva,
+      tvaAmount,
+      disountAmount,
+      totalTTC,
+      status,
+      paymentMethod,
+      notes,
+      orderItems
+    } = req.body
 
-  const query = `
-  INSERT INTO sales_orders
-  (quote_id, client_id, order_number, order_date, delivery_date, delivery_address, vendor_id, total_ht, tva, total_ttc, status)
-  VALUES(?,?,?,?,?,?,?,?,?,?,?)
-  `
 
-  const result = await db.query(query,[quoteID, clientID, orderNumber, orderDate, deliveryDate, deliveryAdress, vendorId, totalHt, tva, totalTTC, status])
+
+    if(!quoteID || !orderDate || !status ) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fill the required fields"
+      });
+    }
+
+    const queryOrder = `
+    INSERT INTO sales_orders
+    (quote_id, client_id, order_number, order_date, delivery_date, delivery_address, vendor_id, total_ht, tva, total_ttc, status)
+    VALUES(?,?,?,?,?,?,?,?,?,?,?)
+    `
+
   
-  if(result.insertId){
-    res.status(201).json({ message: "Order created successfully" })
-  } else {
+
+    const [result] = await db.execute(queryOrder,
+    [quoteID, clientID, orderNumber, orderDate, deliveryDate, deliveryAdress, vendorId, totalHt, tva, totalTTC, status])
+
+ 
+
+
+    const saleOrderId = result.insertId
+
+      console.log(saleOrderId)
+      for (const orderItem of orderItems) {
+        const queryItem = `
+        INSERT INTO sales_order_items (sales_order_id,product_id,quantity,unit_price,discount,total)
+        VALUES(?,?,?,?,?,?)
+        `
+      await db.query(queryItem,[saleOrderId,orderItem.product_ID,orderItem.quantity,orderItem.unit_price,0,orderItem.total])
     
-  }
+      }
 
 
-  }catch (err){
-    console.log(err.message)
-    console.log(err.sqlMessage)
+      
+        res.status(201).json({
+        success: true,
+        message: 'sales order created successfuly'
+      });
+   
+  
+
+  } catch (err){
+      res.status(500).json({
+      success: false,
+      err:err.message
+    });
   }
 
 })
