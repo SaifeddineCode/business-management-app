@@ -96,13 +96,9 @@ router.post("/", async(req,res)=>{
       vendorId,
       totalHt,
       tva,
-      tvaAmount,
-      disountAmount,
       totalTTC,
       status,
-      paymentMethod,
-      notes,
-      orderItems
+      orderItems = []
     } = req.body
 
 
@@ -113,6 +109,26 @@ router.post("/", async(req,res)=>{
         message: "Please fill the required fields"
       });
     }
+
+    if(!orderItems){
+      return res.status(400).json({
+        success: false,
+        message: "No Order Items Detected"
+      });
+    }
+
+    //  2. DUPLICATE CHECK 
+    // const [existingOrders] = await db.execute(
+    //   'SELECT id FROM sales_orders WHERE quote_id = ?',
+    //   [quoteID]
+    // );
+
+    // if (existingOrders.length > 0) {
+    //   return res.status(409).json({
+    //     success: false,
+    //     message: "An order already exists for this quote"
+    //   });
+    // }
 
     const queryOrder = `
     INSERT INTO sales_orders

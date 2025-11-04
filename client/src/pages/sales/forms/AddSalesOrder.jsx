@@ -17,7 +17,7 @@ const AddSalesOrder = () => {
     tvaAmount:"",
     disountAmount:"",
     totalTTC:"",
-    status:"",
+    status:"en_attente",
     paymentMethod:"",
     notes:"",
     orderItems:[]
@@ -29,18 +29,8 @@ const AddSalesOrder = () => {
 
 
 
-  // const [products,setProducts] = useState([])
 
-  // const orderedProducts = [
-  //   { id: 1, productId: 1, name: 'Laptop Dell XPS 13', quantity: 2, unitPrice: 1200, discount: 0, total: 2400 },
-  //   { id: 2, productId: 2, name: 'Wireless Mouse', quantity: 5, unitPrice: 25, discount: 10, total: 112.5 },
-  // ];
-
-
-
-
-  const [selectedQuote,setSelectedQuote] = useState({customer_name:' ------'})
-  // const [orderedItems,setOrderedItems] = useState([])
+  const [selectedQuote,setSelectedQuote] = useState({})
   const [quoteItems,setQuoteItems] = useState([])
   const [products,setProducts] = useState([])
 
@@ -87,21 +77,6 @@ useEffect( ()=>{
 
 
 
-// const handleQuoteChange = (value) =>{
-
-//     setSaleOrderData((prev)=>({
-//         ...prev,
-//         quoteID : value
-//     }))
-
-
-//   const currentQuote=quotes.find(quote => quote.id === parseFloat(value) )
-//   setSelectedQuote(currentQuote)
-
-//   const currentOrderedProducts = quoteItems.find((quoteItem)=> quoteItem.quote_ID === parseFloat(value) )
-//   setOrderedProducts((prev)=>([...prev,currentOrderedProducts]))
-
-//   }
 
 
 const handleQuoteChange = (value) => {
@@ -143,25 +118,6 @@ const handleQuoteChange = (value) => {
 
 
 const handleAddProduct = () =>{
-
-  // setOrderedItems((prev)=>(  
-  //   [
-  //   ...prev,
-  //   {
-  //     id: Math.floor(Math.random() * 1_000_000_0000),
-  //     product_id:"",
-  //     product_name:"",
-  //     quantity:1,
-  //     unit_price:"",
-  //     tva:0.1,
-  //     discount:"",
-  //     total:"",
-  //     is_new:true
-  //   }
-  //   ]
-  // ))
-
-
   setSaleOrderData(prev=>({...prev,orderItems:[...prev.orderItems,{
      id: Math.floor(Math.random() * 1_000_000_0000),
       product_ID:"",
@@ -183,9 +139,7 @@ const handleAddProduct = () =>{
 
 const handleRemoveProduct = (productID) => {
 
-  // const updateItems = orderedItems.filter(item => item.id !== parseFloat(productID))
   const updateItems = saleOrderData.orderItems.filter(item => item.id !== parseFloat(productID))
-  // return setOrderedItems(updateItems)  
   return setSaleOrderData(prev=>({...prev,orderItems:updateItems}))
 
 }
@@ -209,7 +163,6 @@ const handleChangeProduct = (orderedPID,value,field) =>{
         };
         return {
           ...updatedItem,
-          // total : updatedItem.unit_price * updatedItem.quantity
           total: parseFloat((updatedItem.quantity * updatedItem.unit_price) + (updatedItem.quantity * updatedItem.unit_price)*updatedItem.tva)
         }
       }
@@ -242,112 +195,9 @@ const handleChangeProduct = (orderedPID,value,field) =>{
 )
 
 
-//   setOrderedItems((prev) => prev.map((orderItem)=>{
-//     if(orderItem.id === parseFloat(orderedPID)){
-
-//       if (field === "product_id") {
-//         const selectedProduct = products.find(product => product.id === parseFloat(value));
-        
-//         const updatedItem =  {
-//           ...orderItem,
-//           [field]: value,
-//           unit_price: selectedProduct?.product_price || orderItem.unit_price,
-//         };
-//         return {
-//           ...updatedItem,
-//           // total : updatedItem.unit_price * updatedItem.quantity
-//           total: parseFloat((updatedItem.quantity * updatedItem.unit_price) + (updatedItem.quantity * updatedItem.unit_price)*updatedItem.tva)
-//         }
-//       }
-
-//       if (field === "quantity" || field === "unit_price") {
-        
-//         const updatedItem = {
-//           ...orderItem,
-//           [field]: parseFloat(value)
-//         };
-//         return {
-//           ...updatedItem,
-//           total : parseFloat((updatedItem.unit_price * updatedItem.quantity ))
-//         }
-//       }
-//       if(field === "discount"){
-//         const updatedItem = {
-//           ...orderItem,
-//           [field]: parseFloat(value)
-//         };
-//         return {
-//           ...updatedItem,
-//           total : parseFloat((updatedItem.unit_price * updatedItem.quantity * (1 - updatedItem.discount)).toFixed(2))
-//         }
-//       }
-//     }
-    
-//     return orderItem;
-// }))
-
-// )}
-
 }
 
 
-
-// useEffect(()=>{
-//   console.log(saleOrderData)
-// },[saleOrderData])
-
-// const [orderSummary,setOrderSummary] = useState({
-//   tota
-// })
-
-
-
-
-
-
-
-// const totalWitoutDiscount = orderedItems.map((item)=>{
-//   return item.quantity * item.unit_price
-// }).reduce((acc,item)=>{
-//   return acc + item
-// },0)
-
-// const TotalAmountDisount = (totalWitoutDiscount - totalTTC).toFixed(2)
-
-// useEffect(()=>{
-//   console.log(TotalAmountDisount)
-// },[TotalAmountDisount])
-
-
-// Most efficient - calculates only what you need
-
-// const totalAmountDiscount = orderedItems.reduce((acc, item) => {
-//   return acc + (item.quantity * item.unit_price - item.total);
-// }, 0).toFixed(2);
-
-// const totalHT = orderedItems.reduce((acc,item)=>{
-//   return acc + (item.quantity * item.unit_price);
-// },0)
-
-
-// const totalAmountDiscount = orderedItems.reduce((acc, item) => {
-//   const subtotal = item.quantity * item.unit_price;
-//   const discountAmount = subtotal * (item.discount || 0);
-  
-//   return acc + discountAmount;
-// }, 0).toFixed(2);
-
-
-// const totalAmountTva = orderedItems.reduce((acc, item) => {
-//   const subtotal = item.quantity * item.unit_price;
-//   const discountedSubtotal = subtotal * (1 - (item.discount || 0));
-//   const tvaAmount = discountedSubtotal * (item.tva || 0);
-//   return acc + tvaAmount;
-// }, 0);
-
-// const totalAfterDiscount = totalHT - totalAmountDiscount;
-// const totalTTC = totalAfterDiscount + totalAmountTva;
-// const globalTotal = totalTTC;  // This is your final total
 
 
 
@@ -389,6 +239,30 @@ setSaleOrderData(prev => ({
 
 
 
+const resetSaleOrderData = () =>{
+  setSelectedQuote({})
+  setSaleOrderData(prev => ({...prev,
+    quoteID : "",
+    clientID : "",
+    orderNumber :`SO-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`,
+    orderDate:"",
+    deliveryDate:"",
+    deliveryAdress:"",
+    vendorId:3,
+    totalHt:"",
+    tva:0.1,
+    tvaAmount:"",
+    disountAmount:"",
+    totalTTC:"",
+    status:"en_attente",
+    paymentMethod:"",
+    notes:"",
+    orderItems:[]
+  }))
+}
+
+
+
 
 
 const addSaleOrder = async() =>{
@@ -406,7 +280,11 @@ const addSaleOrder = async() =>{
       body:JSON.stringify(saleOrderData)
     })
 
-    // Parse the successful response
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || `Server responded with ${response.status}`);
+    }
+
     const result = await response.json();
     
     return result;
@@ -420,9 +298,24 @@ const addSaleOrder = async() =>{
 }
 
 
+const handleCreatOrder = async () =>{
+ try {
+    await addSaleOrder();  // Your existing API call
+    resetSaleOrderData();  // Your existing reset function
+    alert('Order created successfully!');
+  } catch (error) {
+    alert('Error: ' + error.message);
+  }
+}
+
 useEffect(()=>{
-  console.log(saleOrderData.orderItems)
-},[saleOrderData.orderItems])
+  console.log(selectedQuote)
+},[selectedQuote])
+
+
+// useEffect(()=>{
+//   console.log(saleOrderData.orderItems)
+// },[saleOrderData.orderItems])
 
 
   return (
@@ -445,8 +338,9 @@ useEffect(()=>{
               </div>
               <div className="space-y-4">
                 <select 
-                onChange={(e)=>handleQuoteChange(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  value={saleOrderData.quoteID || ""}
+                  onChange={(e)=>handleQuoteChange(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                   <option value="">Choisir un devis...</option>
                   {quotes.map(quote => (
                     <option key={quote.id} value={quote.id}>
@@ -491,7 +385,7 @@ useEffect(()=>{
                   <input 
                     type="text" 
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    value={selectedQuote.customer_name}
+                    value={selectedQuote?.customer_name || ""}
                     readOnly
                   />
                 </div>
@@ -500,7 +394,7 @@ useEffect(()=>{
                   <input 
                     type="email" 
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    value={selectedQuote.customer_email}
+                    value={selectedQuote?.customer_email || ""}
                     readOnly
                   />
                 </div>
@@ -510,7 +404,7 @@ useEffect(()=>{
                     readOnly
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     rows="3"
-                    value={selectedQuote.customer_adresse}
+                    value={selectedQuote?.customer_adresse || ""}
                   />
                 </div>
               </div>
@@ -718,6 +612,7 @@ useEffect(()=>{
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Statut</label>
                   <select 
+                  value={saleOrderData.status || ""}
                   onChange={(e)=>setSaleOrderData(prev => ({...prev,status:e.target.value}))}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
                     <option value="en_attente">Brouillon</option>
@@ -766,8 +661,10 @@ useEffect(()=>{
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Mode de Paiement</label>
                   <select 
+                  value={saleOrderData.paymentMethod || ""}
                     onChange={(e)=>setSaleOrderData(prev=>({...prev,paymentMethod:e.target.value}))}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                    <option value="">Ajouter un mode de paiement</option>
                     <option value="Espèces">Espèces</option>
                     <option value="CarteBancaire">Carte Bancaire</option>
                     <option value="Virement">Virement</option>
@@ -790,7 +687,7 @@ useEffect(()=>{
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex flex-col sm:flex-row gap-3">
                 <button 
-                onClick={()=>addSaleOrder()}
+                onClick={handleCreatOrder}
                 className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
                   Ajouter le Bon
                 </button>
