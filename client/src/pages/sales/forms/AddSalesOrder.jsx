@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FaUser, FaFileInvoice, FaShoppingCart, FaCalendarAlt, FaMoneyBillWave, FaTruck, FaPlus, FaTrash } from 'react-icons/fa';
+import toast, { Toaster } from 'react-hot-toast';
 
 const AddSalesOrder = () => {
   
@@ -35,15 +36,50 @@ const AddSalesOrder = () => {
   const [products,setProducts] = useState([])
 
 
+   const hasFetched = useRef(false); // ✅ Move useRef here
+
+ 
+
+
+
  useEffect(()=>{
+ if (hasFetched.current) return; // Skip if already executed
+    hasFetched.current = true;
+  
 
-    fetch("/api/quote")
-    .then(result => result.json())
-    .then (data => setQuotes(data))
+    const fetchQuoteProduct = async () =>{
+      let loadingToast;
 
-    fetch("/api/products")
-    .then(result => result.json())
-    .then (data => setProducts(data))
+    try{
+      loadingToast = toast.loading("Loading fetching data")
+      // fetch("/api/quote")
+      // .then(result => result.json())
+      // .then (data => setQuotes(data))
+
+
+      // fetch("/api/products")
+      // .then(result => result.json())
+      // .then (data => setProducts(data))
+
+      await Promise.all([
+        fetch("/api/quote")
+          .then(result => result.json())
+          .then(data => setQuotes(data)),
+        
+        fetch("/api/products")
+          .then(result => result.json()) 
+          .then(data => setProducts(data))
+      ]);
+
+      toast.dismiss(loadingToast)
+      toast.success("Data was fetched succussefuly")
+
+    }catch(err){
+      console.log(err.message)
+    }
+    }
+
+    fetchQuoteProduct()
 
   },[])
 
@@ -52,9 +88,11 @@ const AddSalesOrder = () => {
 
 
 useEffect( ()=>{
+
   const fetchingQuoteItems = async () =>{
     
     try{
+     
 
       const response = await fetch("/api/quote_item")
       
@@ -63,11 +101,12 @@ useEffect( ()=>{
       }
 
       const result = await response.json()
+      
       return setQuoteItems(result.data)
-
+      
 
     }catch(error){
-      console.log(error)
+      console.log(error.message)
     }
     
   }
@@ -699,6 +738,7 @@ useEffect(()=>{
           </div>
         </div>
       </div>
+      <Toaster position="top-right" />
     </div>
   );
 };
