@@ -36,22 +36,19 @@ const AddSalesOrder = () => {
   const [products,setProducts] = useState([])
 
 
-   const hasFetched = useRef(false); // ✅ Move useRef here
 
  
 
 
 
  useEffect(()=>{
- if (hasFetched.current) return; // Skip if already executed
-    hasFetched.current = true;
+
   
 
     const fetchQuoteProduct = async () =>{
-      let loadingToast;
 
     try{
-      loadingToast = toast.loading("Loading fetching data")
+      
       // fetch("/api/quote")
       // .then(result => result.json())
       // .then (data => setQuotes(data))
@@ -71,8 +68,7 @@ const AddSalesOrder = () => {
           .then(data => setProducts(data))
       ]);
 
-      toast.dismiss(loadingToast)
-      toast.success("Data was fetched succussefuly")
+
 
     }catch(err){
       console.log(err.message)
@@ -186,7 +182,6 @@ const handleRemoveProduct = (productID) => {
 
 
 const handleChangeProduct = (orderedPID,value,field) =>{
- 
       setSaleOrderData( (prev) => ({
       ...prev,
       orderItems: prev.orderItems.map((orderItem) => {  
@@ -228,11 +223,8 @@ const handleChangeProduct = (orderedPID,value,field) =>{
         }
       }
     }
-    
     return orderItem;
-})})
-)
-
+})}))
 
 }
 
@@ -301,10 +293,14 @@ const resetSaleOrderData = () =>{
 }
 
 
-
+const hasRun = useRef(false); // ← Creates a "box" with value false
 
 
 const addSaleOrder = async() =>{
+
+  if (hasRun.current) return; // ← Check what's in the box
+    hasRun.current = true;      // ← Put true in the box
+
   try{
 
     if(!saleOrderData.quoteID || !saleOrderData.orderDate || !saleOrderData.status){
@@ -325,12 +321,13 @@ const addSaleOrder = async() =>{
     }
 
     const result = await response.json();
+
+    toast.success("Sale order was created successfuly")
     
     return result;
     
   }catch(err){
-    console.error(err.message);
-    
+    toast.error(err.message)
     // Re-throw the error so the caller can handle it
     throw err;
   }
@@ -343,7 +340,7 @@ const handleCreatOrder = async () =>{
     resetSaleOrderData();  // Your existing reset function
     alert('Order created successfully!');
   } catch (error) {
-    alert('Error: ' + error.message);
+    toast.error(error.message)
   }
 }
 

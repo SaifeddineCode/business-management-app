@@ -101,10 +101,10 @@ const Sales = () => {
           
 
           {/* Consulter les bons de ventes */}
-          <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">
+          <Link to={"/sales-order-list"} className="bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">
             <FiList size={18} />
             <span>Consulter les bons de ventes</span>
-          </button>
+          </Link>
 
           {/* Facturer le client */}
           <button className="bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">

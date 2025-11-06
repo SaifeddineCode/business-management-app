@@ -81,6 +81,59 @@ import db from "../../database/database.js"
 
 const router = express.Router()
 
+
+
+
+router.get("/",async (req,res)=>{
+
+  try{
+
+    const query = `SELECT * FROM sales_orders`
+    const [rows] = await db.execute(query)
+
+    // if(!response.ok){
+    //   res.status(500).json({
+    //     success :"false",
+    //     message:"Failed to fetch sales orders"
+    //   })
+    // }
+
+    return res.status(200).json({
+      success:true,
+      message:"Sales Orders was fetched successefully",
+      data :rows
+    })
+
+
+
+  }catch(err){
+    res.status(500).json({
+      message:err.message
+    })
+  }
+
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 router.post("/", async(req,res)=>{
 
 
@@ -118,17 +171,17 @@ router.post("/", async(req,res)=>{
     }
 
     //  2. DUPLICATE CHECK 
-    // const [existingOrders] = await db.execute(
-    //   'SELECT id FROM sales_orders WHERE quote_id = ?',
-    //   [quoteID]
-    // );
+    const [existingOrders] = await db.execute(
+      'SELECT id FROM sales_orders WHERE quote_id = ?',
+      [quoteID]
+    );
 
-    // if (existingOrders.length > 0) {
-    //   return res.status(409).json({
-    //     success: false,
-    //     message: "An order already exists for this quote"
-    //   });
-    // }
+    if (existingOrders.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: "An order already exists for this quote"
+      });
+    }
 
     const queryOrder = `
     INSERT INTO sales_orders

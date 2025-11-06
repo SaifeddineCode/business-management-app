@@ -9,6 +9,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import AddQuote from "./pages/sales/forms/AddQuote";
 import Quote from "./pages/quote/Quote";
 import AddSalesOrder from "./pages/sales/forms/AddSalesOrder";
+import SalesOrdersList from "./pages/salesOrders/SalesOrders";
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
               <Route path='/add-quote' element={<AddQuote />} />
               <Route path="/quote" element={<Quote />} />
               <Route path='/add-sales-order' element={ <AddSalesOrder /> } />
+              <Route path='/sales-order-list' element={ <SalesOrdersList /> } />
               <Route path='/purchases' element={<Purchases/>} />
             </Routes>
           </main>
