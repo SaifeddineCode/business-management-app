@@ -5,63 +5,10 @@ import toast, { Toaster } from 'react-hot-toast';
 
 const SalesOrdersList = () => {
 
-  const dummySalesOrders = [
-  {
-    id: "SO-001",
-    billingNumber: "FACT-2024-001",
-    date: "2024-01-15",
-    company: "Tech Corp SARL",
-    distributor: "Distrib Solutions",
-    paymentStatus: "paid",
-    tvaAmount: 200.00,
-    totalHT: 1000.00,
-    totalTTC: 1200.00,
-    status: "completed"
-  },
-  {
-    id: "SO-002",
-    billingNumber: "FACT-2024-002",
-    date: "2024-01-16",
-    company: "Business Ltd",
-    distributor: "Global Distribution",
-    paymentStatus: "pending",
-    tvaAmount: 150.00,
-    totalHT: 750.00,
-    totalTTC: 900.00,
-    status: "pending"
-  },
-  {
-    id: "SO-003",
-    billingNumber: "FACT-2024-003",
-    date: "2024-01-17",
-    company: "Enterprise SA",
-    distributor: "Premium Distrib",
-    paymentStatus: "overdue",
-    tvaAmount: 300.00,
-    totalHT: 1500.00,
-    totalTTC: 1800.00,
-    status: "processing"
-  },
-  {
-    id: "SO-004",
-    billingNumber: "FACT-2024-004",
-    date: "2024-01-18",
-    company: "Startup Inc",
-    distributor: "Quick Distrib",
-    paymentStatus: "paid",
-    tvaAmount: 80.00,
-    totalHT: 400.00,
-    totalTTC: 480.00,
-    status: "completed"
-  }
-];
-
-
-
-    const [salesOrders, setSalesOrders] = useState(dummySalesOrders);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all');
-    const [paymentFilter, setPaymentFilter] = useState('all');
+  const [salesOrders, setSalesOrders] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [paymentFilter, setPaymentFilter] = useState('all');
 
 
 useEffect(()=>{
@@ -69,7 +16,7 @@ useEffect(()=>{
         try{
             const response = await fetch("api/salesOrders")
             .then(result => result.json())
-            .then(data => console.log(data))
+            setSalesOrders(response.data)
 
             if(response.success){
                 return toast.success("was fetched naddi")
@@ -87,13 +34,11 @@ useEffect(()=>{
 },[])
 
 
-
   // Filter orders based on search and filters
   const filteredOrders = salesOrders.filter(order => {
     const matchesSearch = 
-      order.billingNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.distributor.toLowerCase().includes(searchTerm.toLowerCase());
+      // order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) 
     
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
     const matchesPayment = paymentFilter === 'all' || order.paymentStatus === paymentFilter;
@@ -101,13 +46,14 @@ useEffect(()=>{
     return matchesSearch && matchesStatus && matchesPayment;
   });
 
+
   // Status badge component
   const StatusBadge = ({ status }) => {
     const statusConfig = {
-      completed: { color: 'bg-green-100 text-green-800', label: 'Terminé' },
-      pending: { color: 'bg-yellow-100 text-yellow-800', label: 'En attente' },
-      processing: { color: 'bg-blue-100 text-blue-800', label: 'En traitement' },
-      cancelled: { color: 'bg-red-100 text-red-800', label: 'Annulé' }
+      livre: { color: 'bg-green-100 text-green-800', label: 'livre' },
+      en_attente: { color: 'bg-yellow-100 text-yellow-800', label: 'En attente' },
+      facture: { color: 'bg-blue-100 text-blue-800', label: 'facture' },
+      annule: { color: 'bg-red-100 text-red-800', label: 'annule' }
     };
     
     const config = statusConfig[status] || statusConfig.pending;
@@ -120,6 +66,7 @@ useEffect(()=>{
   };
 
   // Payment status badge component
+  
   const PaymentStatusBadge = ({ status }) => {
     const paymentConfig = {
       paid: { color: 'bg-green-100 text-green-800', label: 'Payé', icon: '💳' },
@@ -149,9 +96,10 @@ useEffect(()=>{
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"> */}
+      <div className="flex gap-5 mb-10">
         <div className="bg-white rounded-lg shadow p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-10 ">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Commandes</p>
               <p className="text-2xl font-bold text-gray-900">{salesOrders.length}</p>
@@ -163,11 +111,11 @@ useEffect(()=>{
         </div>
 
         <div className="bg-white rounded-lg shadow p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-10">
             <div>
               <p className="text-sm font-medium text-gray-600">Total HT</p>
               <p className="text-2xl font-bold text-gray-900">
-                {salesOrders.reduce((sum, order) => sum + order.totalHT, 0).toFixed(2)} €
+                {salesOrders.reduce((sum, order) => sum + order.total_ht, 0).toFixed(2)} €
               </p>
             </div>
             <div className="p-2 bg-green-100 rounded-lg">
@@ -176,7 +124,7 @@ useEffect(()=>{
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-4">
+        {/* <div className="bg-white rounded-lg shadow p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total TVA</p>
@@ -188,14 +136,14 @@ useEffect(()=>{
               <FaReceipt className="text-purple-600 text-xl" />
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="bg-white rounded-lg shadow p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-10">
             <div>
               <p className="text-sm font-medium text-gray-600">Total TTC</p>
               <p className="text-2xl font-bold text-gray-900">
-                {salesOrders.reduce((sum, order) => sum + order.totalTTC, 0).toFixed(2)} €
+                {salesOrders.reduce((sum, order) => sum + order.total_ttc, 0).toFixed(2)} €
               </p>
             </div>
             <div className="p-2 bg-orange-100 rounded-lg">
@@ -233,9 +181,10 @@ useEffect(()=>{
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
                   <option value="all">Tous les statuts</option>
-                  <option value="completed">Terminé</option>
-                  <option value="pending">En attente</option>
-                  <option value="processing">En traitement</option>
+                  <option value="livre">livre</option>
+                  <option value="en_attente">En attente</option>
+                  <option value="annule"> annule</option>
+                  <option value="facture">facture</option>
                 </select>
               </div>
 
@@ -255,8 +204,9 @@ useEffect(()=>{
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        {/* <div className="overflow-x-auto"> */}
+        <div className='overflow-x-auto overflow-y-visible' >
+          <table className="w-full ">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -266,16 +216,16 @@ useEffect(()=>{
                   Date
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Société
+                  Client
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Distributeur
+                  Distributeur ID
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Statut paiement
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Montant TVA
+                   TVA
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Total HT
@@ -292,40 +242,40 @@ useEffect(()=>{
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredOrders.map((order) => (
+              {filteredOrders?.map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <FaFileInvoice className="text-blue-600 mr-2" />
-                      <span className="font-medium text-gray-900">{order.billingNumber}</span>
+                      <span className="font-medium text-gray-900">{order.id}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {order.date}
+                    {order.order_date}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <FaBuilding className="text-gray-400 mr-2" />
-                      <span className="text-sm text-gray-900">{order.company}</span>
+                      <span className="text-sm text-gray-900">{order.customer_name}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <FaUserTie className="text-gray-400 mr-2" />
-                      <span className="text-sm text-gray-900">{order.distributor}</span>
+                      <span className="text-sm text-gray-900">{order.vendor_id}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <PaymentStatusBadge status={order.paymentStatus} />
+                    <PaymentStatusBadge status={order.status} />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {order.tvaAmount.toFixed(2)} €
+                    {order.tva} 
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {order.totalHT.toFixed(2)} €
+                    {order.total_ht.toFixed(2)} MAD
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {order.totalTTC.toFixed(2)} €
+                    {order.total_ttc.toFixed(2)} MAD
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <StatusBadge status={order.status} />
@@ -347,13 +297,13 @@ useEffect(()=>{
         </div>
 
         {/* Empty State */}
-        {filteredOrders.length === 0 && (
+        {/* {filteredOrders.length === 0 && (
           <div className="text-center py-12">
             <FaFileInvoice className="mx-auto text-gray-400 text-4xl mb-4" />
             <p className="text-gray-500 text-lg">Aucune commande trouvée</p>
             <p className="text-gray-400">Essayez de modifier vos filtres de recherche</p>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

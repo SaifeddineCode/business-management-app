@@ -88,7 +88,19 @@ router.get("/",async (req,res)=>{
 
   try{
 
-    const query = `SELECT * FROM sales_orders`
+    // const query = 
+    // ` SELECT * FROM sales_orders
+    // `
+
+    const query = `
+      SELECT so.*,
+      c.name as customer_name 
+      FROM sales_orders as so
+      JOIN customers as c
+      ON so.client_id = c.id
+      ORDER BY so.id desc
+    `
+
     const [rows] = await db.execute(query)
 
     // if(!response.ok){
