@@ -107,10 +107,10 @@ const Sales = () => {
           </Link>
 
           {/* Facturer le client */}
-          <button className="bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">
+          <Link to={"/invoice"} className="bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">
             <FiDollarSign size={18} />
             <span>Facturer le client</span>
-          </button>
+          </Link>
 
           {/* Consulter les factures */}
           <button className="bg-teal-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">
