@@ -381,8 +381,8 @@ const updateItemLine =(id,field,value)=>{
                     onChange={(e) => setQuoteData(prev => ({ ...prev, status: e.target.value }))}
                     className="border rounded px-2 py-1"
                   >
-                    <option value="Brouillon">Brouillon</option>
-                    <option value="Envoye">Envoyé</option>
+                    <option value="brouillon">Brouillon</option>
+                    <option value="envoye">Envoyé</option>
                     <option value="accepte">Accepté</option>
                     <option value="refuse">Refusé</option>
                   </select>

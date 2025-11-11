@@ -11,37 +11,31 @@ import {
   FaArrowLeft
 } from 'react-icons/fa';
 
-// Dummy data
-const dummyClients = [
-  { id: 1, name: 'TechCorp Inc.', email: 'billing@techcorp.com', phone: '+1 (555) 123-4567' },
-  { id: 2, name: 'Design Studio LLC', email: 'accounts@designstudio.com', phone: '+1 (555) 987-6543' },
-  { id: 3, name: 'Global Solutions Ltd', email: 'finance@globalsolutions.com', phone: '+1 (555) 456-7890' },
-  { id: 4, name: 'StartUp Ventures', email: 'payables@startup.com', phone: '+1 (555) 234-5678' },
-];
 
-const dummySalesOrders = {
-  1: [ // Client ID 1
-    { id: 101, orderNumber: 'SO-001', date: '2024-01-15', total: 2500.00, status: 'completed', items: [
-      { name: 'Web Development', quantity: 1, rate: 2000.00 },
-      { name: 'SEO Package', quantity: 1, rate: 500.00 }
-    ]},
-    { id: 102, orderNumber: 'SO-002', date: '2024-01-20', total: 1800.00, status: 'completed', items: [
-      { name: 'Mobile App', quantity: 1, rate: 1500.00 },
-      { name: 'UI/UX Design', quantity: 1, rate: 300.00 }
-    ]}
-  ],
-  2: [ // Client ID 2
-    { id: 201, orderNumber: 'SO-003', date: '2024-01-18', total: 3200.00, status: 'completed', items: [
-      { name: 'Brand Identity', quantity: 1, rate: 2000.00 },
-      { name: 'Marketing Materials', quantity: 1, rate: 1200.00 }
-    ]}
-  ]
-};
+// const dummySalesOrders = {
+//   1: [ // Client ID 1
+//     { id: 101, orderNumber: 'SO-001', date: '2024-01-15', total: 2500.00, status: 'completed', items: [
+//       { name: 'Web Development', quantity: 1, rate: 2000.00 },
+//       { name: 'SEO Package', quantity: 1, rate: 500.00 }
+//     ]},
+//     { id: 102, orderNumber: 'SO-002', date: '2024-01-20', total: 1800.00, status: 'completed', items: [
+//       { name: 'Mobile App', quantity: 1, rate: 1500.00 },
+//       { name: 'UI/UX Design', quantity: 1, rate: 300.00 }
+//     ]}
+//   ],
+//   2: [ // Client ID 2
+//     { id: 201, orderNumber: 'SO-003', date: '2024-01-18', total: 3200.00, status: 'completed', items: [
+//       { name: 'Brand Identity', quantity: 1, rate: 2000.00 },
+//       { name: 'Marketing Materials', quantity: 1, rate: 1200.00 }
+//     ]}
+//   ]
+// };
 
 const Invoice = () => {
 
 
   const [customers,setCustomers] = useState([])  
+  const [salesOrders,setSalesOrders] = useState([])
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedOrders, setSelectedOrders] = useState([]);
@@ -54,8 +48,34 @@ const Invoice = () => {
 
   const handleClientSelect = (client) => {
     setSelectedClient(client);
+    const handleSalesOrderPerClient = async () =>{
+        try{
+            const fetchResult =  await fetch("/api/salesOrders")
+            .then(result => result.json())
+
+            // if(!selectedClient){
+            //     throw new Error("Client not selected")
+            // }
+
+            if(!fetchResult){
+                throw new Error("Sales Order not found for this client")
+            } else {
+                const filteredSalesOrder = fetchResult.data.filter((order)=>{
+                    return order.client_id === client.id
+                })
+                setSalesOrders(filteredSalesOrder)
+            }
+
+        }catch(err){
+            console.log(err)
+        }
+    }
+    handleSalesOrderPerClient()
     setCurrentStep(2);
   };
+
+
+
 
   const handleOrderSelect = (order) => {
     setSelectedOrders(prev => {
@@ -81,9 +101,9 @@ const Invoice = () => {
  useEffect(() => {
   const fetchClients = async () => {
     try {
-      const result = await fetch("/api/customers");
-      const data = await result.json();
-      setCustomers(data);
+        await fetch("/api/customers")
+       .then(result=>result.json())
+       .then(data => setCustomers(data))
     } catch (err) {
       console.log(err.message);
     }
@@ -93,9 +113,40 @@ const Invoice = () => {
 }, []);
 
 
-  useEffect(()=>{
-    console.log(customers)
-  },[customers])
+
+// useEffect(()=>{
+//     const handleSalesOrderPerClient = async () =>{
+//         try{
+//             const fetchResult =  await fetch("/api/salesOrders")
+//             .then(result => result.json())
+
+//             if(!selectedClient){
+//                 throw new Error("Client not selected")
+//             }
+
+//             if(!fetchResult){
+//                 throw new Error("Sales Order not found for this client")
+//             } else {
+//                 const filteredSalesOrder = fetchResult.data.filter((order)=>{
+//                     return order.client_id === selectedClient.id
+//                 })
+//                 setSalesOrders(filteredSalesOrder)
+//             }
+
+//         }catch(err){
+//             console.log(err)
+//         }
+//     }
+
+//     handleSalesOrderPerClient()
+// },[])
+
+
+useEffect(()=>{
+    console.log(selectedClient)
+    console.log(salesOrders)
+,[selectedClient,salesOrders]})
+
 
 
   return (
@@ -213,7 +264,8 @@ const Invoice = () => {
 
             {/* Sales Orders List */}
             <div className="space-y-4 mb-8">
-              {dummySalesOrders[selectedClient.id]?.map((order) => (
+              {/* {dummySalesOrders[selectedClient.id]?.map((order) => ( */}
+              {salesOrders.map((order) => (
                 <div
                   key={order.id}
                   className={`border-2 rounded-xl p-6 transition-all duration-200 cursor-pointer ${
@@ -234,14 +286,14 @@ const Invoice = () => {
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-800">{order.orderNumber}</h3>
-                        <p className="text-gray-600">Date: {order.date} • Total: ${order.total.toFixed(2)}</p>
-                        <div className="flex gap-2 mt-2">
+                        <p className="text-gray-600">Date: {order.order_date} • Total: ${order.total_ttc.toFixed(2)}</p>
+                        {/* <div className="flex gap-2 mt-2">
                           {order.items.map((item, index) => (
                             <span key={index} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
                               {item.name}
                             </span>
                           ))}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
