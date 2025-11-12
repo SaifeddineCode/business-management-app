@@ -12,24 +12,6 @@ import {
 } from 'react-icons/fa';
 
 
-// const dummySalesOrders = {
-//   1: [ // Client ID 1
-//     { id: 101, orderNumber: 'SO-001', date: '2024-01-15', total: 2500.00, status: 'completed', items: [
-//       { name: 'Web Development', quantity: 1, rate: 2000.00 },
-//       { name: 'SEO Package', quantity: 1, rate: 500.00 }
-//     ]},
-//     { id: 102, orderNumber: 'SO-002', date: '2024-01-20', total: 1800.00, status: 'completed', items: [
-//       { name: 'Mobile App', quantity: 1, rate: 1500.00 },
-//       { name: 'UI/UX Design', quantity: 1, rate: 300.00 }
-//     ]}
-//   ],
-//   2: [ // Client ID 2
-//     { id: 201, orderNumber: 'SO-003', date: '2024-01-18', total: 3200.00, status: 'completed', items: [
-//       { name: 'Brand Identity', quantity: 1, rate: 2000.00 },
-//       { name: 'Marketing Materials', quantity: 1, rate: 1200.00 }
-//     ]}
-//   ]
-// };
 
 const Invoice = () => {
 
@@ -46,33 +28,65 @@ const Invoice = () => {
     client.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleClientSelect = (client) => {
+  // const handleClientSelect = (client) => {
+  //   setSelectedClient(client);
+  //   const handleSalesOrderPerClient = async () =>{
+  //       try{
+  //           const fetchResult =  await fetch("/api/salesOrders")
+  //           .then(result => result.json())
+
+  //           // if(!selectedClient){
+  //           //     throw new Error("Client not selected")
+  //           // }
+
+  //           // console.log(fetchResult)
+
+  //           // if(!fetchResult){
+  //           //     throw new Error("Sales Order not found for this client")
+  //           // } else {
+  //           //     const filteredSalesOrder = fetchResult.data.filter((order)=>{
+  //           //         return order.client_id === client.id
+  //           //     })
+  //           //     setSalesOrders(filteredSalesOrder)
+  //           // }
+  //           const filteredSalesOrder = fetchResult.data.filter((order)=>{
+  //                   return order.client_id === client.id
+  //               })
+  //               console.log(filteredSalesOrder)
+  //           if(filteredSalesOrder.length === 0 ){
+  //             throw new Error("Sales Order not found for this client")
+  //           }else {
+  //             setSalesOrders(filteredSalesOrder)
+  //           }
+
+  //       }catch(err){
+  //           console.log(err)
+  //       }
+  //   }
+  //   handleSalesOrderPerClient()
+  //   setCurrentStep(2);
+  // };
+
+const handleClientSelect = async (client) => {
+  try {
     setSelectedClient(client);
-    const handleSalesOrderPerClient = async () =>{
-        try{
-            const fetchResult =  await fetch("/api/salesOrders")
-            .then(result => result.json())
 
-            // if(!selectedClient){
-            //     throw new Error("Client not selected")
-            // }
+    const response = await fetch("/api/salesOrders");
+    if (!response.ok) throw new Error("Failed to fetch sales orders");
 
-            if(!fetchResult){
-                throw new Error("Sales Order not found for this client")
-            } else {
-                const filteredSalesOrder = fetchResult.data.filter((order)=>{
-                    return order.client_id === client.id
-                })
-                setSalesOrders(filteredSalesOrder)
-            }
+    const result = await response.json();
+    if (!result || !result.data) throw new Error("Invalid data format");
 
-        }catch(err){
-            console.log(err)
-        }
-    }
-    handleSalesOrderPerClient()
+    const filteredSalesOrders = result.data.filter(
+      (order) => order.client_id === client.id
+    );
+
+    setSalesOrders(filteredSalesOrders);
     setCurrentStep(2);
-  };
+  } catch (error) {
+    console.error("Error fetching sales orders:", error);
+  }
+};
 
 
 
@@ -114,38 +128,12 @@ const Invoice = () => {
 
 
 
+
 // useEffect(()=>{
-//     const handleSalesOrderPerClient = async () =>{
-//         try{
-//             const fetchResult =  await fetch("/api/salesOrders")
-//             .then(result => result.json())
-
-//             if(!selectedClient){
-//                 throw new Error("Client not selected")
-//             }
-
-//             if(!fetchResult){
-//                 throw new Error("Sales Order not found for this client")
-//             } else {
-//                 const filteredSalesOrder = fetchResult.data.filter((order)=>{
-//                     return order.client_id === selectedClient.id
-//                 })
-//                 setSalesOrders(filteredSalesOrder)
-//             }
-
-//         }catch(err){
-//             console.log(err)
-//         }
-//     }
-
-//     handleSalesOrderPerClient()
-// },[])
-
-
-useEffect(()=>{
-    console.log(selectedClient)
-    console.log(salesOrders)
-,[selectedClient,salesOrders]})
+//     // console.log(selectedClient)
+//     console.log(salesOrders)
+//     // console.log(selectedOrders)
+// ,[salesOrders]})
 
 
 
@@ -265,7 +253,9 @@ useEffect(()=>{
             {/* Sales Orders List */}
             <div className="space-y-4 mb-8">
               {/* {dummySalesOrders[selectedClient.id]?.map((order) => ( */}
-              {salesOrders.map((order) => (
+              {             
+              salesOrders.length === 0 ? <div> No sales order was found </div> :
+              salesOrders.map((order) => (
                 <div
                   key={order.id}
                   className={`border-2 rounded-xl p-6 transition-all duration-200 cursor-pointer ${
@@ -310,7 +300,8 @@ useEffect(()=>{
                     </div>
                   </div>
                 </div>
-              ))}
+              ))
+              }
             </div>
 
             {/* Action Buttons */}
@@ -380,23 +371,23 @@ useEffect(()=>{
               {selectedOrders.map((order) => (
                 <div key={order.id} className="border border-gray-200 rounded-xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-gray-800">{order.orderNumber}</h4>
+                    <h4 className="font-semibold text-gray-800">{order.order_number}</h4>
                     <span className="text-lg font-bold text-blue-600">
-                      ${order.total.toFixed(2)}
+                      ${order.total_ttc.toFixed(2)}
                     </span>
                   </div>
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     {order.items.map((item, index) => (
                       <div key={index} className="flex justify-between text-sm">
                         <span>{item.quantity}x {item.name}</span>
                         <span>${item.rate.toFixed(2)}</span>
                       </div>
                     ))}
-                  </div>
-                  <button className="mt-4 flex items-center gap-2 text-blue-600 hover:text-blue-700 text-sm">
+                  </div> */}
+                  {/* <button className="mt-4 flex items-center gap-2 text-blue-600 hover:text-blue-700 text-sm">
                     <FaEdit className="text-xs" />
                     Edit Items
-                  </button>
+                  </button> */}
                 </div>
               ))}
             </div>
@@ -408,19 +399,19 @@ useEffect(()=>{
                 <div className="flex justify-between">
                   <span>Subtotal:</span>
                   <span className="font-semibold">
-                    ${selectedOrders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}
+                    ${selectedOrders.reduce((sum, order) => sum + order.total_ttc, 0).toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Tax (10%):</span>
                   <span className="font-semibold">
-                    ${(selectedOrders.reduce((sum, order) => sum + order.total, 0) * 0.1).toFixed(2)}
+                    ${(selectedOrders.reduce((sum, order) => sum + order.total_ttc, 0) * 0.1).toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between text-lg font-bold pt-2 border-t border-blue-200">
                   <span>Total Amount:</span>
                   <span className="text-blue-600">
-                    ${(selectedOrders.reduce((sum, order) => sum + order.total, 0) * 1.1).toFixed(2)}
+                    ${(selectedOrders.reduce((sum, order) => sum + order.total_ttc, 0) * 1.1).toFixed(2)}
                   </span>
                 </div>
               </div>
