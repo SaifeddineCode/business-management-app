@@ -26,7 +26,7 @@ const Sales = () => {
 
 
   const [turnOverCurrentMonth,setturnOverCurrentMonth] = useState([])
-
+  const [pendingQuotes,setPendingQuotes] = useState([])
 
   useEffect(() => {
   const fetchSalesOrders = async () => {
@@ -61,14 +61,43 @@ const Sales = () => {
 }, []);
 
 
+useEffect(()=>{
+
+    const fetchingPendingQuotes = async() =>{
+      
+      try{
+        const result = await fetch("/api/quote")
+        const data = await result.json()
+        
+        if(!data){
+          throw new Error("Error while fetching pending quotes")
+        }
+
+        const filtredQuotesPending = data.filter((quote)=>{
+          return quote?.status === "brouillon"
+        })
+
+        setPendingQuotes(filtredQuotesPending)    
+      }catch(err){
+        console.log(err.message)
+      }
+
+    }
+  
+    fetchingPendingQuotes()
+
+},[])
 
 
+useEffect(()=>{
+    console.log(pendingQuotes)
+  },[pendingQuotes])
  
 
 
-  useEffect(()=>{
-    console.log(turnOverCurrentMonth)
-  },[turnOverCurrentMonth])
+  // useEffect(()=>{
+  //   console.log(turnOverCurrentMonth)
+  // },[turnOverCurrentMonth])
 
 
   // Mock sales data
@@ -190,7 +219,7 @@ const Sales = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Devis En Attente</p>
-              <p className="text-2xl font-bold text-gray-800">{salesData.metrics.pendingQuotes}</p>
+              <p className="text-2xl font-bold text-gray-800">{pendingQuotes.length}</p>
             </div>
             <div className="p-3 bg-yellow-50 rounded-lg">
               <FiFileText className="text-yellow-600" size={24} />
