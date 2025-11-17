@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   FiPlus, 
   FiFilter, 
@@ -21,6 +21,55 @@ const Sales = () => {
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+
+
+
+
+  const [turnOverCurrentMonth,setturnOverCurrentMonth] = useState([])
+
+
+  useEffect(() => {
+  const fetchSalesOrders = async () => {
+    try {
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+
+      const response = await fetch("/api/salesOrders");
+      const data = await response.json();
+
+      if (!data?.data) {
+        throw new Error("Invalid API response format");
+      }
+
+      const currentMonthSalesOrder = data.data
+        .filter(sale => {
+          const saleDate = new Date(sale.order_date);
+          return (
+            saleDate.getMonth() === currentMonth &&
+            saleDate.getFullYear() === currentYear
+          );
+        })
+        .reduce((total, sale) => total + (sale.total_ttc || 0), 0).toFixed(2) ;
+
+      setturnOverCurrentMonth(currentMonthSalesOrder);
+    } catch (error) {
+      console.error("Error fetching sales orders:", error);
+    }
+  };
+
+  fetchSalesOrders();
+}, []);
+
+
+
+
+ 
+
+
+  useEffect(()=>{
+    console.log(turnOverCurrentMonth)
+  },[turnOverCurrentMonth])
+
 
   // Mock sales data
   const salesData = {
@@ -127,7 +176,7 @@ const Sales = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">CA Mensuel</p>
-              <p className="text-2xl font-bold text-gray-800">{salesData.metrics.monthlyRevenue.toLocaleString()} €</p>
+              <p className="text-2xl font-bold text-gray-800">{turnOverCurrentMonth } MAD</p>
             </div>
             <div className="p-3 bg-blue-50 rounded-lg">
               <FiTrendingUp className="text-blue-600" size={24} />
