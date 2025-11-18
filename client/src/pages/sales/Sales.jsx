@@ -27,12 +27,14 @@ const Sales = () => {
 
   const [turnOverCurrentMonth,setturnOverCurrentMonth] = useState([])
   const [pendingQuotes,setPendingQuotes] = useState([])
+  const [dailyOrders,setDailyOrders] = useState([])
 
   useEffect(() => {
   const fetchSalesOrders = async () => {
     try {
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
+      const currentDay = new Date().getDate()
 
       const response = await fetch("/api/salesOrders");
       const data = await response.json();
@@ -40,6 +42,16 @@ const Sales = () => {
       if (!data?.data) {
         throw new Error("Invalid API response format");
       }
+
+      const currentDailyOrders = data.data.filter((order)=>{
+        const orderDate = new Date(order.order_date);
+        return orderDate.getMonth() === currentMonth &&
+            orderDate.getFullYear() === currentYear 
+            && orderDate.getDate() === currentDay 
+            
+      })
+
+      setDailyOrders(currentDailyOrders)
 
       const currentMonthSalesOrder = data.data
         .filter(sale => {
@@ -63,41 +75,37 @@ const Sales = () => {
 
 useEffect(()=>{
 
-    const fetchingPendingQuotes = async() =>{
+  const fetchingPendingQuotes = async() =>{
+    
+    try{
+      const result = await fetch("/api/quote")
+      const data = await result.json()
       
-      try{
-        const result = await fetch("/api/quote")
-        const data = await result.json()
-        
-        if(!data){
-          throw new Error("Error while fetching pending quotes")
-        }
-
-        const filtredQuotesPending = data.filter((quote)=>{
-          return quote?.status === "brouillon"
-        })
-
-        setPendingQuotes(filtredQuotesPending)    
-      }catch(err){
-        console.log(err.message)
+      if(!data){
+        throw new Error("Error while fetching pending quotes")
       }
 
+      const filtredQuotesPending = data.filter((quote)=>{
+        return quote?.status === "brouillon"
+      })
+
+      setPendingQuotes(filtredQuotesPending)    
+    }catch(err){
+      console.log(err.message)
     }
-  
-    fetchingPendingQuotes()
+
+  }
+
+  fetchingPendingQuotes()
 
 },[])
 
 
-useEffect(()=>{
-    console.log(pendingQuotes)
-  },[pendingQuotes])
- 
 
 
-  // useEffect(()=>{
-  //   console.log(turnOverCurrentMonth)
-  // },[turnOverCurrentMonth])
+  useEffect(()=>{
+    console.log(dailyOrders)
+  },[dailyOrders])
 
 
   // Mock sales data
@@ -233,7 +241,7 @@ useEffect(()=>{
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Commandes du Jour</p>
-              <p className="text-2xl font-bold text-gray-800">{salesData.metrics.todaysOrders}</p>
+              <p className="text-2xl font-bold text-gray-800">{dailyOrders.length}</p>
             </div>
             <div className="p-3 bg-green-50 rounded-lg">
               <FiShoppingCart className="text-green-600" size={24} />
