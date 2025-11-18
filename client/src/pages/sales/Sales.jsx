@@ -28,6 +28,11 @@ const Sales = () => {
   const [turnOverCurrentMonth,setturnOverCurrentMonth] = useState([])
   const [pendingQuotes,setPendingQuotes] = useState([])
   const [dailyOrders,setDailyOrders] = useState([])
+  const [recentQuotes,setRecentQuotes] = useState([])
+  const [dailySalesOrders,setDailySalesOrders] = useState([])
+
+  
+
 
   useEffect(() => {
   const fetchSalesOrders = async () => {
@@ -42,6 +47,8 @@ const Sales = () => {
       if (!data?.data) {
         throw new Error("Invalid API response format");
       }
+
+      setDailySalesOrders(data.data)
 
       const currentDailyOrders = data.data.filter((order)=>{
         const orderDate = new Date(order.order_date);
@@ -84,7 +91,7 @@ useEffect(()=>{
       if(!data){
         throw new Error("Error while fetching pending quotes")
       }
-
+      setRecentQuotes(data)
       const filtredQuotesPending = data.filter((quote)=>{
         return quote?.status === "brouillon"
       })
@@ -103,31 +110,15 @@ useEffect(()=>{
 
 
 
+
+
+
   useEffect(()=>{
-    console.log(dailyOrders)
-  },[dailyOrders])
+    console.log(recentQuotes.slice(0,4))
+  },[recentQuotes])
 
 
-  // Mock sales data
-  const salesData = {
-    metrics: {
-      monthlyRevenue: 45280,
-      pendingQuotes: 12,
-      todaysOrders: 8,
-      unpaidInvoices: 5
-    },
-    quotes: [
-      { id: 1, number: 'DEV-2024-001', client: 'Client A', amount: 1500, date: '2024-01-15', status: 'pending' },
-      { id: 2, number: 'DEV-2024-002', client: 'Client B', amount: 3200, date: '2024-01-14', status: 'accepted' },
-      { id: 3, number: 'DEV-2024-003', client: 'Client C', amount: 850, date: '2024-01-13', status: 'draft' },
-      { id: 4, number: 'DEV-2024-004', client: 'Client D', amount: 2100, date: '2024-01-12', status: 'rejected' }
-    ],
-    recentOrders: [
-      { id: 1, number: 'CMD-2024-001', client: 'Client A', products: 3, total: 1500, status: 'delivered' },
-      { id: 2, number: 'CMD-2024-002', client: 'Client B', products: 5, total: 3200, status: 'shipped' },
-      { id: 3, number: 'CMD-2024-003', client: 'Client C', products: 2, total: 850, status: 'processing' }
-    ]
-  };
+  
 
   // Status badge colors
   const getStatusColor = (status) => {
@@ -144,8 +135,8 @@ useEffect(()=>{
   };
 
   // Filter quotes based on search and status
-  const filteredQuotes = salesData.quotes.filter(quote =>
-    quote.client.toLowerCase().includes(searchTerm.toLowerCase()) &&
+  const filteredQuotes = recentQuotes.filter(quote =>
+    quote.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
     (statusFilter === 'all' || quote.status === statusFilter)
   );
 
@@ -255,7 +246,7 @@ useEffect(()=>{
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Factures Impayées</p>
-              <p className="text-2xl font-bold text-gray-800">{salesData.metrics.unpaidInvoices}</p>
+              <p className="text-2xl font-bold text-gray-800">{""}</p>
             </div>
             <div className="p-3 bg-red-50 rounded-lg">
               <FiDollarSign className="text-red-600" size={24} />
@@ -287,10 +278,10 @@ useEffect(()=>{
             onChange={(e) => setStatusFilter(e.target.value)}
           >
             <option value="all">Tous les statuts</option>
-            <option value="draft">Brouillon</option>
-            <option value="pending">En attente</option>
-            <option value="accepted">Accepté</option>
-            <option value="rejected">Refusé</option>
+            <option value="brouillon">Brouillon</option>
+            <option value="en_attente">En attente</option>
+            <option value="accepte">Accepté</option>
+            <option value="refuse">Refusé</option>
           </select>
         </div>
       </div>
@@ -316,12 +307,12 @@ useEffect(()=>{
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredQuotes.map((quote) => (
+              {filteredQuotes.slice(0,4).map((quote) => (
                 <tr key={quote.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{quote.number}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{quote.client}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{quote.amount} €</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{quote.date}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{ `#${quote.id}` }</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{quote.customer_name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{quote.total_ttc} €</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{quote.date.split('T')[0]}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(quote.status)}`}>
                       {quote.status}
@@ -357,19 +348,19 @@ useEffect(()=>{
         </div>
         <div className="p-6">
           <div className="space-y-4">
-            {salesData.recentOrders.map((order) => (
+            {dailySalesOrders.slice(0,4).map((order) => (
               <div key={order.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                 <div className="flex items-center space-x-4">
                   <div className="p-2 bg-blue-50 rounded-lg">
                     <FiShoppingCart className="text-blue-600" size={20} />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-800">{order.number}</p>
-                    <p className="text-sm text-gray-600">{order.client}</p>
+                    <p className="font-medium text-gray-800">{order.order_number}</p>
+                    <p className="text-sm text-gray-600">{order.customer_name}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-gray-800">{order.total} €</p>
+                  <p className="font-semibold text-gray-800">{order.total_ttc} €</p>
                   <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(order.status)}`}>
                     {order.status}
                   </span>
