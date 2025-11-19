@@ -16,6 +16,16 @@ import {
 const Invoice = () => {
 
 
+  const [invoiceData,setInvoiceData] = useState({
+    order_ID :"",
+    date : new Date().toLocaleDateString(),
+    total_ht:"",
+    tva:"",
+    tota_ttc :"",
+    statut:""
+  })
+
+
   const [customers,setCustomers] = useState([])  
   const [salesOrders,setSalesOrders] = useState([])
   const [currentStep, setCurrentStep] = useState(1);
@@ -97,20 +107,45 @@ const handleClientSelect = async (client) => {
       if (exists) {
         return prev.filter(o => o.id !== order.id);
       } else {
-        return [...prev, order];
+        return [...prev, order]
       }
     });
+    setInvoiceData(prev=>({...prev,order_ID:order.id,total_ht:order.total_ht,tva:order.tva,total_ttc:order.total_ttc,statut:order.statut}))
   };
+
+  
 
   const handleProceedToInvoice = () => {
     setCurrentStep(3);
   };
 
-  const handleCreateInvoice = () => {
-    // This would be your logic to create the final invoice
-    console.log('Creating invoice with:', { selectedClient, selectedOrders });
-    alert('Invoice created successfully!');
+
+
+
+  const handleCreateInvoice = async () => {
+
+    try{
+
+      const reponse = await fetch("/api/invoice",{
+        method :"POST",
+        headers:'Content : application/json',
+        body : JSON.stringify(invoiceData)
+      })
+
+
+
+
+
+    }catch(err){  
+      console.log(err)
+
+    }
+
   };
+
+
+
+
 
  useEffect(() => {
   const fetchClients = async () => {
@@ -129,11 +164,12 @@ const handleClientSelect = async (client) => {
 
 
 
-// useEffect(()=>{
-//     // console.log(selectedClient)
-//     console.log(salesOrders)
-//     // console.log(selectedOrders)
-// ,[salesOrders]})
+useEffect(()=>{
+    // console.log(selectedClient)
+    // console.log(salesOrders)
+    console.log(selectedOrders)
+    console.log(invoiceData)
+,[selectedOrders]})
 
 
 
@@ -393,7 +429,7 @@ const handleClientSelect = async (client) => {
             </div>
 
             {/* Invoice Summary */}
-            <div className="bg-blue-50 rounded-xl p-6 mb-8">
+            {/* <div className="bg-blue-50 rounded-xl p-6 mb-8">
               <h3 className="font-semibold text-gray-800 mb-4">Invoice Summary</h3>
               <div className="space-y-2">
                 <div className="flex justify-between">
@@ -415,7 +451,7 @@ const handleClientSelect = async (client) => {
                   </span>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Final Actions */}
             <div className="flex justify-between pt-6 border-t">
