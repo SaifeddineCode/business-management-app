@@ -30,8 +30,12 @@ const Invoice = () => {
   const [salesOrders,setSalesOrders] = useState([])
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedClient, setSelectedClient] = useState(null);
-  const [selectedOrders, setSelectedOrders] = useState([]);
+  // const [selectedOrders, setSelectedOrders] = useState([]);
+  const [selectedOrders, setSelectedOrders] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
+
+  const [orderAlreadyExist,setOrderAlreadyExist] = useState(false)
+
 
   // Filter clients based on search
   const filteredClients = customers.filter(client =>
@@ -101,17 +105,48 @@ const handleClientSelect = async (client) => {
 
 
 
+  // const handleOrderSelect = (order) => {
+  //   setSelectedOrders(prev => {
+  //     const exists = prev.find(o => o.id === order.id);
+  //     if (exists) {
+  //       return prev.filter(o => o.id !== order.id);
+  //     } else {
+  //       return [...prev, order]
+  //       // return order
+  //     }
+  // setInvoiceData(prev=>({...prev,order_ID:order.id,total_ht:order.total_ht,tva:order.tva,total_ttc:order.total_ttc,statut:order.statut}))
+  //   });
+
   const handleOrderSelect = (order) => {
-    setSelectedOrders(prev => {
-      const exists = prev.find(o => o.id === order.id);
-      if (exists) {
-        return prev.filter(o => o.id !== order.id);
+
+   setSelectedOrders(prev => {
+      // const exists = prev.find(o => o.id === order.id);
+      const {id} = prev
+
+      if (id===order.id) {
+        setOrderAlreadyExist(true)
+        return {}
       } else {
-        return [...prev, order]
+        return order
       }
-    });
-    setInvoiceData(prev=>({...prev,order_ID:order.id,total_ht:order.total_ht,tva:order.tva,total_ttc:order.total_ttc,statut:order.statut}))
+    })
+  
+
   };
+
+  // useEffect(()=>{
+
+  //   try{
+  //     if(!selectedOrders){
+  //       throw new Error("no order was selected")
+  //     }
+  //     return setInvoiceData(prev=>({...prev,order_ID:selectedOrders.id,total_ht:selectedOrders.total_ht,tva:selectedOrders.tva,total_ttc:selectedOrders.total_ttc,statut:selectedOrders.statut}))
+  //   }catch(err){
+  //     console.log(err)
+  //   }
+
+
+  // },selectedOrders)
 
   
 
@@ -124,22 +159,22 @@ const handleClientSelect = async (client) => {
 
   const handleCreateInvoice = async () => {
 
-    try{
+    // try{
 
-      const reponse = await fetch("/api/invoice",{
-        method :"POST",
-        headers:'Content : application/json',
-        body : JSON.stringify(invoiceData)
-      })
-
-
+    //   const reponse = await fetch("/api/invoice",{
+    //     method :"POST",
+    //     headers:'Content : application/json',
+    //     body : JSON.stringify(invoiceData)
+    //   })
 
 
 
-    }catch(err){  
-      console.log(err)
 
-    }
+
+    // }catch(err){  
+    //   console.log(err)
+
+    // }
 
   };
 
@@ -168,7 +203,6 @@ useEffect(()=>{
     // console.log(selectedClient)
     // console.log(salesOrders)
     console.log(selectedOrders)
-    console.log(invoiceData)
 ,[selectedOrders]})
 
 
@@ -295,7 +329,8 @@ useEffect(()=>{
                 <div
                   key={order.id}
                   className={`border-2 rounded-xl p-6 transition-all duration-200 cursor-pointer ${
-                    selectedOrders.find(o => o.id === order.id)
+                    // selectedOrders.find(o => o.id === order.id)
+                    orderAlreadyExist
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-blue-300'
                   }`}
@@ -304,7 +339,8 @@ useEffect(()=>{
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className={`p-3 rounded-lg ${
-                        selectedOrders.find(o => o.id === order.id)
+                        // selectedOrders.find(o => o.id === order.id)
+                        orderAlreadyExist
                           ? 'bg-blue-500 text-white'
                           : 'bg-gray-100 text-gray-600'
                       }`}>
@@ -323,7 +359,8 @@ useEffect(()=>{
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      {selectedOrders.find(o => o.id === order.id) ? (
+                      {/* {selectedOrders.find(o => o.id === order.id) ? ( */}
+                      {orderAlreadyExist ? (
                         <div className="flex items-center gap-2 text-blue-600">
                           <FaCheck className="text-sm" />
                           <span className="text-sm font-medium">Selected</span>
