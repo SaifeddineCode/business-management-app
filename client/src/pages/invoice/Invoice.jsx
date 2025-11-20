@@ -21,8 +21,8 @@ const Invoice = () => {
     date : new Date().toLocaleDateString(),
     total_ht:"",
     tva:"",
-    tota_ttc :"",
-    statut:""
+    total_ttc :"",
+    statut:"payee"
   })
 
 
@@ -120,17 +120,30 @@ const handleClientSelect = async (client) => {
   const handleOrderSelect = (order) => {
 
    setSelectedOrders(prev => {
-      // const exists = prev.find(o => o.id === order.id);
       const {id} = prev
 
       if (id===order.id) {
         setOrderAlreadyExist(true)
         return {}
       } else {
+        setOrderAlreadyExist(false)
         return order
       }
     })
   
+    if(!orderAlreadyExist){
+      setInvoiceData(prev=>({...prev,order_ID:order.id,total_ht:order.total_ht,tva:order.tva,total_ttc:order.total_ttc}))
+    }else {
+      setInvoiceData(prev=>({...prev,
+    order_ID :"",
+    date : new Date().toLocaleDateString(),
+    total_ht:"",
+    tva:"",
+    total_ttc :"",
+    statut:""
+  
+      }))
+    }
 
   };
 
@@ -159,22 +172,21 @@ const handleClientSelect = async (client) => {
 
   const handleCreateInvoice = async () => {
 
-    // try{
+    try{
 
-    //   const reponse = await fetch("/api/invoice",{
-    //     method :"POST",
-    //     headers:'Content : application/json',
-    //     body : JSON.stringify(invoiceData)
-    //   })
+      const response = await fetch("/api/invoice",{
+        method :"POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body : JSON.stringify(invoiceData)
+      })
 
 
+    }catch(err){  
+      console.log(err)
 
-
-
-    // }catch(err){  
-    //   console.log(err)
-
-    // }
+    }
 
   };
 
@@ -201,8 +213,8 @@ const handleClientSelect = async (client) => {
 
 useEffect(()=>{
     // console.log(selectedClient)
-    // console.log(salesOrders)
-    console.log(selectedOrders)
+    console.log(invoiceData)
+    // console.log(selectedOrders)
 ,[selectedOrders]})
 
 
@@ -441,12 +453,12 @@ useEffect(()=>{
               <h3 className="font-semibold text-gray-800 mb-4">
                 Selected Sales Orders ({selectedOrders.length})
               </h3>
-              {selectedOrders.map((order) => (
-                <div key={order.id} className="border border-gray-200 rounded-xl p-6">
+              {/* {selectedOrders.map((order) => ( */}
+                <div key={selectedOrders.id} className="border border-gray-200 rounded-xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-gray-800">{order.order_number}</h4>
+                    <h4 className="font-semibold text-gray-800">{selectedOrders.order_number}</h4>
                     <span className="text-lg font-bold text-blue-600">
-                      ${order.total_ttc.toFixed(2)}
+                      ${selectedOrders.total_ttc.toFixed(2)}
                     </span>
                   </div>
                   {/* <div className="space-y-2">
@@ -462,7 +474,7 @@ useEffect(()=>{
                     Edit Items
                   </button> */}
                 </div>
-              ))}
+              {/* ))} */}
             </div>
 
             {/* Invoice Summary */}

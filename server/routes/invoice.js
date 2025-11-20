@@ -1,19 +1,27 @@
 import express from "express"
+import db from "../../database/database.js"
 
 const router = express.Router();
 
 
-router.post("/",(req,res)=>{
+router.post("/", async (req,res)=>{
 
 
     try{
 
-        // post on invoice 
+        const {order_ID,date,total_ht,tva,total_ttc,statut} = req.body
 
+        if(!order_ID){
+            res.status(500).json({
+                message :"There is no order selected"
+            })
+        }
 
-
-
-        // post on invoice item
+        const invoiceQuery = `
+            INSERT INTO invoice (order_id,total_ht,tva,total_ttc,statut) 
+            VALUES (?,?,?,?,?)
+        `
+        const resultInvoice = await db.execute(invoiceQuery,[order_ID,total_ht,tva,total_ttc,statut])
 
 
     }catch(err){
