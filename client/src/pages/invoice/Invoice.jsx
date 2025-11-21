@@ -123,27 +123,27 @@ const handleClientSelect = async (client) => {
       const {id} = prev
 
       if (id===order.id) {
-        setOrderAlreadyExist(true)
+        setOrderAlreadyExist(false)
+        setInvoiceData(prev=>({...prev,
+          order_ID :"",
+          date : new Date().toLocaleDateString(),
+          total_ht:"",
+          tva:"",
+          total_ttc :"",
+          statut:""
+        
+            }))
         return {}
       } else {
-        setOrderAlreadyExist(false)
+        setOrderAlreadyExist(true)
+        setInvoiceData(prev=>({...prev,order_ID:order.id,total_ht:order.total_ht,tva:order.tva,total_ttc:order.total_ttc,statut:order.statut}))
         return order
       }
     })
   
-    if(!orderAlreadyExist){
-      setInvoiceData(prev=>({...prev,order_ID:order.id,total_ht:order.total_ht,tva:order.tva,total_ttc:order.total_ttc}))
-    }else {
-      setInvoiceData(prev=>({...prev,
-    order_ID :"",
-    date : new Date().toLocaleDateString(),
-    total_ht:"",
-    tva:"",
-    total_ttc :"",
-    statut:""
-  
-      }))
-    }
+    // if(!orderAlreadyExist){
+    //   setInvoiceData(prev=>({...prev,order_ID:order.id,total_ht:order.total_ht,tva:order.tva,total_ttc:order.total_ttc}))
+    // }
 
   };
 
