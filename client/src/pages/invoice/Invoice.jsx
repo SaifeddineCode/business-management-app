@@ -342,7 +342,7 @@ useEffect(()=>{
                   key={order.id}
                   className={`border-2 rounded-xl p-6 transition-all duration-200 cursor-pointer ${
                     // selectedOrders.find(o => o.id === order.id)
-                    orderAlreadyExist
+                    order.id === selectedOrders.id
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-blue-300'
                   }`}
@@ -352,7 +352,8 @@ useEffect(()=>{
                     <div className="flex items-center gap-4">
                       <div className={`p-3 rounded-lg ${
                         // selectedOrders.find(o => o.id === order.id)
-                        orderAlreadyExist
+                        // orderAlreadyExist 
+                        order.id === selectedOrders.id
                           ? 'bg-blue-500 text-white'
                           : 'bg-gray-100 text-gray-600'
                       }`}>
