@@ -21,7 +21,12 @@ router.post("/", async (req,res)=>{
             INSERT INTO invoice (order_id,total_ht,tva,total_ttc,statut) 
             VALUES (?,?,?,?,?)
         `
-        const resultInvoice = await db.execute(invoiceQuery,[order_ID,total_ht,tva,total_ttc,statut])
+        const [resultInvoice] = await db.execute(invoiceQuery,[order_ID,total_ht,tva,total_ttc,statut])
+        res.status(201).json({
+            message:"the invoice was added successfuly"
+        })
+        
+        
 
 
     }catch(err){

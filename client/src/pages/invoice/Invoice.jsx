@@ -34,7 +34,7 @@ const Invoice = () => {
   const [selectedOrders, setSelectedOrders] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
 
-  const [orderAlreadyExist,setOrderAlreadyExist] = useState(false)
+  // const [orderAlreadyExist,setOrderAlreadyExist] = useState(false)
 
 
   // Filter clients based on search
@@ -123,7 +123,6 @@ const handleClientSelect = async (client) => {
       const {id} = prev
 
       if (id===order.id) {
-        setOrderAlreadyExist(false)
         setInvoiceData(prev=>({...prev,
           order_ID :"",
           date : new Date().toLocaleDateString(),
@@ -135,8 +134,7 @@ const handleClientSelect = async (client) => {
             }))
         return {}
       } else {
-        setOrderAlreadyExist(true)
-        setInvoiceData(prev=>({...prev,order_ID:order.id,total_ht:order.total_ht,tva:order.tva,total_ttc:order.total_ttc,statut:order.statut}))
+        setInvoiceData(prev=>({...prev,order_ID:order.id,total_ht:order.total_ht,tva:order.tva,total_ttc:order.total_ttc}))
         return order
       }
     })
@@ -181,6 +179,12 @@ const handleClientSelect = async (client) => {
         },
         body : JSON.stringify(invoiceData)
       })
+
+      if(!response.ok){
+         throw new Error("error while posting the invoice")
+      }else {
+        console.log("good , the invoice was added successefuly")
+      }
 
 
     }catch(err){  
@@ -373,7 +377,7 @@ useEffect(()=>{
                     </div>
                     <div className="flex items-center gap-4">
                       {/* {selectedOrders.find(o => o.id === order.id) ? ( */}
-                      {orderAlreadyExist ? (
+                      {order.id === selectedOrders.id ? (
                         <div className="flex items-center gap-2 text-blue-600">
                           <FaCheck className="text-sm" />
                           <span className="text-sm font-medium">Selected</span>
@@ -462,6 +466,22 @@ useEffect(()=>{
                       ${selectedOrders.total_ttc.toFixed(2)}
                     </span>
                   </div>
+                   <div className="w-full max-w-xs">
+                      <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+                        Sélectionner le statut :
+                      </label>
+                      <select
+                        id="status"
+                        value={invoiceData.statut}
+                        onChange={(e)=>setInvoiceData((prev)=>({...prev,statut : e.target.value}))}
+                        className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                      >
+                        <option value="">Choisir un statut</option>
+                        <option value="payee">payee</option>
+                        <option value="impayee">impayee</option>
+                        <option value="partiellement">partiellement</option>
+                      </select>
+                    </div>
                   {/* <div className="space-y-2">
                     {order.items.map((item, index) => (
                       <div key={index} className="flex justify-between text-sm">
