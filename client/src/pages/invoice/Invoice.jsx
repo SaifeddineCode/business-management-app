@@ -13,6 +13,8 @@ import {
 
 
 
+
+
 const Invoice = () => {
 
 
@@ -169,6 +171,9 @@ const handleClientSelect = async (client) => {
 
 
   const handleCreateInvoice = async () => {
+
+
+    if(!selectedOrders.id) return console.log("Veuillez choisir un bon de commande valide")
 
     try{
 
@@ -404,7 +409,7 @@ useEffect(()=>{
               </button>
               <button
                 onClick={handleProceedToInvoice}
-                disabled={selectedOrders.length === 0}
+                disabled={!selectedOrders.id}
                 className={`px-8 py-3 rounded-xl font-medium transition-all ${
                   selectedOrders.length === 0
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -416,6 +421,7 @@ useEffect(()=>{
             </div>
           </div>
         )}
+        
 
         {/* Step 3: Invoice Review */}
         {currentStep === 3 && (
