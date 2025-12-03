@@ -24,7 +24,8 @@ const Invoice = () => {
     total_ht:"",
     tva:"",
     total_ttc :"",
-    statut:"payee"
+    statut:"payee",
+    invoiceItems:[]
   })
 
 
@@ -201,8 +202,6 @@ const handleClientSelect = async (client) => {
 
 
 
-
-
  useEffect(() => {
   const fetchClients = async () => {
     try {
@@ -218,13 +217,27 @@ const handleClientSelect = async (client) => {
 }, []);
 
 
+useEffect(()=>{
+  const fetchingOrderItems = async () =>{
+    try {
+      const response = await fetch("/api/sales_orders_items")
+      const data = await response.json()
+      setInvoiceData(prev=>({...prev,invoiceItems:data?.data}))
+    }catch(err){
+      console.log(err)
+    }
+  }
+  fetchingOrderItems()
+},[])
 
 
 useEffect(()=>{
     // console.log(selectedClient)
-    console.log(invoiceData)
+    // console.log(invoiceData)
     // console.log(selectedOrders)
-,[selectedOrders]})
+    // console.log(invoiceData.invoiceItems)
+},[])
+
 
 
 

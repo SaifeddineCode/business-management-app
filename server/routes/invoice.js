@@ -25,6 +25,8 @@ router.post("/", async (req,res)=>{
         res.status(201).json({
             message:"the invoice was added successfuly"
         })
+
+        
     }catch(err){
         console.log(err)
     }
