@@ -123,8 +123,9 @@ const handleClientSelect = async (client) => {
   const handleOrderSelect = (order) => {
 
    setSelectedOrders(prev => {
-      const {id} = prev
 
+      const {id} = prev
+    
       if (id===order.id) {
         setInvoiceData(prev=>({...prev,
           order_ID :"",
@@ -133,18 +134,14 @@ const handleClientSelect = async (client) => {
           tva:"",
           total_ttc :"",
           statut:""
-        
             }))
+
         return {}
       } else {
         setInvoiceData(prev=>({...prev,order_ID:order.id,total_ht:order.total_ht,tva:order.tva,total_ttc:order.total_ttc}))
         return order
       }
     })
-  
-    // if(!orderAlreadyExist){
-    //   setInvoiceData(prev=>({...prev,order_ID:order.id,total_ht:order.total_ht,tva:order.tva,total_ttc:order.total_ttc}))
-    // }
 
   };
 
@@ -168,11 +165,7 @@ const handleClientSelect = async (client) => {
     setCurrentStep(3);
   };
 
-
-
-
   const handleCreateInvoice = async () => {
-
 
     if(!selectedOrders.id) return console.log("Veuillez choisir un bon de commande valide")
 
@@ -191,11 +184,8 @@ const handleClientSelect = async (client) => {
       }else {
         console.log("good , the invoice was added successefuly")
       }
-
-
     }catch(err){  
       console.log(err)
-
     }
 
   };
@@ -219,24 +209,33 @@ const handleClientSelect = async (client) => {
 
 useEffect(()=>{
   const fetchingOrderItems = async () =>{
-    try {
+    if(selectedOrders.id){
+      try {
       const response = await fetch("/api/sales_orders_items")
       const data = await response.json()
-      setInvoiceData(prev=>({...prev,invoiceItems:data?.data}))
+
+      // setInvoiceData(prev=>({...prev,invoiceItems:data?.data}))
+      const invoiceItems = data.data.filter((orderItem)=>{
+        return orderItem.sales_order_id === selectedOrders.id
+      })
+      setInvoiceData(prev=>({...prev,invoiceItems:invoiceItems}))
+
     }catch(err){
       console.log(err)
     }
+    } else {
+      return console.log()
+    }
   }
   fetchingOrderItems()
-},[])
+},[selectedOrders])
 
 
 useEffect(()=>{
     // console.log(selectedClient)
     // console.log(invoiceData)
-    // console.log(selectedOrders)
-    // console.log(invoiceData.invoiceItems)
-},[])
+    console.log(invoiceData.invoiceItems)
+},[invoiceData.invoiceItems])
 
 
 
