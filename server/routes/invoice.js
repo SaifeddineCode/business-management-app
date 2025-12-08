@@ -11,11 +11,23 @@ router.post("/", async (req,res)=>{
 
         const {order_ID,date,total_ht,tva,total_ttc,statut,invoiceItems} = req.body
 
+
         if(!order_ID){
             res.status(500).json({
                 message :"There is no order selected"
             })
         }
+
+        const queryTocheckInvoice  = `SELECT 1 FROM invoice WHERE order_id = ?`
+
+        const [rows] = await db.execute(queryTocheckInvoice,[order_ID])
+
+        
+        if (rows.length > 0) {
+            return res.status(500).json({
+                message:"order id is already in invoice"
+            })
+        } 
 
         const invoiceQuery = `
             INSERT INTO invoice (order_id,total_ht,tva,total_ttc,statut) 

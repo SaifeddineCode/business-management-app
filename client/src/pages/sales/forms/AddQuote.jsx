@@ -25,7 +25,7 @@ function AddQuote({ onClose }) {
     quoteNumber: `DEV-${Date.now()}`,
     dateCreated: new Date().toISOString().split('T')[0],
     expiryDate: '',
-    status: '',
+    status: 'brouillon',
     
     // Products/Services - Dynamic items array
     items: [
@@ -46,6 +46,11 @@ function AddQuote({ onClose }) {
     // validityPeriod: '30 jours',
     // specialNotes: ''
   });
+
+
+  useEffect(()=>{
+    console.log(quoteData.status)
+  },[quoteData.status])
 
   // ===========================================================================
   // API DATA FETCHING SECTION

@@ -179,13 +179,20 @@ const handleClientSelect = async (client) => {
         body : JSON.stringify(invoiceData)
       })
 
-      if(!response.ok){
-         throw new Error("error while posting the invoice")
-      }else {
-        console.log("good , the invoice was added successefuly")
+      const data = await response.json(); // ⬅️ Important
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong");
       }
-    }catch(err){  
-      console.log(err)
+
+      // if(!response.ok){
+      //    throw new Error("error while posting the invoice")
+      // }else {
+      //   console.log("good , the invoice was added successefuly")
+      // }
+     console.log("Success:", data.message);
+    } catch (err) {
+      console.log("Error:", err.message);
     }
 
   };
