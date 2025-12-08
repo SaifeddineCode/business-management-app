@@ -9,7 +9,7 @@ router.post("/", async (req,res)=>{
 
     try{
 
-        const {order_ID,date,total_ht,tva,total_ttc,statut} = req.body
+        const {order_ID,date,total_ht,tva,total_ttc,statut,invoiceItems} = req.body
 
         if(!order_ID){
             res.status(500).json({
@@ -22,6 +22,24 @@ router.post("/", async (req,res)=>{
             VALUES (?,?,?,?,?)
         `
         const [resultInvoice] = await db.execute(invoiceQuery,[order_ID,total_ht,tva,total_ttc,statut])
+
+
+        const invoiceID = resultInvoice.insertId
+
+        console.log(invoiceID)
+
+        // const {product_id,quantity,unit_price,total} = invoiceItems
+
+        const invoiceItemQuery = `
+            INSERT INTO invoice_item (invoice_id,product_id,quantity,unit_price,total)
+            values (?,?,?,?,?)
+        `
+        
+        for (const invoiceItem of invoiceItems) {
+            const response = await db.execute(invoiceItemQuery,[invoiceID,parseFloat(invoiceItem.product_id),invoiceItem.quantity,invoiceItem.unit_price,invoiceItem.total])
+
+        }
+
         res.status(201).json({
             message:"the invoice was added successfuly"
         })
