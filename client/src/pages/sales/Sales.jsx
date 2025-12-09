@@ -190,10 +190,10 @@ useEffect(()=>{
           </Link>
 
           {/* Consulter les factures */}
-          <button className="bg-teal-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">
+          <Link to={"/invoiceList"} className="bg-teal-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-800 transition-colors">
             <FiFile size={18} />
             <span>Consulter les factures</span>
-          </button>
+          </Link>
           
         </div>
 

@@ -4,6 +4,23 @@ import db from "../../database/database.js"
 const router = express.Router();
 
 
+
+
+
+router.get("/",async(req,res)=>{
+    
+    const getInvoice = `
+    SELECT * from invoice
+    `  
+    const [result] = await db.execute(getInvoice)
+    res.status(200).json({
+        message:"the invoice list was fetched successuly",
+        invoices : result
+    }) 
+
+})
+
+
 router.post("/", async (req,res)=>{
 
 
