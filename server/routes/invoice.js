@@ -10,7 +10,12 @@ const router = express.Router();
 router.get("/",async(req,res)=>{
     
     const getInvoice = `
-    SELECT * from invoice
+    SELECT inv.*,c.name FROM invoice as inv
+    JOIN sales_orders as slo
+    ON inv.order_id = slo.id
+    JOIN customers as c
+    ON c.id = slo.client_id
+    ;
     `  
     const [result] = await db.execute(getInvoice)
     res.status(200).json({

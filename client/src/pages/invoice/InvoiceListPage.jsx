@@ -15,6 +15,7 @@ import {
 } from 'react-icons/fi';
 
 const InvoiceListPage = () => {
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('Tous');
   const [invoices,setInvoices] = useState([])
@@ -29,34 +30,17 @@ const InvoiceListPage = () => {
     avgPaymentTime: '14.5 jours'
   };
 
-  // Mock invoice data
-  const dumbInvoices = [
-    { id: 1, number: 'INV-2024-001', client: 'TechCorp Inc', amount: '€2,850', date: '15 Jan 2024', status: 'paid' },
-    { id: 2, number: 'INV-2024-002', client: 'Marketing Pro', amount: '€1,250', date: '18 Jan 2024', status: 'pending' },
-    { id: 3, number: 'INV-2024-003', client: 'Retail Solutions', amount: '€4,500', date: '20 Jan 2024', status: 'overdue' },
-    { id: 4, number: 'INV-2024-004', client: 'Digital Agency', amount: '€3,200', date: '22 Jan 2024', status: 'paid' },
-    { id: 5, number: 'INV-2024-005', client: 'Consulting Group', amount: '€5,750', date: '25 Jan 2024', status: 'pending' },
-  ];
-
   const statusFilters = ['Tous', 'Payées', 'Impayées', 'En Retard'];
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'paid': return <FiCheckCircle className="text-green-500" />;
-      case 'pending': return <FiClock className="text-yellow-500" />;
-      case 'overdue': return <FiAlertCircle className="text-red-500" />;
+      case 'payé': return <FiCheckCircle className="text-green-500" />;
+      case 'en attene': return <FiClock className="text-yellow-500" />;
+      case 'non payé': return <FiAlertCircle className="text-red-500" />;
       default: return null;
     }
   };
 
-  const getStatusText = (status) => {
-    switch (status) {
-      case 'paid': return 'Payée';
-      case 'pending': return 'Impayée';
-      case 'overdue': return 'En Retard';
-      default: return '';
-    }
-  };
 
 
 useEffect(()=>{
@@ -67,6 +51,18 @@ useEffect(()=>{
   }
   fetchInvoices()
 },[])
+
+const payedInvoices = invoices.filter((invoice)=>{
+  return invoice.status === "payé"
+})
+
+const inpayedInvoices = invoices.filter((invoice)=>{
+  return invoice.status === "non payé"
+})
+
+const pendingInvoices = invoices.filter((invoice)=>{
+  return invoice.status === "en attente"
+})
 
 
   return (
@@ -84,7 +80,7 @@ useEffect(()=>{
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500">Total Factures</p>
-              <p className="text-3xl font-bold text-gray-800 mt-2">{kpiData.totalInvoices}</p>
+              <p className="text-3xl font-bold text-gray-800 mt-2">{invoices.length}</p>
             </div>
             <div className="bg-blue-50 p-3 rounded-lg">
               <FiFileText className="text-blue-500 text-xl" />
@@ -97,7 +93,7 @@ useEffect(()=>{
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500">Factures Payées</p>
-              <p className="text-3xl font-bold text-gray-800 mt-2">{kpiData.paidInvoices}</p>
+              <p className="text-3xl font-bold text-gray-800 mt-2"> {payedInvoices.length} </p>
             </div>
             <div className="bg-green-50 p-3 rounded-lg">
               <FiCheckCircle className="text-green-500 text-xl" />
@@ -109,8 +105,8 @@ useEffect(()=>{
         <div className="bg-white rounded-xl shadow-md shadow-gray-200 p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Factures Impayées</p>
-              <p className="text-3xl font-bold text-gray-800 mt-2">{kpiData.unpaidInvoices}</p>
+              <p className="text-sm text-gray-500">Factures Non payées</p>
+              <p className="text-3xl font-bold text-gray-800 mt-2">{inpayedInvoices.length}</p>
             </div>
             <div className="bg-yellow-50 p-3 rounded-lg">
               <FiAlertCircle className="text-yellow-500 text-xl" />
@@ -122,8 +118,8 @@ useEffect(()=>{
         <div className="bg-white rounded-xl shadow-md shadow-gray-200 p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Factures En Retard</p>
-              <p className="text-3xl font-bold text-gray-800 mt-2">{kpiData.overdueInvoices}</p>
+              <p className="text-sm text-gray-500">Factures En Attente</p>
+              <p className="text-3xl font-bold text-gray-800 mt-2">{pendingInvoices.length}</p>
             </div>
             <div className="bg-red-50 p-3 rounded-lg">
               <FiClock className="text-red-500 text-xl" />
@@ -207,26 +203,27 @@ useEffect(()=>{
                     {invoice.id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {invoice.client}
+                    {invoice.name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">
-                    {invoice.amount}
+                    {`${invoice.total_ttc} DH`}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {invoice.date}
+                    {invoice.date.split('T')[0] }
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       {getStatusIcon(invoice.status)}
                       <span className={`text-sm font-medium px-3 py-1 rounded-full ${
-                        invoice.status === 'paid' 
+                        invoice.status === 'payé' 
                           ? 'bg-green-100 text-green-800'
-                          : invoice.status === 'pending'
+                          : invoice.status === 'en attente'
                           ? 'bg-yellow-100 text-yellow-800'
                           : 'bg-red-100 text-red-800'
                       }`}>
-                        {getStatusText(invoice.status)}
+                        {invoice.status}
                       </span>
+                      {/* {invoice.status} */}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
