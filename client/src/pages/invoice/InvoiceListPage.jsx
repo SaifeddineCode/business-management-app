@@ -30,7 +30,7 @@ const InvoiceListPage = () => {
     avgPaymentTime: '14.5 jours'
   };
 
-  const statusFilters = ['Tous', 'Payées', 'Impayées', 'En Retard'];
+  const statusFilters = ['Tous', 'payé', 'non payé', 'en attente'];
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -63,6 +63,18 @@ const inpayedInvoices = invoices.filter((invoice)=>{
 const pendingInvoices = invoices.filter((invoice)=>{
   return invoice.status === "en attente"
 })
+
+
+const filteredInvoices = invoices.filter((invoice)=>{
+    const searchByClientName = invoice.name.toLowerCase().includes(searchQuery.toLowerCase()) || invoice.name
+    const searchByStatus = invoice.status.toLowerCase().includes(statusFilter.toLowerCase()) || "Tous"
+    return searchByClientName && searchByStatus 
+})
+
+useEffect(()=>{
+  console.log(filteredInvoices)
+},[searchQuery,statusFilter])
+
 
 
   return (
@@ -186,7 +198,7 @@ const pendingInvoices = invoices.filter((invoice)=>{
                   Date
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Statut
+                  Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-xl">
                   Actions

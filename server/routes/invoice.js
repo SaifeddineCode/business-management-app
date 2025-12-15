@@ -15,6 +15,7 @@ router.get("/",async(req,res)=>{
     ON inv.order_id = slo.id
     JOIN customers as c
     ON c.id = slo.client_id
+    ORDER BY inv.date desc
     ;
     `  
     const [result] = await db.execute(getInvoice)
@@ -31,7 +32,7 @@ router.post("/", async (req,res)=>{
 
     try{
 
-        const {order_ID,date,total_ht,tva,total_ttc,statut,invoiceItems} = req.body
+        const {order_ID,date,total_ht,tva,total_ttc,status,invoiceItems} = req.body
 
 
         if(!order_ID){
@@ -52,10 +53,10 @@ router.post("/", async (req,res)=>{
         } 
 
         const invoiceQuery = `
-            INSERT INTO invoice (order_id,total_ht,tva,total_ttc,statut) 
+            INSERT INTO invoice (order_id,total_ht,tva,total_ttc,status) 
             VALUES (?,?,?,?,?)
         `
-        const [resultInvoice] = await db.execute(invoiceQuery,[order_ID,total_ht,tva,total_ttc,statut])
+        const [resultInvoice] = await db.execute(invoiceQuery,[order_ID,total_ht,tva,total_ttc,status])
 
 
         const invoiceID = resultInvoice.insertId

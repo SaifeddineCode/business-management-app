@@ -24,7 +24,7 @@ const Invoice = () => {
     total_ht:"",
     tva:"",
     total_ttc :"",
-    statut:"payee",
+    status:"",
     invoiceItems:[]
   })
 
@@ -133,7 +133,7 @@ const handleClientSelect = async (client) => {
           total_ht:"",
           tva:"",
           total_ttc :"",
-          statut:""
+          status:""
             }))
 
         return {}
@@ -497,14 +497,14 @@ useEffect(()=>{
                       </label>
                       <select
                         id="status"
-                        value={invoiceData.statut}
-                        onChange={(e)=>setInvoiceData((prev)=>({...prev,statut : e.target.value}))}
+                        value={invoiceData.status}
+                        onChange={(e)=>setInvoiceData((prev)=>({...prev,status : e.target.value}))}
                         className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                       >
                         <option value="">Choisir un statut</option>
-                        <option value="payee">payee</option>
-                        <option value="impayee">impayee</option>
-                        <option value="partiellement">partiellement</option>
+                        <option value="payé">payé</option>
+                        <option value="non payé">non payé</option>
+                        <option value="en attente">en attente</option>
                       </select>
                     </div>
                   {/* <div className="space-y-2">
