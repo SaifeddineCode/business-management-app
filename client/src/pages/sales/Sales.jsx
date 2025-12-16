@@ -16,6 +16,8 @@ import {
   FiFile 
 } from 'react-icons/fi';
 import { Link, Outlet } from 'react-router-dom';
+import { useQuery } from "@tanstack/react-query";
+
 
 const Sales = () => {
   // State for search and filters
@@ -23,15 +25,12 @@ const Sales = () => {
   const [statusFilter, setStatusFilter] = useState('all');
 
 
-
-
   const [turnOverCurrentMonth,setturnOverCurrentMonth] = useState([])
-  const [pendingQuotes,setPendingQuotes] = useState([])
+  // const [pendingQuotes,setPendingQuotes] = useState([])
   const [dailyOrders,setDailyOrders] = useState([])
   const [recentQuotes,setRecentQuotes] = useState([])
   const [dailySalesOrders,setDailySalesOrders] = useState([])
 
-  
 
 
   useEffect(() => {
@@ -80,42 +79,47 @@ const Sales = () => {
 }, []);
 
 
-useEffect(()=>{
-
-  const fetchingPendingQuotes = async() =>{
-    
-    try{
-      const result = await fetch("/api/quote")
-      const data = await result.json()
+// useEffect(()=>{
+//   const fetchingPendingQuotes = async() =>{
+//     try{
+//       const result = await fetch("/api/quote")
+//       const data = await result.json()
       
-      if(!data){
-        throw new Error("Error while fetching pending quotes")
-      }
-      setRecentQuotes(data)
-      const filtredQuotesPending = data.filter((quote)=>{
-        return quote?.status === "brouillon"
-      })
+//       if(!data){
+//         throw new Error("Error while fetching pending quotes")
+//       }
+//       setRecentQuotes(data)
+//       const filtredQuotesPending = data.filter((quote)=>{
+//         return quote?.status === "brouillon"
+//       })
 
-      setPendingQuotes(filtredQuotesPending)    
-    }catch(err){
-      console.log(err.message)
-    }
+//       setPendingQuotes(filtredQuotesPending)    
+//     }catch(err){
+//       console.log(err.message)
+//     }
+//   }
 
-  }
-
-  fetchingPendingQuotes()
-
-},[])
+//   fetchingPendingQuotes()
+// },[])
 
 
+const fetchQuotes = async() =>{
+  const res = await fetch("/api/quote")
+  if(!res.ok) throw new Error("Error while fetching quotes")
+  const quotes = await res.json()
+  return quotes
+}
+
+const {data  = [],isLoading,error} = useQuery({
+  queryKey:["quotes"],
+  queryFn:fetchQuotes
+})
+
+const pendingQuotes = data.filter((quote)=>{
+  return quote.status === "brouillon"
+})
 
 
-
-
-
-  useEffect(()=>{
-    console.log(recentQuotes.slice(0,4))
-  },[recentQuotes])
 
 
   
@@ -135,7 +139,7 @@ useEffect(()=>{
   };
 
   // Filter quotes based on search and status
-  const filteredQuotes = recentQuotes.filter(quote =>
+  const filteredQuotes = data.filter(quote =>
     quote.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
     (statusFilter === 'all' || quote.status === statusFilter)
   );
@@ -307,7 +311,8 @@ useEffect(()=>{
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredQuotes.slice(0,4).map((quote) => (
+              {/* {filteredQuotes.slice(0,4).map((quote) => ( */}
+              {  filteredQuotes.slice(0,4).map((quote) => (
                 <tr key={quote.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{ `#${quote.id}` }</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{quote.customer_name}</td>

@@ -72,9 +72,6 @@ const filteredInvoices = invoices.filter((invoice)=>{
     // return searchByClientName
 })
 
-useEffect(()=>{
-  console.log(filteredInvoices)
-},[searchQuery,statusFilter])
 
 
 
