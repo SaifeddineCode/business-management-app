@@ -66,9 +66,10 @@ const pendingInvoices = invoices.filter((invoice)=>{
 
 
 const filteredInvoices = invoices.filter((invoice)=>{
-    const searchByClientName = invoice.name.toLowerCase().includes(searchQuery.toLowerCase()) || invoice.name
-    const searchByStatus = invoice.status.toLowerCase().includes(statusFilter.toLowerCase()) || "Tous"
+    const searchByClientName = invoice.name.toLowerCase().includes(searchQuery.toLowerCase()) 
+    const searchByStatus = ( statusFilter === "Tous" || invoice.status === statusFilter )
     return searchByClientName && searchByStatus 
+    // return searchByClientName
 })
 
 useEffect(()=>{
@@ -206,7 +207,8 @@ useEffect(()=>{
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {invoices.map((invoice) => (
+              {/* {invoices.map((invoice) => ( */}
+              {filteredInvoices.map((invoice) => (
                 <tr 
                   key={invoice.id} 
                   className="hover:bg-gray-50 transition-colors duration-150"
