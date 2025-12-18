@@ -1,20 +1,11 @@
 import db from "../../database/database.js";
 import express from "express"
+import { getProducts } from "../controllers/productController.js";
 
 
 const router = express.Router()
 
-router.get('/', async(req,res)=>{
-    try {
-        // we did it like this [products] so we can get the first element 
-        //  which is products table 
-        const [products] = await db.execute('SELECT * from products')
-        res.send(products)
-    } catch (error) {
-        res.send(error.message)
-        console.log(error)
-    }
-})
+router.get('/', getProducts)
 
 
 export default router
