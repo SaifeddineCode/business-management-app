@@ -1,5 +1,5 @@
-import db from "../../database/database.js";
 
+import db from "../config/database.js";
 
 
 export const getClients= async (req, res) => {

@@ -1,5 +1,4 @@
 import express from 'express'
-import db from '../../database/database.js';
 import { getClients } from '../controllers/customersController.js';
 
 

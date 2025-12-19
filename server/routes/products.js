@@ -1,4 +1,4 @@
-import db from "../../database/database.js";
+
 import express from "express"
 import { getProducts } from "../controllers/productController.js";
 

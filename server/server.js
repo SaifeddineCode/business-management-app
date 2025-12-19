@@ -1,6 +1,4 @@
-
 import express from "express";
-import db from "../database/database.js";
 import customers from './routes/customers.js'
 import products from "./routes/products.js"
 import quote from "./routes/quote.js"

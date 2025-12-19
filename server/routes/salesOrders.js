@@ -1,6 +1,4 @@
-
 import express from "express"
-import db from "../../database/database.js"
 import { getSalesOrders, postSaleOrder } from "../controllers/salesOrderController.js"
 
 const router = express.Router()
