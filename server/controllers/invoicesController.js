@@ -1,22 +1,14 @@
 import db from "../config/database.js";
+import invoice from "../models/invoiceModel.js";
 
 
 
 export const getInvoices = async(req,res)=>{
-    
-    const getInvoice = `
-    SELECT inv.*,c.name FROM invoice as inv
-    JOIN sales_orders as slo
-    ON inv.order_id = slo.id
-    JOIN customers as c
-    ON c.id = slo.client_id
-    ORDER BY inv.date desc
-    ;
-    `  
-    const [result] = await db.execute(getInvoice)
+      
+    const invoices = await invoice.getAll()
     res.status(200).json({
         message:"the invoice list was fetched successuly",
-        invoices : result
+        invoices 
     }) 
 
 }

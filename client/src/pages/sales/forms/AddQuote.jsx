@@ -63,6 +63,7 @@ function AddQuote({ onClose }) {
     setClients(data);
   };
 
+
   const fetchProducts = async () => {
     // TODO: Add error handling for failed API calls
     const response = await fetch('/api/products');
