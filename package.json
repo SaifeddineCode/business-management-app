@@ -12,6 +12,8 @@
   "type": "commonjs",
   "dependencies": {
     "@tanstack/react-query": "^5.90.12",
+    "bcryptjs": "^3.0.3",
+    "jsonwebtoken": "^9.0.3",
     "react-router-dom": "^7.9.2"
   }
 }
