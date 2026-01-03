@@ -1,10 +1,9 @@
-
 import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Sales from "./pages/sales/Sales";
 import Purchases from "./pages/purchases/Purchases";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from "./pages/dashboard/Dashboard";
 import AddQuote from "./pages/sales/forms/AddQuote";
 import Quote from "./pages/quote/Quote";
@@ -12,19 +11,35 @@ import AddSalesOrder from "./pages/sales/forms/AddSalesOrder";
 import SalesOrdersList from "./pages/salesOrders/SalesOrders";
 import Invoice from "./pages/invoice/Invoice";
 import InvoiceListPage from "./pages/invoice/InvoiceListPage";
+import Login from "./pages/login/Login";
+import { useEffect, useState } from "react";
 
 function App() {
 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+   useEffect(() => {
+    // Check if token exists in localStorage
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token); // !! converts to boolean
+  }, []);
+
+
+  if (!isAuthenticated) {
+    return <Login setIsAuthenticated={setIsAuthenticated} />;
+  }
 
   return (
     <div className="flex flex-col">
       <div className="flex  bg-gray-100">
         <Sidebar />
         <div className="flex flex-col flex-1">
-          <Navbar />
+          <Navbar setIsAuthenticated={setIsAuthenticated} />
           <main className="flex-1 p-6">
             <Routes>
-              <Route path='' element={<Dashboard/>} />
+              {/* <Route path='/login' element={<Login />} />
+              <Route path='/' element={<Navigate to={'/login'} />} /> */}
+              <Route path='/dashboard' element={<Dashboard/>} />
               <Route path='/sales' element={<Sales/>} />
               <Route path='/add-quote' element={<AddQuote />} />
               <Route path="/quote" element={<Quote />} />
@@ -39,6 +54,7 @@ function App() {
       </div>
       <Footer />
     </div>
+   
   )
 }
 

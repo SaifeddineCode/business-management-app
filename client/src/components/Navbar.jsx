@@ -1,19 +1,3 @@
-// import React from "react";
-
-// export default function Navbar() {
-//   return (
-//     <header className="w-full bg-white shadow p-4 flex justify-between items-center">
-//       <h1 className="text-xl font-semibold">Admin Dashboard</h1>
-//       <div className="flex items-center space-x-4">
-//         <input type="text" placeholder="Search..." className="border rounded p-2" />
-//         <div>🔔</div>
-//         <div>👤 Profile</div>
-//       </div>
-//     </header>
-//   );
-// }
-
-
 import React, { useState } from 'react';
 import { 
   FiSearch, 
@@ -23,7 +7,7 @@ import {
   FiMenu 
 } from 'react-icons/fi';
 
-const Navbar = () => {
+const Navbar = ({setIsAuthenticated}) => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -39,6 +23,12 @@ const Navbar = () => {
     { id: 2, text: 'Payment received from ABC Corp', time: '1 hour ago', unread: true },
     { id: 3, text: 'Inventory low for Product #123', time: '2 hours ago', unread: false }
   ];
+
+  const signOut = () =>{
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    setIsAuthenticated(false)
+  }
 
   return (
     <nav className="bg-white border-b border-gray-200 px-6 py-4">
@@ -147,7 +137,9 @@ const Navbar = () => {
                   </a>
                 </div>
                 <div className="p-2 border-t border-gray-200">
-                  <button className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded">
+                  <button 
+                    onClick={()=>signOut()}
+                    className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded">
                     Sign out
                   </button>
                 </div>

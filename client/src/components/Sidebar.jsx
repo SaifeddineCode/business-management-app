@@ -147,7 +147,7 @@ const Sidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { id: 'dashboard', label: 'Tableau de bord', icon: FiHome, path: '/' },
+    { id: 'dashboard', label: 'Tableau de bord', icon: FiHome, path: '/dashboard' },
     { id: 'sales', label: 'Gestion des ventes', icon: FiTrendingUp, path: '/sales' },
     { id: 'purchases', label: 'Gestion des achats', icon: FiShoppingCart, path: '/purchases' },
     { id: 'products', label: 'Gestion des produits', icon: FiPackage, path: '/products' },
