@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { createUser, findUserByEmail } from "../models/userModel";
+import { createUser, findUserByEmail } from "../models/userModel.js";
 
 
 

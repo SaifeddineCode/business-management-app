@@ -6,16 +6,20 @@ import quote_item from "./routes/quote_item.js"
 import salesOrders from "./routes/salesOrders.js"
 import invoice from "./routes/invoice.js"
 import sales_orders_items from "./routes/sales_orders_items.js"
+import authRoutes from "./routes/authRoutes.js"
 
 
 const app = express();
 
 const PORT = process.env.PORT
 
+
+
+// app.use(cors());  
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
+app.use('/api/auth', authRoutes);
 app.use("/api/customers",customers)
 app.use("/api/products",products)
 app.use('/api/quote', quote);
