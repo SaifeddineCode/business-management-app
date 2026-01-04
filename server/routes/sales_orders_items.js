@@ -1,9 +1,10 @@
 import express from "express"
 import { getSalesOrderItems } from "../controllers/salesOrder_ItemsController.js";
+import { verifyToken } from "../middlewares/authMiddlware.js";
 
 const router = express.Router()
 
-router.get("/", getSalesOrderItems)
+router.get("/",verifyToken, getSalesOrderItems)
 
 
 
