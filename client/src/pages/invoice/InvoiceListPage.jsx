@@ -13,6 +13,7 @@ import {
   FiDownload,
   FiFilter
 } from 'react-icons/fi';
+import { fetchWithToken } from '../../utils/api';
 
 const InvoiceListPage = () => {
 
@@ -45,7 +46,7 @@ const InvoiceListPage = () => {
 
 useEffect(()=>{
   const fetchInvoices = async() =>{
-    const result = await fetch("/api/invoice")
+    const result = await fetchWithToken("/api/invoice")
     const data = await result.json()
     setInvoices(data.invoices)
   }

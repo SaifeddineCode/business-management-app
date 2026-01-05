@@ -10,6 +10,7 @@ import {
   FaClipboardList,
   FaArrowLeft
 } from 'react-icons/fa';
+import { fetchWithToken } from '../../utils/api';
 
 
 
@@ -88,7 +89,7 @@ const handleClientSelect = async (client) => {
   try {
     setSelectedClient(client);
 
-    const response = await fetch("/api/salesOrders");
+    const response = await fetchWithToken("/api/salesOrders");
     if (!response.ok) throw new Error("Failed to fetch sales orders");
 
     const result = await response.json();
@@ -171,7 +172,7 @@ const handleClientSelect = async (client) => {
 
     try{
 
-      const response = await fetch("/api/invoice",{
+      const response = await fetchWithToken("/api/invoice",{
         method :"POST",
         headers: {
           'Content-Type': 'application/json',
@@ -202,7 +203,7 @@ const handleClientSelect = async (client) => {
  useEffect(() => {
   const fetchClients = async () => {
     try {
-        await fetch("/api/customers")
+        await fetchWithToken("/api/customers")
        .then(result=>result.json())
        .then(data => setCustomers(data))
     } catch (err) {
@@ -218,7 +219,7 @@ useEffect(()=>{
   const fetchingOrderItems = async () =>{
     if(selectedOrders.id){
       try {
-      const response = await fetch("/api/sales_orders_items")
+      const response = await fetchWithToken("/api/sales_orders_items")
       const data = await response.json()
 
       // setInvoiceData(prev=>({...prev,invoiceItems:data?.data}))

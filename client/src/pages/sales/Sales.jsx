@@ -17,6 +17,7 @@ import {
 } from 'react-icons/fi';
 import { Link, Outlet } from 'react-router-dom';
 import { useQuery } from "@tanstack/react-query";
+import { fetchWithToken } from '../../utils/api';
 
 
 const Sales = () => {
@@ -28,7 +29,7 @@ const Sales = () => {
   const [turnOverCurrentMonth,setturnOverCurrentMonth] = useState([])
   // const [pendingQuotes,setPendingQuotes] = useState([])
   const [dailyOrders,setDailyOrders] = useState([])
-  const [recentQuotes,setRecentQuotes] = useState([])
+  // const [recentQuotes,setRecentQuotes] = useState([])
   const [dailySalesOrders,setDailySalesOrders] = useState([])
 
 
@@ -40,7 +41,7 @@ const Sales = () => {
       const currentYear = new Date().getFullYear();
       const currentDay = new Date().getDate()
 
-      const response = await fetch("/api/salesOrders");
+      const response = await fetchWithToken("/api/salesOrders");
       const data = await response.json();
 
       if (!data?.data) {
@@ -104,7 +105,8 @@ const Sales = () => {
 
 
 const fetchQuotes = async() =>{
-  const res = await fetch("/api/quote")
+  // const res = await fetch("/api/quote")
+  const res = await fetchWithToken("/api/quote")
   if(!res.ok) throw new Error("Error while fetching quotes")
   const quotes = await res.json()
   return quotes

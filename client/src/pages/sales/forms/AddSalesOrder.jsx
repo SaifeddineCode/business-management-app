@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FaUser, FaFileInvoice, FaShoppingCart, FaCalendarAlt, FaMoneyBillWave, FaTruck, FaPlus, FaTrash } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
+import { fetchWithToken } from '../../../utils/api';
 
 const AddSalesOrder = () => {
   
@@ -36,6 +37,9 @@ const AddSalesOrder = () => {
   const [products,setProducts] = useState([])
 
 
+  useEffect(()=>{
+    console.log(saleOrderData)
+  },[saleOrderData])
 
  
 
@@ -59,11 +63,11 @@ const AddSalesOrder = () => {
       // .then (data => setProducts(data))
 
       await Promise.all([
-        fetch("/api/quote")
+        fetchWithToken("/api/quote")
           .then(result => result.json())
           .then(data => setQuotes(data)),
         
-        fetch("/api/products")
+        fetchWithToken("/api/products")
           .then(result => result.json()) 
           .then(data => setProducts(data))
       ]);
@@ -90,7 +94,7 @@ useEffect( ()=>{
     try{
      
 
-      const response = await fetch("/api/quote_item")
+      const response = await fetchWithToken("/api/quote_item")
       
       if(!response.ok){
         console.log(response.message)
@@ -307,11 +311,11 @@ const addSaleOrder = async() =>{
       throw new Error("Please check the required fields");
     }
 
-    const response = await fetch("/api/salesOrders",{
+    const response = await fetchWithToken("/api/salesOrders",{
       method :"POST",
-      headers :{
-        "Content-Type" :"application/json"
-      },
+      // headers :{
+      //   "Content-Type" :"application/json"
+      // },
       body:JSON.stringify(saleOrderData)
     })
 
@@ -344,9 +348,9 @@ const handleCreatOrder = async () =>{
   }
 }
 
-useEffect(()=>{
-  console.log(selectedQuote)
-},[selectedQuote])
+// useEffect(()=>{
+//   console.log(selectedQuote)
+// },[selectedQuote])
 
 
 // useEffect(()=>{

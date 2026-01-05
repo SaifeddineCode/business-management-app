@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { FaSearch, FaFilter, FaEye, FaEdit, FaCopy, FaPaperPlane, FaFileInvoice, FaTrash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { fetchWithToken } from '../../utils/api';
 
 function QuotesList() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -11,7 +12,7 @@ function QuotesList() {
     const [quotes,setQuotes] = useState([])
 
     useEffect(()=>{
-        fetch("/api/quote")
+        fetchWithToken("/api/quote")
         .then(res => res.json()
         .then(result => setQuotes(result))
     )

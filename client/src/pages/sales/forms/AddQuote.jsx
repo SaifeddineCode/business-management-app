@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FaSave, FaPrint, FaPaperPlane, FaFileInvoice, FaPlus, FaTrash, FaArrowLeft } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { fetchWithToken } from '../../../utils/api';
 
 // =============================================================================
 // COMPONENT: AddQuote
@@ -58,7 +59,7 @@ function AddQuote({ onClose }) {
   // ===========================================================================
   const fetchClients = async () => {
     // TODO: Add error handling for failed API calls
-    const response = await fetch('/api/customers');
+    const response = await fetchWithToken('/api/customers');
     const data = await response.json();
     setClients(data);
   };
@@ -66,7 +67,7 @@ function AddQuote({ onClose }) {
 
   const fetchProducts = async () => {
     // TODO: Add error handling for failed API calls
-    const response = await fetch('/api/products');
+    const response = await fetchWithToken('/api/products');
     const data = await response.json();
     setProducts(data);
   };
@@ -306,7 +307,8 @@ const updateItemLine =(id,field,value)=>{
       };
 
       // API Call - TODO: Add timeout and retry logic
-        const response = await fetch('/api/quote', {
+        // const response = await fetch('/api/quote', {
+        const response = await fetchWithToken('/api/quote', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

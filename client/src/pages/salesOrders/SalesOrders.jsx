@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaEye, FaEdit, FaFileInvoice, FaBuilding, FaUserTie, FaMoneyCheck, FaReceipt, FaEuroSign, FaSearch, FaFilter } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
+import { fetchWithToken } from '../../utils/api';
 
 
 const SalesOrdersList = () => {
@@ -14,7 +15,7 @@ const SalesOrdersList = () => {
 useEffect(()=>{
     const fetchSalesOrder = async () =>{
         try{
-            const response = await fetch("api/salesOrders")
+            const response = await fetchWithToken("api/salesOrders")
             .then(result => result.json())
             setSalesOrders(response.data)
 
