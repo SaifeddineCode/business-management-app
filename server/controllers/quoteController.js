@@ -1,24 +1,39 @@
 import db from "../config/database.js";
+import { getQuoteWithPagination } from "../models/quoteModel.js";
+
+// import { getQuotesWithPagination } from '../models/quoteModel.js';
+
 
 export const getQuotes = async (req,res)=>{
   try {
-  const query = `
-    SELECT 
-      q.*,                           
-      c.id as customer_id,           
-      c.name as customer_name,
-      c.email as customer_email,
-      c.telephone as customer_telephone,
-      c.adresse as customer_adresse
-    FROM quote q
-    LEFT JOIN customers c ON q.client_id = c.id
-    ORDER BY id DESC
-  `;
-  const [quotes] = await db.execute(query)
-  res.status(200).json(quotes)
+  
+  // Get page and limit from query parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    
 
-  }catch(err){  
-    res.status(500)
+    const result = await getQuoteWithPagination()
+
+    res.status(200).json({
+      success :"true",
+      data : result.quotes,
+      pagination: {
+        currentPage: result.page,
+        totalPages: result.totalPages,
+        totalQuotes: result.total,
+        limit: result.limit
+      }
+    })
+
+
+  // res.status(200).json(quotes)
+
+  }catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch quotes"
+    });
   }
 }
 
