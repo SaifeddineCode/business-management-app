@@ -5,6 +5,7 @@ import { getQuotes,postQuote } from '../controllers/quoteController.js';
 import { verifyToken } from '../middlewares/authMiddlware.js';
 
 
+// router.get("/",verifyToken, getQuotes)
 router.get("/",verifyToken, getQuotes)
 
 

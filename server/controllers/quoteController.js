@@ -1,5 +1,5 @@
 import db from "../config/database.js";
-import { getQuoteWithPagination } from "../models/quoteModel.js";
+import { getQuotesWithPagination } from "../models/quoteModel.js";
 
 // import { getQuotesWithPagination } from '../models/quoteModel.js';
 
@@ -11,8 +11,11 @@ export const getQuotes = async (req,res)=>{
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     
+    
 
-    const result = await getQuoteWithPagination()
+    const result = await getQuotesWithPagination(page,limit)
+
+    console.log(result.quotes)
 
     res.status(200).json({
       success :"true",
@@ -25,6 +28,7 @@ export const getQuotes = async (req,res)=>{
       }
     })
 
+    
 
   // res.status(200).json(quotes)
 

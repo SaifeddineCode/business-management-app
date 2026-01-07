@@ -109,7 +109,8 @@ const fetchQuotes = async() =>{
   const res = await fetchWithToken("/api/quote")
   if(!res.ok) throw new Error("Error while fetching quotes")
   const quotes = await res.json()
-  return quotes
+  
+  return quotes.data
 }
 
 const {data  = [],isLoading,error} = useQuery({
@@ -122,6 +123,9 @@ const pendingQuotes = data.filter((quote)=>{
 })
 
 
+useEffect(()=>{
+  console.log(data)
+},[data])
 
 
   
