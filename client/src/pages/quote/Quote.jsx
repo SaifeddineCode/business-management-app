@@ -3,21 +3,55 @@ import { useState } from 'react';
 import { FaSearch, FaFilter, FaEye, FaEdit, FaCopy, FaPaperPlane, FaFileInvoice, FaTrash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { fetchWithToken } from '../../utils/api';
+import Pagination from '../../components/Pagination';
 
 function QuotesList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   
   
-    const [quotes,setQuotes] = useState([])
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalQuotes, setTotalQuotes] = useState(0);
+  const [limit] = useState(10); // Items per page
 
-    useEffect(()=>{
-        fetchWithToken("/api/quote")
-        .then(res => res.json()
-        .then(result => setQuotes(result))
-    )
-    },[])
+  const [quotes,setQuotes] = useState([])
 
+const fetchQuotes = async (page) =>{
+
+try {
+
+   const response =  await fetchWithToken(`/api/quote?page=${page}$limit=${limit}`)
+
+   if(!response.ok) {
+    throw new Error("Failed while fetching quotes")
+   }
+
+   const data = await response.json()
+
+    setQuotes(data.data);
+    setCurrentPage(data.pagination.currentPage);
+    setTotalPages(data.pagination.totalPages);
+    setTotalQuotes(data.pagination.totalQuotes);
+ 
+}catch(err){
+  console.log(err)
+}
+}
+
+
+
+
+  useEffect(()=>{
+    fetchQuotes(currentPage)
+  },[currentPage])
+
+ const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
 
     // console.log(quotes)
@@ -89,7 +123,7 @@ function QuotesList() {
       {/* Stats Summary */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         <div className="bg-white rounded-lg shadow-sm p-4">
-          <div className="text-2xl font-bold text-gray-800">{filteredQuotes.length}</div>
+          <div className="text-2xl font-bold text-gray-800">{totalQuotes}</div>
           <div className="text-gray-600">Total Devis</div>
         </div>
         <div className="bg-white rounded-lg shadow-sm p-4">
@@ -159,6 +193,17 @@ function QuotesList() {
             </tbody>
           </table>
         </div>
+      </div>
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
+
+      {/* Showing info */}
+      <div className="text-center text-sm text-gray-600 mt-4">
+        Showing {(currentPage - 1) * limit + 1} to {Math.min(currentPage * limit, totalQuotes)} of {totalQuotes} quotes
       </div>
 
       {/* Empty State */}
