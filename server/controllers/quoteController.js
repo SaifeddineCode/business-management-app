@@ -1,9 +1,32 @@
 import db from "../config/database.js";
-import { getQuotesWithPagination } from "../models/quoteModel.js";
+import { findQuoteById, getQuotesWithPagination } from "../models/quoteModel.js";
 
 // import { getQuotesWithPagination } from '../models/quoteModel.js';
 
 
+
+// this controller to get specific quote by id 
+export const getQuoteById = async (req,res) =>{
+  try{
+    const quote = await findQuoteById(req.params.id)
+
+    if (!quote){
+      return res.status(404).json({message:'Quote not found'})
+    } 
+
+    res.status(200).json(quote)
+
+  }catch(err){
+    res.status(500).json({message:"internal server error"})
+  }
+}
+
+
+
+
+
+
+// this controller to get all quotes bayna aslan haha
 export const getQuotes = async (req,res)=>{
   try {
   

@@ -331,9 +331,9 @@ useEffect(()=>{
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
-                      <button className="text-blue-600 hover:text-blue-800 transition-colors">
+                      <Link to={`/quote/${quote.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
                         <FiEye size={16} />
-                      </button>
+                      </Link>
                       <button className="text-gray-600 hover:text-gray-800 transition-colors">
                         <FiEdit size={16} />
                       </button>
