@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { fetchWithToken } from '../../utils/api';
 
 const QuoteDetails = () => {
   const { id } = useParams();
@@ -7,7 +8,7 @@ const QuoteDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/quote/${id}`)
+    fetchWithToken(`/api/quote/${id}`)
       .then(res => res.json())
       .then(data => {
         setQuote(data);

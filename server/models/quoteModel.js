@@ -16,6 +16,17 @@ export const findQuoteById = async(id) =>{
 
 }
 
+
+
+export const deleteQuoteById = async (id) =>{
+  const [result] = await db.execute(`
+      DELETE FROM quotes 
+      WHERE id = ?
+    `,[id]);
+
+    return result.affectedRows;
+}
+
 // Get all quotes with pagination
 export const getQuotesWithPagination = async (page = 1, limit = 10) => {
   const offset = (page - 1) * limit;

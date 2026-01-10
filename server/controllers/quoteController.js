@@ -1,5 +1,5 @@
 import db from "../config/database.js";
-import { findQuoteById, getQuotesWithPagination } from "../models/quoteModel.js";
+import { deleteQuoteById, findQuoteById, getQuotesWithPagination } from "../models/quoteModel.js";
 
 // import { getQuotesWithPagination } from '../models/quoteModel.js';
 
@@ -21,6 +21,25 @@ export const getQuoteById = async (req,res) =>{
   }
 }
 
+
+export const deleteSingleQuote = async (req,res) =>{
+  try{
+
+    const {id} = req.params.id
+    const deleted = await deleteQuoteById(id)
+
+    if (!deleted) {
+    return res.status(404).json({ message: 'Quote not found' });
+  }
+
+  res.status(200).json({ message: 'Quote deleted successfully' });
+
+
+  }
+  catch(err){
+    console.log(err)
+  }
+}
 
 
 
