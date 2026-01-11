@@ -123,10 +123,27 @@ const pendingQuotes = data.filter((quote)=>{
 })
 
 
-useEffect(()=>{
-  console.log(data)
-},[data])
 
+
+const handleDeleteSingleQuote = async(id) =>{
+
+
+ try{
+
+  const result =  await fetch(`/api/quote/${id}`, {
+    method: 'DELETE'
+  });
+
+   if (!result.ok) {
+      const errorData = await result.json(); // or .text()
+      throw new Error(errorData.message || 'Failed to delete quote');
+    }
+
+ }catch(err){
+  console.log(err)
+ }
+
+}
 
   
 
@@ -334,10 +351,13 @@ useEffect(()=>{
                       <Link to={`/quote/${quote.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
                         <FiEye size={16} />
                       </Link>
-                      <button className="text-gray-600 hover:text-gray-800 transition-colors">
+                      <button
+                      className="text-gray-600 hover:text-gray-800 transition-colors">
                         <FiEdit size={16} />
                       </button>
-                      <button className="text-red-600 hover:text-red-800 transition-colors">
+                      <button
+                      onClick={()=>handleDeleteSingleQuote(quote.id)}
+                      className="text-red-600 hover:text-red-800 transition-colors">
                         <FiTrash2 size={16} />
                       </button>
                     </div>

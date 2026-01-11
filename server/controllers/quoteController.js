@@ -25,8 +25,10 @@ export const getQuoteById = async (req,res) =>{
 export const deleteSingleQuote = async (req,res) =>{
   try{
 
-    const {id} = req.params.id
+    const {id} = req.params
     const deleted = await deleteQuoteById(id)
+
+    console.log(id)
 
     if (!deleted) {
     return res.status(404).json({ message: 'Quote not found' });
@@ -57,7 +59,6 @@ export const getQuotes = async (req,res)=>{
 
     const result = await getQuotesWithPagination(page,limit)
 
-    console.log(result.quotes)
 
     res.status(200).json({
       success :"true",

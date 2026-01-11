@@ -19,8 +19,21 @@ export const findQuoteById = async(id) =>{
 
 
 export const deleteQuoteById = async (id) =>{
+
+
+  await db.execute(
+    'DELETE from sales_orders WHERE quote_id = ?',
+    [id]
+  );
+
+   await db.execute(
+    'DELETE FROM quote_item WHERE quote_ID = ?',
+    [id]
+  );
+
+
   const [result] = await db.execute(`
-      DELETE FROM quotes 
+      DELETE FROM quote
       WHERE id = ?
     `,[id]);
 

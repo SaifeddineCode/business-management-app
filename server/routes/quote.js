@@ -14,7 +14,7 @@ router.get("/",verifyToken, getQuotes)
 router.get('/:id',getQuoteById)
 
 // delete single route
-router.delete('/quote/:id', deleteSingleQuote);
+router.delete('/:id', deleteSingleQuote);
 
 
 router.post('/',verifyToken, postQuote);
