@@ -373,9 +373,9 @@ const handleDeleteSingleQuote = async(id) =>{
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
           <h2 className="text-lg font-semibold text-gray-800">Commandes Récentes</h2>
-          <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+          <Link to={"/sales-order-list"} className="text-sm text-blue-600 hover:text-blue-800 font-medium">
             Voir tout
-          </button>
+          </Link>
         </div>
         <div className="p-6">
           <div className="space-y-4">
