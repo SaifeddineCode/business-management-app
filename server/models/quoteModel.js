@@ -40,15 +40,16 @@ export const getQuotesWithPagination = async (page = 1, limit = 10) => {
   const query = `
     SELECT 
       q.*,                           
-      c.id as customer_id,           
-      c.name as customer_name,
-      c.email as customer_email,
-      c.telephone as customer_telephone,
-      c.adresse as customer_adresse
+      c.id AS customer_id,           
+      c.name AS customer_name,
+      c.email AS customer_email,
+      c.telephone AS customer_telephone,
+      c.adresse AS customer_adresse
     FROM quote q
     LEFT JOIN customers c ON q.client_id = c.id
-    ORDER BY id DESC
-    LIMIT ? OFFSET ?
+    WHERE q.deleted_at IS NULL
+    ORDER BY q.id DESC
+    LIMIT ? OFFSET ?;
   `;
 
 
