@@ -168,6 +168,36 @@ const handleDeleteSingleQuote = async(id) =>{
   );
 
 
+  const updateQuote = async(id,columnUpdated,valueUpdated) =>{
+
+    try{
+      const data = {columnUpdated,valueUpdated}
+
+    const result = await fetch(`/api/quote/${id}`,{
+      method : "PATCH",
+      headers: {
+        "Content-Type": "application/json" 
+      },
+      body: JSON.stringify(data) 
+        }
+    )
+
+    if(!result.ok){
+      return console.log("something went wrong")
+    }
+
+    return result.json()
+    }catch(err){
+      console.log(err)
+    }
+
+  }
+
+
+
+
+
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -352,6 +382,7 @@ const handleDeleteSingleQuote = async(id) =>{
                         <FiEye size={16} />
                       </Link>
                       <button
+                      onClick={()=>updateQuote(quote.id)}
                       className="text-gray-600 hover:text-gray-800 transition-colors">
                         <FiEdit size={16} />
                       </button>

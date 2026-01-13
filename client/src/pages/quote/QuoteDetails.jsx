@@ -26,7 +26,7 @@ const QuoteDetails = () => {
       <p><strong>Client :</strong> {quote.customer_name}</p>
       <p><strong>Date :</strong> {quote.date}</p>
       <p><strong>Status :</strong> {quote.status}</p>
-      <p><strong>Total :</strong> {quote.total} DH</p>
+      <p><strong>Total :</strong> {quote.total_ttc} DH</p>
     </div>
   );
 };

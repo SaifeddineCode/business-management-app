@@ -29,8 +29,25 @@ export const deleteQuoteById = async (id) =>{
   'UPDATE quote SET deleted_at = NOW() WHERE id = ?',
   [id]
 );
-    return result.affectedRows;
+    return result.affectedRows
 }
+
+
+// update single quote 
+
+export const updateSingleQuote = async (id,columnUpdated,valueUpdated) =>{
+  const queryUpdate = ` 
+    UPDATE quote 
+    set ${columnUpdated} = ?
+    where id = ? 
+  `
+
+  const [result] = await db.execute(queryUpdate,[valueUpdated,id])
+
+  return result.affectedRows
+}
+
+
 
 // Get all quotes with pagination
 export const getQuotesWithPagination = async (page = 1, limit = 10) => {

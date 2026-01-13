@@ -1,5 +1,5 @@
 import db from "../config/database.js";
-import { deleteQuoteById, findQuoteById, getQuotesWithPagination } from "../models/quoteModel.js";
+import { deleteQuoteById, findQuoteById, getQuotesWithPagination, updateSingleQuote } from "../models/quoteModel.js";
 
 // import { getQuotesWithPagination } from '../models/quoteModel.js';
 
@@ -42,6 +42,46 @@ export const deleteSingleQuote = async (req,res) =>{
     console.log(err)
   }
 }
+
+
+
+
+// updating specefic quote : 
+
+export const updatingQuote = async(req,res) =>{
+  const {id} = req.params
+  const { columnUpdated, valueUpdated } = req.body
+
+
+  if(!id){
+    throw new Error("quote id not found")
+  }
+  if(!columnUpdated){
+    throw new Error("column to update not found")
+  }
+  if(!valueUpdated){
+    throw new Error("no value assigned to this column update")
+  }
+
+  try{
+
+    
+
+    const response = await updateSingleQuote(id,columnUpdated,valueUpdated)
+    if(!response.affectedRows){
+      throw new Error("somethig went wrong updating this quote")
+    }
+
+    return res.status(200).json({
+      message : "the Quote was updated successfuly"
+    })
+
+  }catch(err){
+    return res.status(500).json({message:err.message})
+  }
+}
+
+
 
 
 

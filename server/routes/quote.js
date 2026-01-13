@@ -1,7 +1,7 @@
 import express from 'express'
 const router = express.Router();
 
-import { deleteSingleQuote, getQuoteById, getQuotes,postQuote } from '../controllers/quoteController.js';
+import { deleteSingleQuote, getQuoteById, getQuotes,postQuote, updatingQuote } from '../controllers/quoteController.js';
 import { verifyToken } from '../middlewares/authMiddlware.js';
 
 
@@ -13,8 +13,11 @@ router.get("/",verifyToken, getQuotes)
 // get single quote
 router.get('/:id',getQuoteById)
 
-// delete single route
+// delete single quote
 router.delete('/:id', deleteSingleQuote);
+
+// update single quote
+router.patch('/:id', updatingQuote);
 
 
 router.post('/',verifyToken, postQuote);
