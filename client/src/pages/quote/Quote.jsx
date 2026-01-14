@@ -41,8 +41,6 @@ try {
 }
 
 
-
-
   useEffect(()=>{
     fetchQuotes(currentPage)
   },[currentPage])

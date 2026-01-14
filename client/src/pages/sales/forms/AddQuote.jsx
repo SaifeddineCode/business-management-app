@@ -2,12 +2,39 @@ import { useState, useEffect } from 'react';
 import { FaSave, FaPrint, FaPaperPlane, FaFileInvoice, FaPlus, FaTrash, FaArrowLeft } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { fetchWithToken } from '../../../utils/api';
+import { useParams } from 'react-router-dom';
 
 // =============================================================================
 // COMPONENT: AddQuote
 // PURPOSE: Form for creating new quotes with client selection, product items, and terms
 // =============================================================================
 function AddQuote({ onClose }) {
+
+  // SAIF ===========================================================================
+  
+  // let's check if there is already an ID for editing a quote :
+
+  const {id} = useParams()
+
+ const [quoteEdit,setQuoteEdit] = useState({})
+
+  const fetchQuoteToEdit = async () =>{
+    const result = await fetch(`/api/quote/${id}`)
+    const data = await result.json()
+    console.log(data)
+    return setQuoteEdit(data)
+  }
+  
+  useEffect(()=>{
+    if(id){
+      fetchQuoteToEdit()
+    }
+  },[id])
+
+  // SAIF ===========================================================================
+
+
+
   // ===========================================================================
   // STATE MANAGEMENT SECTION
   // ===========================================================================
@@ -49,9 +76,6 @@ function AddQuote({ onClose }) {
   });
 
 
-  useEffect(()=>{
-    console.log(quoteData.status)
-  },[quoteData.status])
 
   // ===========================================================================
   // API DATA FETCHING SECTION
@@ -362,13 +386,13 @@ const updateItemLine =(id,field,value)=>{
               <div className="mt-4 space-y-2">
                 <div className="flex">
                   <span className="w-32 font-medium text-gray-600">Numéro:</span>
-                  <span className="text-blue-600 font-semibold">{quoteData.quoteNumber}</span>
+                  <span className="text-blue-600 font-semibold">{quoteEdit ? quoteEdit.quoteNumber  : quoteData.quoteNumber}</span>
                 </div>
                 <div className="flex">
                   <span className="w-32 font-medium text-gray-600">Date création:</span>
                   <input
                     type="date"
-                    value={quoteData.dateCreated}
+                    value={ quoteEdit ? quoteEdit.dateCreated : quoteData.dateCreated }
                     onChange={(e) => setQuoteData(prev => ({ ...prev, dateCreated: e.target.value }))}
                     className="border rounded px-2 py-1"
                   />
@@ -385,7 +409,7 @@ const updateItemLine =(id,field,value)=>{
                 <div className="flex">
                   <span className="w-32 font-medium text-gray-600">Statut:</span>
                   <select
-                    value={quoteData.status}
+                    value={quoteEdit ? quoteEdit.status : quoteData.status}
                     onChange={(e) => setQuoteData(prev => ({ ...prev, status: e.target.value }))}
                     className="border rounded px-2 py-1"
                   >

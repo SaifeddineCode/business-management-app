@@ -168,32 +168,32 @@ const handleDeleteSingleQuote = async(id) =>{
   );
 
 
-  const updateQuote = async(id,columnUpdated,valueUpdated) =>{
+  const updateQuote = async(id,columnUpdated = "",valueUpdated = "") =>{
 
     try{
       const data = {columnUpdated,valueUpdated}
 
-    const result = await fetch(`/api/quote/${id}`,{
-      method : "PATCH",
-      headers: {
-        "Content-Type": "application/json" 
-      },
-      body: JSON.stringify(data) 
-        }
-    )
+      const result = await fetch(`/api/quote/${id}/edit`,{
+        method : "PATCH",
+        headers: {
+          "Content-Type": "application/json" 
+        },
+        body: JSON.stringify(data) 
+          }
+      )
 
     if(!result.ok){
-      return console.log("something went wrong")
+      return console.log("client side message error  :",result.status,result.statusText)
     }
 
     return result.json()
+
     }catch(err){
+
       console.log(err)
+
     }
-
   }
-
-
 
 
 
@@ -381,11 +381,11 @@ const handleDeleteSingleQuote = async(id) =>{
                       <Link to={`/quote/${quote.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
                         <FiEye size={16} />
                       </Link>
-                      <button
-                      onClick={()=>updateQuote(quote.id)}
-                      className="text-gray-600 hover:text-gray-800 transition-colors">
-                        <FiEdit size={16} />
-                      </button>
+                      <Link to={`/quote/${quote.id}/edit`}
+                        // onClick={()=>updateQuote(quote.id)}
+                        className="text-gray-600 hover:text-gray-800 transition-colors">
+                          <FiEdit size={16} />
+                      </Link>
                       <button
                       onClick={()=>handleDeleteSingleQuote(quote.id)}
                       className="text-red-600 hover:text-red-800 transition-colors">

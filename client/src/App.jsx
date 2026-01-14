@@ -45,6 +45,8 @@ function App() {
               <Route path='/add-quote' element={<AddQuote />} />
               <Route path="/quote" element={<Quote />} />
               <Route path="/quote/:id" element={<QuoteDetails />} />
+              <Route path="/quote/:id/edit" element={<AddQuote />} />
+              {/* <Route path="/quote/:id" element={<AddQuote />} /> */}
               <Route path='/add-sales-order' element={ <AddSalesOrder /> } />
               <Route path='/sales-order-list' element={ <SalesOrdersList /> } />
               <Route path='/invoice' element={ <Invoice /> } />

@@ -22,7 +22,6 @@ const QuoteDetails = () => {
   return (
     <div>
       <h2>Devis #{quote.id}</h2>
-
       <p><strong>Client :</strong> {quote.customer_name}</p>
       <p><strong>Date :</strong> {quote.date}</p>
       <p><strong>Status :</strong> {quote.status}</p>

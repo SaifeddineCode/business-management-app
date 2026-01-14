@@ -50,7 +50,7 @@ export const deleteSingleQuote = async (req,res) =>{
 
 export const updatingQuote = async(req,res) =>{
   const {id} = req.params
-  const { columnUpdated, valueUpdated } = req.body
+  const { columnUpdated , valueUpdated } = req.body
 
 
   if(!id){
@@ -65,11 +65,9 @@ export const updatingQuote = async(req,res) =>{
 
   try{
 
-    
-
     const response = await updateSingleQuote(id,columnUpdated,valueUpdated)
     if(!response.affectedRows){
-      throw new Error("somethig went wrong updating this quote")
+      throw new Error(response.status)
     }
 
     return res.status(200).json({
