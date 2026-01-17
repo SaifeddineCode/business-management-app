@@ -661,6 +661,7 @@ function AddQuote({ onClose }) {
     try {
       const result = await fetch(`/api/quote/${id}`);
       const data = await result.json();
+      console.log(data)
       setQuoteData(data); // Set the entire fetched data
     } catch (error) {
       console.error('Error fetching quote:', error);
@@ -741,6 +742,7 @@ function AddQuote({ onClose }) {
     }));
   };
 
+
   // CALCULATIONS
   const subtotal = quoteData.items.reduce((sum, item) => sum + item.total, 0);
   const taxAmount = quoteData.items.reduce((sum, item) => sum + (item.total * (item.taxRate / 100)), 0);
@@ -812,7 +814,7 @@ function AddQuote({ onClose }) {
         totalAmount
       };
 
-      const response = await fetchWithToken(`/api/quote/${id}`, {
+      const response = await fetchWithToken(`/api/quote/${id}/edit`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(quoteToSave)

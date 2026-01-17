@@ -17,7 +17,7 @@ router.get('/:id',getQuoteById)
 router.delete('/:id', deleteSingleQuote);
 
 // update single quote
-router.patch('/:id/edit', updatingQuote);
+router.put('/:id/edit', updatingQuote);
 
 
 router.post('/',verifyToken, postQuote);

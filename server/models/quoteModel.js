@@ -4,7 +4,9 @@ import db from "../config/database.js";
 
 export const findQuoteById = async(id) =>{
 
-  const [rows] = await db.execute(`
+
+  // Fetch the main single quote from quote table
+  const [quoteResult] = await db.execute(`
      SELECT q.*,
      c.name as customer_name
      FROM quote q        
@@ -12,7 +14,25 @@ export const findQuoteById = async(id) =>{
     WHERE q.id = ?
     `,[id])
 
-    return rows[0]
+  if(!quoteResult || quoteResult.length === 0 ){
+    return null
+  }
+
+  const quote = quoteResult[0]
+
+  // now let's Fetch its item from quote_item table
+
+
+  const [itemsResult] = await db.query(
+      'SELECT * FROM quote_item WHERE quote_ID = ?',
+      [id]
+    );
+
+ // in on fetch we get quote and its item
+    return {
+      ...quote,
+      items: itemsResult || []
+    };
 
 }
 
