@@ -24,7 +24,15 @@ export const findQuoteById = async(id) =>{
 
 
   const [itemsResult] = await db.query(
-      'SELECT * FROM quote_item WHERE quote_ID = ?',
+      // 'SELECT * FROM quote_item WHERE quote_ID = ?',
+      `
+      select qt.*,
+      p.product_name
+      from quote_item as qt
+      JOIN products as p
+      ON qt.product_ID = p.id
+      WHERE qt.quote_id = ?
+      `,
       [id]
     );
 

@@ -878,7 +878,7 @@ function AddQuote({ onClose }) {
                   <span className="w-32 font-medium text-gray-600">Date création:</span>
                   <input
                     type="date"
-                    value={quoteData.dateCreated || ''}
+                    value={quoteData.date?.split('T')[0] }
                     onChange={(e) => setQuoteData(prev => ({ ...prev, dateCreated: e.target.value }))}
                     className="border rounded px-2 py-1"
                   />
@@ -887,7 +887,7 @@ function AddQuote({ onClose }) {
                   <span className="w-32 font-medium text-gray-600">Date expiration:</span>
                   <input
                     type="date"
-                    value={quoteData.expiryDate || ''}
+                    value={quoteData.expiryDate?.split('T')[0] || ''}
                     onChange={(e) => setQuoteData(prev => ({ ...prev, expiryDate: e.target.value }))}
                     className="border rounded px-2 py-1"
                   />
@@ -927,7 +927,7 @@ function AddQuote({ onClose }) {
                 onChange={(e) => setQuoteData(prev => ({ ...prev, clientID: e.target.value }))}
                 className="w-full border rounded px-3 py-2"
               >
-                <option value="">Sélectionner un client</option>
+                <option value="">{quoteData.customer_name || 'Sélectionner un client'}</option>
                 {clients.map(client => (
                   <option key={client.id} value={client.id}>
                     {client.name}
@@ -972,7 +972,8 @@ function AddQuote({ onClose }) {
                         onChange={(e) => handleProductChange(item.id, e.target.value)}
                         className="w-full border rounded px-2 py-1"
                       >
-                        <option value="">Sélectionner un produit</option>
+                        <option value="">{ item.product_name || "Sélectionner un produit" } </option>
+                        {/* <option value="">{ "Sélectionner un produit" } </option> */}
                         {products.map(product => (
                           <option key={product.id} value={product.id}>
                             {product.product_name} - {product.product_price}€
