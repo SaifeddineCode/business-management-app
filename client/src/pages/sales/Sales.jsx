@@ -370,7 +370,7 @@ const handleDeleteSingleQuote = async(id) =>{
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{ `#${quote.id}` }</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{quote.customer_name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{quote.total_ttc} €</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{quote.date.split('T')[0]}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{quote.dateCreated.split('T')[0]}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(quote.status)}`}>
                       {quote.status}

@@ -641,7 +641,7 @@ function AddQuote({ onClose }) {
         productId: '',
         description: '',
         quantity: 1,
-        unitPrice: 0,
+        unit_price: 0,
         taxRate: 20,
         total: 0
       }
@@ -657,11 +657,12 @@ function AddQuote({ onClose }) {
     fetchProducts();
   }, [id]);
 
+
   const fetchQuoteToEdit = async () => {
     try {
       const result = await fetch(`/api/quote/${id}`);
       const data = await result.json();
-      console.log(data)
+      // console.log(data)
       setQuoteData(data); // Set the entire fetched data
     } catch (error) {
       console.error('Error fetching quote:', error);
@@ -687,7 +688,7 @@ function AddQuote({ onClose }) {
     if (selectedProduct) {
       updateItemLine(itemId, 'productId', productId);
       updateItemLine(itemId, 'description', selectedProduct.product_name);
-      updateItemLine(itemId, 'unitPrice', selectedProduct.product_price);
+      updateItemLine(itemId, 'unit_price', selectedProduct.product_price);
     }
   };
 
@@ -700,9 +701,9 @@ function AddQuote({ onClose }) {
         {
           id: Math.max(...prev.items.map(i => i.id), 0) + 1,
           productId: '',
-          description: '',
+          product_name: '',
           quantity: 1,
-          unitPrice: 0,
+          unit_price: 0,
           taxRate: 20,
           total: 0
         }
@@ -731,9 +732,10 @@ function AddQuote({ onClose }) {
           const updatedItem = { ...item, [field]: value };
           
           // Recalculate total
-          const amountHT = updatedItem.quantity * updatedItem.unitPrice;
+          const amountHT = updatedItem.quantity * updatedItem.unit_price;
           const amountTax = amountHT * (updatedItem.taxRate / 100);
           updatedItem.total = amountHT + amountTax;
+          console.log(amountHT,amountTax)
           
           return updatedItem;
         }
@@ -747,6 +749,12 @@ function AddQuote({ onClose }) {
   const subtotal = quoteData.items.reduce((sum, item) => sum + item.total, 0);
   const taxAmount = quoteData.items.reduce((sum, item) => sum + (item.total * (item.taxRate / 100)), 0);
   const totalAmount = subtotal + taxAmount;
+
+  // useEffect(()=>{
+  //   console.log(subtotal)
+  //   console.log(taxAmount)
+  //   console.log(totalAmount)
+  // },[])
 
   // SAVE QUOTE (CREATE)
   const saveQuote = async () => {
@@ -849,9 +857,9 @@ function AddQuote({ onClose }) {
         {
           id: 1,
           productId: '',
-          description: '',
+          product_name: '',
           quantity: 1,
-          unitPrice: 0,
+          unit_price: 0,
           taxRate: 20,
           total: 0
         }
@@ -878,7 +886,7 @@ function AddQuote({ onClose }) {
                   <span className="w-32 font-medium text-gray-600">Date création:</span>
                   <input
                     type="date"
-                    value={quoteData.date?.split('T')[0] }
+                    value={quoteData.dateCreated.split('T')[0] }
                     onChange={(e) => setQuoteData(prev => ({ ...prev, dateCreated: e.target.value }))}
                     className="border rounded px-2 py-1"
                   />
@@ -955,7 +963,7 @@ function AddQuote({ onClose }) {
               <thead>
                 <tr className="border-b">
                   <th className="text-left p-3">Produit</th>
-                  <th className="text-left p-3">Description</th>
+                  {/* <th className="text-left p-3">Name</th> */}
                   <th className="text-left p-3">Quantité</th>
                   <th className="text-left p-3">Prix Unitaire</th>
                   <th className="text-left p-3">TVA</th>
@@ -970,7 +978,7 @@ function AddQuote({ onClose }) {
                       <select
                         value={item.productId || ''}
                         onChange={(e) => handleProductChange(item.id, e.target.value)}
-                        className="w-full border rounded px-2 py-1"
+                        className="w-42 border rounded px-2 py-1"
                       >
                         <option value="">{ item.product_name || "Sélectionner un produit" } </option>
                         {/* <option value="">{ "Sélectionner un produit" } </option> */}
@@ -981,15 +989,15 @@ function AddQuote({ onClose }) {
                         ))}
                       </select>
                     </td>
-                    <td className="p-3">
+                    {/* <td className="p-3">
                       <input
                         type="text"
-                        value={item.description}
-                        onChange={(e) => updateItemLine(item.id, 'description', e.target.value)}
+                        value={item.product_name}
+                        onChange={(e) => updateItemLine(item.id, 'product_name', e.target.value)}
                         className="w-full border rounded px-2 py-1"
                         placeholder="Description"
                       />
-                    </td>
+                    </td> */}
                     <td className="p-3">
                       <input
                         type="number"
@@ -1002,7 +1010,7 @@ function AddQuote({ onClose }) {
                     <td className="p-3">
                       <input
                         type="number"
-                        value={item.unitPrice}
+                        value={item.unit_price}
                         onChange={(e) => updateItemLine(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
                         className="w-32 border rounded px-2 py-1"
                         step="0.01"

@@ -165,7 +165,7 @@ export const postQuote = async (req, res) => {
     try {
       // 1. Insert main quote data into 'devis' table
       const [quoteResult] = await db.execute(
-        `INSERT INTO quote (client_id,libelle, date, total_ht, tva, total_ttc, status,expiryDate) VALUES (?,?,?, ?, ?, ?, ?,?)`,
+        `INSERT INTO quote (client_id,libelle, dateCreated, total_ht, tva, total_ttc, status,expiryDate) VALUES (?,?,?, ?, ?, ?, ?,?)`,
         [
           clientID,
           libelle,
@@ -185,13 +185,14 @@ export const postQuote = async (req, res) => {
       for (const item of items) {
         console.log('Inserting item:', item);
         await db.execute(
-          `INSERT INTO quote_item (quote_ID, product_ID, quantity, unit_price, total) VALUES (?, ?, ?, ?, ?)`,
+          `INSERT INTO quote_item (quote_ID, product_ID, quantity, unit_price, total,taxRate) VALUES (?, ?, ?, ?, ?,?)`,
           [
             quoteId,
             item.productId,
             item.quantity || 1,
-            item.unitPrice || 0,
-            item.total || 0
+            item.unit_price || 0,
+            item.total || 0,
+            item.taxRate
           ]
         );
       }

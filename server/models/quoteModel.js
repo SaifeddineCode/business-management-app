@@ -45,7 +45,6 @@ export const findQuoteById = async(id) =>{
 }
 
 
-
 export const deleteQuoteById = async (id) =>{
 
   // const [result] = await db.execute(`
