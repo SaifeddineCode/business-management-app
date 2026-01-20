@@ -629,7 +629,7 @@ function AddQuote({ onClose }) {
 
   // SINGLE STATE FOR BOTH CREATE AND EDIT
   const [quoteData, setQuoteData] = useState({
-    clientID: '',
+    client_id: '',
     libelle: '',
     quoteNumber: `DEV-${Date.now()}`,
     dateCreated: new Date().toISOString().split('T')[0],
@@ -800,14 +800,18 @@ function AddQuote({ onClose }) {
     }
   };
 
+  useEffect(()=>{
+    console.log(quoteData)
+  },[quoteData])
+
   // EDIT QUOTE (UPDATE)
   const editQuote = async () => {
-    if (!quoteData.clientID) {
+    if (!quoteData.client_id) {
       alert('Veuillez sélectionner un client');
       return;
     }
 
-    if (quoteData.items.length === 0 || quoteData.items.some(item => !item.productId)) {
+    if (quoteData.items.length === 0 ) {
       alert('Veuillez ajouter au moins un article valide');
       return;
     }
@@ -817,6 +821,8 @@ function AddQuote({ onClose }) {
     try {
       const quoteToSave = {
         ...quoteData,
+        dateCreated : quoteData.dateCreated.split('T')[0],
+        expiryDate:quoteData.expiryDate ? quoteData.expiryDate.split('T')[0] : '',
         subtotal,
         taxAmount,
         totalAmount

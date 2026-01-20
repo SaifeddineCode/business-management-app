@@ -49,34 +49,35 @@ export const deleteSingleQuote = async (req,res) =>{
 // updating specefic quote : 
 
 export const updatingQuote = async(req,res) =>{
-  const {id} = req.params
-  const { columnUpdated , valueUpdated } = req.body
-
-
-  if(!id){
-    throw new Error("quote id not found")
-  }
-  if(!columnUpdated){
-    throw new Error("column to update not found")
-  }
-  if(!valueUpdated){
-    throw new Error("no value assigned to this column update")
-  }
-
-  try{
-
-    const response = await updateSingleQuote(id,columnUpdated,valueUpdated)
-    if(!response.affectedRows){
-      throw new Error(response.status)
+  
+  try {
+    const { id } = req.params;
+    const quoteData = req.body; // This is your quoteToSave object
+    
+    // Validate
+    if (!id || !quoteData) {
+      return res.status(400).json({ success: false, message: 'Invalid data' });
     }
-
-    return res.status(200).json({
-      message : "the Quote was updated successfuly"
-    })
-
-  }catch(err){
-    return res.status(500).json({message:err.message})
+    
+    // Call the model/service
+    const result = await updateSingleQuote(id, quoteData);
+    
+    if (result) {
+      return res.status(200).json({ 
+        success: true, 
+        message: 'Devis modifié avec succès',
+        quote: result 
+      });
+    } else {
+      return res.status(404).json({ success: false, message: 'Quote not found' });
+    }
+    
+  } catch (error) {
+    console.error('Error updating quote:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
+
+
 }
 
 

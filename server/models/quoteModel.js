@@ -62,16 +62,57 @@ export const deleteQuoteById = async (id) =>{
 
 // update single quote 
 
-export const updateSingleQuote = async (id,columnUpdated,valueUpdated) =>{
-  const queryUpdate = ` 
-    UPDATE quote 
-    set ${columnUpdated} = ?
-    where id = ? 
-  `
+export const updateSingleQuote = async (id,quoteData) =>{
+  try {
+    // Update the quote in database
+    const result = await db.query(
+      `UPDATE quote SET 
+        client_id = ?, 
+        libelle = ?, 
+        dateCreated = ?, 
+        total_ht = ?, 
+        tva = ?, 
+        total_ttc = ?, 
+        status = ?, 
+        expiryDate = ?
+       WHERE id = ?`,
+      [
+        quoteData.client_id,
+        quoteData.libelle,
+        quoteData.dateCreated,
+        quoteData.subtotal,
+        quoteData.taxAmount,
+        quoteData.totalAmount,
+        quoteData.status,
+        quoteData.expiryDate,
+        id
+      ]
+    );
+    
+    // Also update items if needed
+    if (quoteData.items && quoteData.items.length > 0) {
+      // Delete old items
+      // await db.query('DELETE FROM quote_items WHERE quoteId = ?', [id]);
+      
+      // Insert new items
+      for (let item of quoteData.items) {
+        await db.query(
+          `INSERT INTO quote_item (quote_ID, product_ID , quantity, unit_price, total, taxRate) 
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          [id, item.product_ID , item.quantity, item.unit_price, item.taxRate, item.total]
+        );
+      }
+    }
+    
+    // Return updated quote
+    return { success: true, id, ...quoteData };
+    
+  } catch (error) {
+    console.error('Database error:', error);
+    return null;
+  }
 
-  const [result] = await db.execute(queryUpdate,[valueUpdated,id])
 
-  return result.affectedRows
 }
 
 
