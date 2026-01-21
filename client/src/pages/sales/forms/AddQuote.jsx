@@ -638,7 +638,7 @@ function AddQuote({ onClose }) {
     items: [
       {
         id: 1,
-        productId: '',
+        product_ID: '',
         description: '',
         quantity: 1,
         unit_price: 0,
@@ -686,7 +686,7 @@ function AddQuote({ onClose }) {
   const handleProductChange = (itemId, productId) => {
     const selectedProduct = products.find(product => product.id === parseInt(productId));
     if (selectedProduct) {
-      updateItemLine(itemId, 'productId', productId);
+      updateItemLine(itemId, 'product_ID', productId);
       updateItemLine(itemId, 'description', selectedProduct.product_name);
       updateItemLine(itemId, 'unit_price', selectedProduct.product_price);
     }
@@ -700,7 +700,7 @@ function AddQuote({ onClose }) {
         ...prev.items,
         {
           id: Math.max(...prev.items.map(i => i.id), 0) + 1,
-          productId: '',
+          product_ID: '',
           product_name: '',
           quantity: 1,
           unit_price: 0,
@@ -862,7 +862,7 @@ function AddQuote({ onClose }) {
       items: [
         {
           id: 1,
-          productId: '',
+          product_ID: '',
           product_name: '',
           quantity: 1,
           unit_price: 0,
@@ -982,7 +982,7 @@ function AddQuote({ onClose }) {
                   <tr key={item.id} className="border-b">
                     <td className="p-3">
                       <select
-                        value={item.productId || ''}
+                        value={item.product_ID || ''}
                         onChange={(e) => handleProductChange(item.id, e.target.value)}
                         className="w-42 border rounded px-2 py-1"
                       >

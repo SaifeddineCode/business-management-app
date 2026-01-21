@@ -92,14 +92,15 @@ export const updateSingleQuote = async (id,quoteData) =>{
     // Also update items if needed
     if (quoteData.items && quoteData.items.length > 0) {
       // Delete old items
-      // await db.query('DELETE FROM quote_items WHERE quoteId = ?', [id]);
+      // await db.query('DELETE FROM quote_item WHERE quote_ID = ?', [id]);
       
       // Insert new items
       for (let item of quoteData.items) {
         await db.query(
-          `INSERT INTO quote_item (quote_ID, product_ID , quantity, unit_price, total, taxRate) 
-           VALUES (?, ?, ?, ?, ?, ?)`,
-          [id, item.product_ID , item.quantity, item.unit_price, item.taxRate, item.total]
+          `UPDATE quote_item SET product_ID = ? , quantity = ?, unit_price = ?, total = ?, taxRate = ? 
+          WHERE id = ? AND quote_ID = ?`,
+          //  VALUES (?, ?, ?, ?, ?, ?),
+          [item.product_ID , item.quantity, item.unit_price, item.total, item.taxRate,item.id,id]
         );
       }
     }
