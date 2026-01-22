@@ -90,18 +90,53 @@ export const updateSingleQuote = async (id,quoteData) =>{
     );
     
     // Also update items if needed
-    if (quoteData.items && quoteData.items.length > 0) {
-      // Delete old items
-      // await db.query('DELETE FROM quote_item WHERE quote_ID = ?', [id]);
+    // if (quoteData.items && quoteData.items.length > 0) {
+    //   // Delete old items
+    //   // await db.query('DELETE FROM quote_item WHERE quote_ID = ?', [id]);
       
-      // Insert new items
+    //   // Insert new items
+    //   for (let item of quoteData.items) {
+    //     await db.query(
+    //       `UPDATE quote_item SET product_ID = ? , quantity = ?, unit_price = ?, total = ?, taxRate = ? 
+    //       WHERE id = ? AND quote_ID = ?`,
+    //       //  VALUES (?, ?, ?, ?, ?, ?),
+    //       [item.product_ID , item.quantity, item.unit_price, item.total, item.taxRate,item.id,id]
+    //     );
+    //   }
+    // }else {
+    //   await db.query(` INSERT INTO quote_item (quote_ID, product_ID, quantity, unit_price, total, taxRate)  
+    //         VALUES (?, ?, ?, ?, ?, ?) ` , [id,item.product_ID , item.quantity, item.unit_price, item.total, item.taxRate])
+    // }
+    if (quoteData.items && quoteData.items.length > 0) {
       for (let item of quoteData.items) {
-        await db.query(
-          `UPDATE quote_item SET product_ID = ? , quantity = ?, unit_price = ?, total = ?, taxRate = ? 
-          WHERE id = ? AND quote_ID = ?`,
-          //  VALUES (?, ?, ?, ?, ?, ?),
-          [item.product_ID , item.quantity, item.unit_price, item.total, item.taxRate,item.id,id]
-        );
+        if (item.id) {
+          // Update existing item
+          const updateResult = await db.query(
+            `UPDATE quote_item SET product_ID = ?, quantity = ?, unit_price = ?, total = ?, taxRate = ? 
+            WHERE id = ? AND quote_ID = ?`,
+            [item.product_ID, item.quantity, item.unit_price, item.total, item.taxRate, item.id, id]
+          );
+
+          if(updateResult.affectedRows === 0 ){
+            console.log("item not found or not updated")
+          }else{
+            console.log("item updated" )
+          }
+
+        } else {
+          // Insert new item (no id)
+          const insertResult = await db.query(
+            `INSERT INTO quote_item (quote_ID, product_ID, quantity, unit_price, total, taxRate) 
+            VALUES (?, ?, ?, ?, ?, ?)`,
+            [id, item.product_ID, item.quantity, item.unit_price, item.total, item.taxRate]
+          );
+
+          if(insertResult.insertId === 0){
+            console.log("new item inserted")
+          }else{
+            console.log("item insertion failed")
+          }
+        }
       }
     }
     

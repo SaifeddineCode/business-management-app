@@ -637,7 +637,7 @@ function AddQuote({ onClose }) {
     status: 'brouillon',
     items: [
       {
-        id: 1,
+        // id: 1,
         product_ID: '',
         description: '',
         quantity: 1,
@@ -687,7 +687,7 @@ function AddQuote({ onClose }) {
     const selectedProduct = products.find(product => product.id === parseInt(productId));
     if (selectedProduct) {
       updateItemLine(itemId, 'product_ID', productId);
-      updateItemLine(itemId, 'description', selectedProduct.product_name);
+      updateItemLine(itemId, 'product_name', selectedProduct.product_name);
       updateItemLine(itemId, 'unit_price', selectedProduct.product_price);
     }
   };
@@ -699,7 +699,7 @@ function AddQuote({ onClose }) {
       items: [
         ...prev.items,
         {
-          id: Math.max(...prev.items.map(i => i.id), 0) + 1,
+          // id: Math.max(...prev.items.map(i => i.id), 0) + 1,
           product_ID: '',
           product_name: '',
           quantity: 1,
@@ -744,6 +744,27 @@ function AddQuote({ onClose }) {
     }));
   };
 
+//   const updateItemLine = (itemIdentifier, field, value) => {
+//   setQuoteData(prev => ({
+//     ...prev,
+//     items: prev.items.map((item, index) => {
+//       // Match by id if it exists (from database), otherwise by index (new items)
+//       const isMatch = item.id ? item.id === itemIdentifier : index === itemIdentifier;
+      
+//       if (isMatch) {
+//         const updatedItem = { ...item, [field]: value };
+        
+//         // Recalculate total
+//         const amountHT = updatedItem.quantity * updatedItem.unit_price;
+//         const amountTax = amountHT * (updatedItem.taxRate / 100);
+//         updatedItem.total = amountHT + amountTax;
+        
+//         return updatedItem;
+//       }
+//       return item;
+//     })
+//   }));
+// };
 
   // CALCULATIONS
   const subtotal = quoteData.items.reduce((sum, item) => sum + item.total, 0);
@@ -861,7 +882,7 @@ function AddQuote({ onClose }) {
       status: 'brouillon',
       items: [
         {
-          id: 1,
+          // id: 1,
           product_ID: '',
           product_name: '',
           quantity: 1,
@@ -937,8 +958,8 @@ function AddQuote({ onClose }) {
             <div className="flex-1 max-w-md">
               <h2 className="text-lg font-semibold text-gray-800 mb-4">Client</h2>
               <select
-                value={quoteData.clientID || ''}
-                onChange={(e) => setQuoteData(prev => ({ ...prev, clientID: e.target.value }))}
+                value={quoteData.client_id || ''}
+                onChange={(e) => setQuoteData(prev => ({ ...prev, client_id: e.target.value }))}
                 className="w-full border rounded px-3 py-2"
               >
                 <option value="">{quoteData.customer_name || 'Sélectionner un client'}</option>
