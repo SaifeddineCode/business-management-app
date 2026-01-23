@@ -637,7 +637,8 @@ function AddQuote({ onClose }) {
     status: 'brouillon',
     items: [
       {
-        // id: 1,
+        // id: Date.now(),
+        id: `temp_${Date.now()}`,
         product_ID: '',
         description: '',
         quantity: 1,
@@ -700,6 +701,7 @@ function AddQuote({ onClose }) {
         ...prev.items,
         {
           // id: Math.max(...prev.items.map(i => i.id), 0) + 1,
+          id: `temp_${Date.now()}`,
           product_ID: '',
           product_name: '',
           quantity: 1,
@@ -779,12 +781,12 @@ function AddQuote({ onClose }) {
 
   // SAVE QUOTE (CREATE)
   const saveQuote = async () => {
-    if (!quoteData.clientID) {
+    if (!quoteData.client_id) {
       alert('Veuillez sélectionner un client');
       return;
     }
 
-    if (quoteData.items.length === 0 || quoteData.items.some(item => !item.productId)) {
+    if (quoteData.items.length === 0 || quoteData.items.some(item => !item.product_ID)) {
       alert('Veuillez ajouter au moins un article valide');
       return;
     }
@@ -822,7 +824,7 @@ function AddQuote({ onClose }) {
   };
 
   useEffect(()=>{
-    console.log(quoteData)
+    console.log(quoteData.items)
   },[quoteData])
 
   // EDIT QUOTE (UPDATE)
@@ -844,6 +846,11 @@ function AddQuote({ onClose }) {
         ...quoteData,
         dateCreated : quoteData.dateCreated.split('T')[0],
         expiryDate:quoteData.expiryDate ? quoteData.expiryDate.split('T')[0] : '',
+        items : quoteData.items.map(({ id, ...rest }) => ({
+          ...rest,
+          // Remove temp ID - backend will assign real ID
+          id: id.toString().startsWith('temp_') ? null : id
+        })),
         subtotal,
         taxAmount,
         totalAmount
@@ -883,6 +890,7 @@ function AddQuote({ onClose }) {
       items: [
         {
           // id: 1,
+          id: Date.now(),
           product_ID: '',
           product_name: '',
           quantity: 1,
