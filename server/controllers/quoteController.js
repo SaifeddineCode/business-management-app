@@ -86,7 +86,7 @@ export const updatingQuote = async(req,res) =>{
 
 
 
-// this controller to get all quotes bayna aslan haha
+// this controller to get limited quotes bayna aslan haha
 export const getQuotes = async (req,res)=>{
   try {
   

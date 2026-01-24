@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FaUser, FaFileInvoice, FaShoppingCart, FaCalendarAlt, FaMoneyBillWave, FaTruck, FaPlus, FaTrash } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
 import { fetchWithToken } from '../../../utils/api';
+import { data } from 'react-router-dom';
 
 const AddSalesOrder = () => {
   
@@ -36,11 +37,6 @@ const AddSalesOrder = () => {
   const [quoteItems,setQuoteItems] = useState([])
   const [products,setProducts] = useState([])
 
-
-  useEffect(()=>{
-    console.log(saleOrderData)
-  },[saleOrderData])
-
  
 
 
@@ -63,9 +59,14 @@ const AddSalesOrder = () => {
       // .then (data => setProducts(data))
 
       await Promise.all([
+        // fetchWithToken("/api/quote")
+        //   .then(result => result.json())
+        //   .then(data => setQuotes(data)),
+          
         fetchWithToken("/api/quote")
           .then(result => result.json())
-          .then(data => setQuotes(data)),
+          .then(data => setQuotes(data.data))
+          ,
         
         fetchWithToken("/api/products")
           .then(result => result.json()) 
@@ -84,6 +85,10 @@ const AddSalesOrder = () => {
   },[])
 
 
+useEffect(()=>{
+    // console.log(saleOrderData)
+    console.log(quotes)
+  },[quotes])
 
 
 
@@ -382,7 +387,8 @@ const handleCreatOrder = async () =>{
                   onChange={(e)=>handleQuoteChange(e.target.value)}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                   <option value="">Choisir un devis...</option>
-                  {quotes.map(quote => (
+                  {/* {quotes.map(quote => ( */}
+                  {quotes.map((quote) => (
                     <option key={quote.id} value={quote.id}>
                       {quote.libelle}
                     </option>
