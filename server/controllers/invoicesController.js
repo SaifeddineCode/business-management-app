@@ -27,7 +27,8 @@ export const postInvoice = async (req, res) => {
     }
 
     // Check if invoice already exists
-    const [rows] = await invoice.checkInvoiceExists(order_ID);
+    const rows = await invoice.checkInvoiceExists(order_ID);
+    console.log(rows)
 
     if (rows.length > 0) {
       return res.status(500).json({

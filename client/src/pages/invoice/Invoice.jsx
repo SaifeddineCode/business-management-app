@@ -242,8 +242,8 @@ useEffect(()=>{
 useEffect(()=>{
     // console.log(selectedClient)
     // console.log(invoiceData)
-    console.log(invoiceData.invoiceItems)
-},[invoiceData.invoiceItems])
+    console.log(invoiceData)
+},[invoiceData])
 
 
 
