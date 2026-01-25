@@ -37,24 +37,28 @@ export const postSaleOrder = async(req,res)=>{
 
   try{
 
+    console.log(req.body)
+
     const {
-      quoteID ,
-      clientID ,
-      orderNumber,
-      orderDate,
-      deliveryDate,
-      deliveryAdress,
-      vendorId,
-      totalHt,
+      quote_id ,
+      client_id ,
+      order_number,
+      order_date,
+      delivery_date,
+      delivery_adress,
+      vendor_id,
+      total_ht,
       tva,
-      totalTTC,
+      total_ttc,
       status,
       orderItems = []
     } = req.body
 
+    
 
 
-    if(!quoteID || !orderDate || !status ) {
+
+    if(!quote_id || !order_date || !status ) {
       return res.status(400).json({
         success: false,
         message: "Please fill the required fields"
@@ -69,17 +73,17 @@ export const postSaleOrder = async(req,res)=>{
     }
 
     //  2. DUPLICATE CHECK 
-    const [existingOrders] = await db.execute(
-      'SELECT id FROM sales_orders WHERE quote_id = ?',
-      [quoteID]
-    );
+    // const [existingOrders] = await db.execute(
+    //   'SELECT id FROM sales_orders WHERE quote_id = ?',
+    //   [quote_id]
+    // );
 
-    if (existingOrders.length > 0) {
-      return res.status(409).json({
-        success: false,
-        message: "An order already exists for this quote"
-      });
-    }
+    // if (existingOrders.length > 0) {
+    //   return res.status(409).json({
+    //     success: false,
+    //     message: "An order already exists for this quote"
+    //   });
+    // }
 
     const queryOrder = `
     INSERT INTO sales_orders
@@ -90,7 +94,7 @@ export const postSaleOrder = async(req,res)=>{
   
 
     const [result] = await db.execute(queryOrder,
-    [quoteID, clientID, orderNumber, orderDate, deliveryDate, deliveryAdress, vendorId, totalHt, tva, totalTTC, status])
+    [quote_id, client_id, order_number, order_date, delivery_date, delivery_adress, vendor_id, total_ht, tva, total_ttc, status])
 
  
 

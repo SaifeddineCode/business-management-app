@@ -8,18 +8,18 @@ const AddSalesOrder = () => {
   
 
   const [saleOrderData,setSaleOrderData] = useState({
-    quoteID : "",
-    clientID : "",
-    orderNumber :`SO-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`,
-    orderDate:"",
-    deliveryDate:"",
-    deliveryAdress:"",
-    vendorId:3,
-    totalHt:"",
+    quote_id : "",
+    client_id : "",
+    order_number :`SO-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`,
+    order_date:"",
+    delivery_date:"",
+    delivery_adress:"",
+    vendor_id:3,
+    total_ht:"",
     tva:0.1,
     tvaAmount:"",
     disountAmount:"",
-    totalTTC:"",
+    total_ttc:"",
     status:"en_attente",
     paymentMethod:"",
     notes:"",
@@ -85,10 +85,10 @@ const AddSalesOrder = () => {
   },[])
 
 
-useEffect(()=>{
-    // console.log(saleOrderData)
-    console.log(quotes)
-  },[quotes])
+// useEffect(()=>{
+//     // console.log(saleOrderData)
+//     console.log(quotes)
+//   },[quotes])
 
 
 
@@ -130,7 +130,7 @@ const handleQuoteChange = (value) => {
   
   setSaleOrderData((prev) => ({
     ...prev,
-    quoteID: quoteId
+    quote_id: quoteId
   }));
 
   
@@ -154,8 +154,8 @@ const handleQuoteChange = (value) => {
   setSaleOrderData(prev=>({...prev,orderItems:currentOrderedProducts}))
   setSaleOrderData(prev=>({
     ...prev,
-    clientID : currentQuote.client_id,
-    deliveryAdress:currentQuote.customer_adresse
+    client_id : currentQuote.client_id,
+    delivery_adress:currentQuote.customer_adresse
   }))
 };
 
@@ -269,8 +269,8 @@ const totalTTC = totalAfterDiscount + totalAmountTva;
 
 setSaleOrderData(prev => ({
   ...prev,
-  totalHt : totalHT,
-  totalTTC :totalTTC,
+  total_ht : totalHT,
+  total_ttc :totalTTC,
   tvaAmount:totalAmountTva,
   disountAmount:totalAmountDiscount
 }))
@@ -282,18 +282,18 @@ setSaleOrderData(prev => ({
 const resetSaleOrderData = () =>{
   setSelectedQuote({})
   setSaleOrderData(prev => ({...prev,
-    quoteID : "",
-    clientID : "",
-    orderNumber :`SO-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`,
-    orderDate:"",
-    deliveryDate:"",
-    deliveryAdress:"",
-    vendorId:3,
-    totalHt:"",
+    quote_id : "",
+    client_id : "",
+    order_number :`SO-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`,
+    order_date:"",
+    delivery_date:"",
+    delivery_adress:"",
+    vendor_id:3,
+    total_ht:"",
     tva:0.1,
     tvaAmount:"",
     disountAmount:"",
-    totalTTC:"",
+    total_ttc:"",
     status:"en_attente",
     paymentMethod:"",
     notes:"",
@@ -312,7 +312,7 @@ const addSaleOrder = async() =>{
 
   try{
 
-    if(!saleOrderData.quoteID || !saleOrderData.orderDate || !saleOrderData.status){
+    if(!saleOrderData.quote_id || !saleOrderData.order_date || !saleOrderData.status){
       throw new Error("Please check the required fields");
     }
 
@@ -363,6 +363,11 @@ const handleCreatOrder = async () =>{
 // },[saleOrderData.orderItems])
 
 
+useEffect(()=>{
+  console.log(saleOrderData)
+},[saleOrderData])
+
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
@@ -383,7 +388,7 @@ const handleCreatOrder = async () =>{
               </div>
               <div className="space-y-4">
                 <select 
-                  value={saleOrderData.quoteID || ""}
+                  value={saleOrderData.quote_id || ""}
                   onChange={(e)=>handleQuoteChange(e.target.value)}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                   <option value="">Choisir un devis...</option>
@@ -412,7 +417,7 @@ const handleCreatOrder = async () =>{
                     </div>
                     <div>
                       <span className="font-medium">Numéro:</span>
-                      <p className="text-gray-700">{saleOrderData.orderNumber}</p>
+                      <p className="text-gray-700">{saleOrderData.order_number}</p>
                     </div>
                   </div>
                 </div>
@@ -631,19 +636,19 @@ const handleCreatOrder = async () =>{
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Date de Commande</label>
                   <input 
-                    onChange={(e)=>setSaleOrderData(prev=> ({...prev,orderDate : e.target.value})  )}
+                    onChange={(e)=>setSaleOrderData(prev=> ({...prev,order_date : e.target.value})  )}
                     type="date" 
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                    value={saleOrderData.orderDate}
+                    value={saleOrderData.order_date}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Date de Livraison</label>
                   <input 
-                    onChange={(e)=>setSaleOrderData(prev => ({...prev,deliveryDate : e.target.value}) )}
+                    onChange={(e)=>setSaleOrderData(prev => ({...prev,delivery_date : e.target.value}) )}
                     type="date" 
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                    value={saleOrderData.deliveryDate}
+                    value={saleOrderData.delivery_date}
                   />
                 </div>
                 <div>
@@ -652,7 +657,7 @@ const handleCreatOrder = async () =>{
                     readOnly
                     type="text" 
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                    value={saleOrderData.orderNumber}
+                    value={saleOrderData.order_number}
                   />
                 </div>
                 <div>
@@ -680,7 +685,7 @@ const handleCreatOrder = async () =>{
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Sous-total:</span>
-                  <span className="font-medium">{saleOrderData.totalHt} MAD</span>
+                  <span className="font-medium">{saleOrderData.total_ttc} MAD</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Remise globale:</span>
@@ -692,7 +697,7 @@ const handleCreatOrder = async () =>{
                 </div>
                 <div className="border-t border-gray-200 pt-3 flex justify-between text-lg font-bold">
                   <span>Total:</span>
-                  <span className="text-blue-600">{saleOrderData.totalTTC} MAD</span>
+                  <span className="text-blue-600">{saleOrderData.total_ttc} MAD</span>
                 </div>
               </div>
             </div>
@@ -733,8 +738,8 @@ const handleCreatOrder = async () =>{
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex flex-col sm:flex-row gap-3">
                 <button 
-                onClick={handleCreatOrder}
-                className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                  onClick={handleCreatOrder}
+                  className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
                   Ajouter le Bon
                 </button>
                 <button className="flex-1 bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 transition-colors font-medium">

@@ -9,7 +9,7 @@ export const fetchWithToken = async  (url,options={}) =>{
 
      // Add Authorization header to the request
     const headers = {
-        // 'Content-Type': 'application/json',
+        'Content-Type': 'application/json',
         ...options.headers,
     };
     
