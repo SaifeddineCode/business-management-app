@@ -9,6 +9,8 @@ export const findQuoteById = async(id) =>{
   const [quoteResult] = await db.execute(`
      SELECT q.*,
      c.name as customer_name
+     c.email as customer_email
+     c.telephone as customer_phone
      FROM quote q        
     JOIN customers c ON c.id = q.client_id
     WHERE q.id = ?
