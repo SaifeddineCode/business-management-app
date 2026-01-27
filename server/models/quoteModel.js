@@ -5,14 +5,15 @@ import db from "../config/database.js";
 export const findQuoteById = async(id) =>{
 
 
-  // Fetch the main single quote from quote table
+  try{
+    // Fetch the main single quote from quote table
   const [quoteResult] = await db.execute(`
      SELECT q.*,
-     c.name as customer_name
-     c.email as customer_email
+     c.name as customer_name,
+     c.email as customer_email,
      c.telephone as customer_phone
-     FROM quote q        
-    JOIN customers c ON c.id = q.client_id
+     FROM quote as q        
+    JOIN customers as c ON c.id = q.client_id
     WHERE q.id = ?
     `,[id])
 
@@ -20,7 +21,9 @@ export const findQuoteById = async(id) =>{
     return null
   }
 
-  const quote = quoteResult[0]
+  console.log(quoteResult)
+  // const quote = quoteResult[0]
+  const mainQuote = quoteResult[0]
 
   // now let's Fetch its item from quote_item table
 
@@ -38,12 +41,22 @@ export const findQuoteById = async(id) =>{
       [id]
     );
 
- // in on fetch we get quote and its item
-    return {
-      ...quote,
-      items: itemsResult || []
-    };
+    const quote = {
+      ...mainQuote,
+      items : itemsResult
+    }
 
+ // in on fetch we get quote and its item
+    // return {
+    //   ...quote,
+    //   items: itemsResult || []
+    // };
+    return quote
+
+  }catch(err){
+    console.error(err)
+    return null
+  }
 }
 
 

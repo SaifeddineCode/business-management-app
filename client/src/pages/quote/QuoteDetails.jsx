@@ -49,6 +49,7 @@ export default function QuoteDetails() {
       try{
         const result = await fetchWithToken(`/api/quote/${id}`)
         const data = await result.json()
+        console.log(data)
         return setQuote(data)
       }catch(err){
         console.log(err)
@@ -58,9 +59,7 @@ export default function QuoteDetails() {
 
   },[id])
 
-   useEffect(()=>{
-    console.log(quote)
-  },[quote])
+
 
 
   const getStatusColor = (status) => {
@@ -80,12 +79,12 @@ export default function QuoteDetails() {
     refuse: 'Refusé'
   };
 
-  useEffect(()=>{
-    console.log(quote)
-  },[quote])
+  // useEffect(()=>{
+  //   console.log("quote :",quote)
+  // },[id,quote])
 
 
-  if(quote === null){
+  if(!quote){
 return (
   <>
   Loading quote...
