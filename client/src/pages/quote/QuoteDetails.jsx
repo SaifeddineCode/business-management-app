@@ -209,14 +209,14 @@ return (
                   <p className="text-sm text-gray-500 mb-1">Nom</p>
                   <p className="font-semibold text-gray-800">{quote.customer_name}</p>
                 </div>
-                {/* <div>
+                <div>
                   <p className="text-sm text-gray-500 mb-1">Email</p>
                   <p className="text-gray-700 break-all">{quote.customer_email}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Téléphone</p>
                   <p className="text-gray-700">{quote.customer_phone}</p>
-                </div> */}
+                </div>
               </div>
             </div>
 

@@ -18,7 +18,8 @@ import {
 } from 'react-icons/fi';
 
 const Purchases = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+
+  
 
   // Sample data
   const purchaseOrders = [
@@ -117,7 +118,7 @@ const Purchases = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-gray-200">
+        {/* <div className="flex border-b border-gray-200">
           {['overview', 'orders', 'suppliers', 'deliveries', 'invoices'].map((tab) => (
             <button
               key={tab}
@@ -135,7 +136,7 @@ const Purchases = () => {
               {tab === 'invoices' && 'Factures'}
             </button>
           ))}
-        </div>
+        </div> */}
       </div>
 
       {/* Metrics Cards */}

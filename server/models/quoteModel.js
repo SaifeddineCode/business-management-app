@@ -21,7 +21,6 @@ export const findQuoteById = async(id) =>{
     return null
   }
 
-  console.log(quoteResult)
   // const quote = quoteResult[0]
   const mainQuote = quoteResult[0]
 
