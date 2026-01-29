@@ -15,6 +15,7 @@ import Login from "./pages/login/Login";
 import { useEffect, useState } from "react";
 import QuoteDetails from "./pages/quote/QuoteDetails";
 import Products from "./pages/products/Products";
+import AddProduct from "./pages/products/AddProduct";
 
 function App() {
 
@@ -54,6 +55,7 @@ function App() {
               <Route path='/invoiceList' element={ <InvoiceListPage /> } />
               <Route path='/purchases' element={<Purchases/>} />
               <Route path='/products' element={<Products/>} />
+              <Route path='/add-product' element={<AddProduct/>} />
             </Routes>
           </main>
         </div>

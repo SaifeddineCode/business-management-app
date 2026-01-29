@@ -4,6 +4,7 @@ import { FiPlus, FiEye, FiEdit, FiTrash2, FiSearch, FiFilter } from 'react-icons
 import { MdInventory } from 'react-icons/md';
 import { fetchWithToken } from '../../utils/api';
 import { use } from 'react';
+import { Link } from 'react-router-dom';
 
 const Products = () => {
 
@@ -68,18 +69,19 @@ useEffect(()=>{
   });
 
   // Gestionnaires d'événements pour les actions
+
+
+
   const handleAddProduct = () => {
-    const newProduct = {
-      id: dummyProducts.length + 1,
-      name: `Nouveau Produit ${dummyProducts.length + 1}`,
-      category: 'Nouvelle Catégorie',
-      price: 99.99,
-      stock: 10,
-      status: 'Disponible'
-    };
-    setDummyProducts([newProduct, ...dummyProducts]);
-    alert(`Produit "${newProduct.name}" ajouté!`);
+    
+  
+    
+
   };
+
+
+
+
 
   const handleViewProduct = (id) => {
     const product = dummyProducts.find(p => p.id === id);
@@ -126,14 +128,15 @@ useEffect(()=>{
             <p className="text-gray-500">{filteredProducts.length} produit(s) trouvé(s)</p>
           </div>
           
-          <button 
+          <Link
+            to={"/add-product"} 
             onClick={handleAddProduct}
             className="flex items-center justify-center px-5 py-3 rounded-lg font-medium text-white transition-all hover:opacity-90"
             style={{ backgroundColor: '#112074' }}
           >
             <FiPlus className="mr-2" />
             Ajouter un Produit
-          </button>
+          </Link>
         </div>
 
         {/* Filtres et recherche */}
