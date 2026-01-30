@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiSave, FiArrowLeft, FiUpload, FiPackage, FiDollarSign, FiHash, FiTag } from 'react-icons/fi';
 import { MdDescription, MdCategory, MdInventory } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
@@ -7,23 +7,16 @@ const AddProduct = () => {
   const navigate = useNavigate();
   
   const [productData, setProductData] = useState({
-    name: '',
+    product_name: '',
     category: '',
-    price: '',
+    product_price: '',
     stock: '',
     sku: '',
     description: '',
     status: 'Disponible',
-    weight: '',
-    dimensions: {
-      length: '',
-      width: '',
-      height: ''
-    },
-    tags: []
   });
 
-  const [currentTag, setCurrentTag] = useState('');
+  
   const [errors, setErrors] = useState({});
 
   const categories = [
@@ -52,45 +45,11 @@ const AddProduct = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (validateForm()) {
-      // Dans une vraie application, on enverrait les données à l'API
-      const newProduct = {
-        id: Date.now(),
-        ...productData,
-        price: parseFloat(productData.price),
-        stock: parseInt(productData.stock),
-        weight: productData.weight ? parseFloat(productData.weight) : null,
-        dimensions: productData.dimensions
-      };
-      
-      // Ici, on simule l'ajout au state global
-      // En réalité, vous utiliseriez Context API, Redux, ou une requête API
-      console.log('Nouveau produit:', newProduct);
-      
-      alert(`Produit "${productData.name}" créé avec succès !`);
-      navigate('/products'); // Retour à la liste
-    }
+  const handleAddProduct = () => {
+    return console.log("hellllo")
   };
 
-  const handleAddTag = () => {
-    if (currentTag.trim() && !productData.tags.includes(currentTag.trim())) {
-      setProductData({
-        ...productData,
-        tags: [...productData.tags, currentTag.trim()]
-      });
-      setCurrentTag('');
-    }
-  };
 
-  const handleRemoveTag = (tagToRemove) => {
-    setProductData({
-      ...productData,
-      tags: productData.tags.filter(tag => tag !== tagToRemove)
-    });
-  };
 
   const generateSku = () => {
     const prefix = productData.category ? productData.category.substring(0, 3).toUpperCase() : 'PROD';
@@ -98,6 +57,11 @@ const AddProduct = () => {
     const newSku = `${prefix}-${randomNum}`;
     setProductData({ ...productData, sku: newSku });
   };
+
+
+  useEffect(()=>{
+    console.log(productData)
+  },[productData])
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -123,7 +87,8 @@ const AddProduct = () => {
       </div>
 
       <div className="max-w-6xl mx-auto">
-        <form onSubmit={handleSubmit} className="space-y-8">
+        {/* <form onSubmit={handleSubmit} className="space-y-8"> */}
+        <form  className="space-y-8">
           {/* Section: Informations de base */}
           <div className="bg-white rounded-xl shadow-md p-6">
             <h2 className="text-xl font-semibold mb-6 pb-4 border-b" style={{ color: '#112074', borderColor: '#11207420' }}>
@@ -143,8 +108,8 @@ const AddProduct = () => {
                     errors.name ? 'border-red-300 focus:ring-red-200' : 'border-gray-300 focus:ring-blue-200'
                   }`}
                   style={{ color: '#112074' }}
-                  value={productData.name}
-                  onChange={(e) => setProductData({...productData, name: e.target.value})}
+                  value={productData.product_name}
+                  onChange={(e) => setProductData({...productData, product_name: e.target.value})}
                   placeholder="Ex: iPhone 14 Pro Max"
                 />
                 {errors.name && <p className="mt-2 text-sm text-red-600">{errors.name}</p>}
@@ -262,8 +227,8 @@ const AddProduct = () => {
                       errors.price ? 'border-red-300 focus:ring-red-200' : 'border-gray-300 focus:ring-blue-200'
                     }`}
                     style={{ color: '#112074' }}
-                    value={productData.price}
-                    onChange={(e) => setProductData({...productData, price: e.target.value})}
+                    value={productData.product_price}
+                    onChange={(e) => setProductData({...productData, product_price: e.target.value})}
                     placeholder="0.00"
                   />
                 </div>
@@ -314,128 +279,6 @@ const AddProduct = () => {
                   {productData.description.length}/2000 caractères
                 </p>
               </div>
-
-              {/* Tags */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <FiTag className="inline mr-2" />
-                  Tags
-                </label>
-                <div className="flex gap-2 mb-3">
-                  <input
-                    type="text"
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
-                    style={{ color: '#112074' }}
-                    value={currentTag}
-                    onChange={(e) => setCurrentTag(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
-                    placeholder="Ajouter un tag (appuyez sur Entrée)"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddTag}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                    style={{ color: '#112074' }}
-                  >
-                    Ajouter
-                  </button>
-                </div>
-                
-                {productData.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {productData.tags.map(tag => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm"
-                      >
-                        {tag}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveTag(tag)}
-                          className="ml-2 text-blue-600 hover:text-blue-800"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Section: Informations supplémentaires */}
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-6 pb-4 border-b" style={{ color: '#112074', borderColor: '#11207420' }}>
-              <FiPackage className="inline mr-2" />
-              Informations Supplémentaires
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Poids */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Poids (kg)
-                </label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
-                    style={{ color: '#112074' }}
-                    value={productData.weight}
-                    onChange={(e) => setProductData({...productData, weight: e.target.value})}
-                    placeholder="Ex: 0.5"
-                  />
-                  <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">kg</span>
-                </div>
-              </div>
-
-              {/* Dimensions */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Dimensions (cm)
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  <input
-                    type="number"
-                    min="0"
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
-                    placeholder="L"
-                    style={{ color: '#112074' }}
-                    value={productData.dimensions.length}
-                    onChange={(e) => setProductData({
-                      ...productData,
-                      dimensions: { ...productData.dimensions, length: e.target.value }
-                    })}
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
-                    placeholder="l"
-                    style={{ color: '#112074' }}
-                    value={productData.dimensions.width}
-                    onChange={(e) => setProductData({
-                      ...productData,
-                      dimensions: { ...productData.dimensions, width: e.target.value }
-                    })}
-                  />
-                  <input
-                    type="number"
-                    min="0"
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
-                    placeholder="H"
-                    style={{ color: '#112074' }}
-                    value={productData.dimensions.height}
-                    onChange={(e) => setProductData({
-                      ...productData,
-                      dimensions: { ...productData.dimensions, height: e.target.value }
-                    })}
-                  />
-                </div>
-              </div>
             </div>
           </div>
 
@@ -454,7 +297,8 @@ const AddProduct = () => {
                   Annuler
                 </Link>
                 <button
-                  type="submit"
+                type="button"
+                  onClick={()=>handleAddProduct()}
                   className="flex items-center justify-center px-8 py-3 rounded-lg font-medium text-white transition-all hover:opacity-90 shadow-md hover:shadow-lg"
                   style={{ backgroundColor: '#112074' }}
                 >
