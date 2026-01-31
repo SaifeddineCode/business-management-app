@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FiSave, FiArrowLeft, FiUpload, FiPackage, FiDollarSign, FiHash, FiTag } from 'react-icons/fi';
 import { MdDescription, MdCategory, MdInventory } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
+import { fetchWithToken } from '../../utils/api';
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -45,9 +46,30 @@ const AddProduct = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleAddProduct = () => {
-    return console.log("hellllo")
-  };
+const handleAddProduct = async() => {
+
+    try{
+        const response = await fetchWithToken("/api/products",{
+            method : "POST",
+            // headers : {
+            //     "Content-type":"application/json"
+            // },
+            body : JSON.stringify(productData)
+        })
+
+        if(!response.ok){
+            const err = response.json()
+            throw new Error(err.message)
+        }
+
+
+    }catch(err){
+
+        console.log(err)
+
+    }
+
+};
 
 
 

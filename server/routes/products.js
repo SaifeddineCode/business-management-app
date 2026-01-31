@@ -1,12 +1,13 @@
 
 import express from "express"
-import { getProducts } from "../controllers/productController.js";
+import { getProducts, postProduct } from "../controllers/productController.js";
 import { verifyToken } from "../middlewares/authMiddlware.js";
 
 
 const router = express.Router()
 
 router.get('/',verifyToken, getProducts)
+router.post('/',verifyToken, postProduct)
 
 
 export default router
