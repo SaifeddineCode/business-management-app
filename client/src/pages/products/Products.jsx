@@ -19,9 +19,7 @@ useEffect(()=>{
     const fetchProducts = async () =>{
         try{
             const result = await fetchWithToken("/api/products")
-            const data = await result.json()
-            console.log(data)
-            
+            const data = await result.json()          
             if(!result.ok){
             throw new Error("Error while fetching product FS")
             }
@@ -72,17 +70,6 @@ useEffect(()=>{
 
 
 
-  const handleAddProduct = () => {
-    
-  
-    
-
-  };
-
-
-
-
-
   const handleViewProduct = (id) => {
     const product = dummyProducts.find(p => p.id === id);
     alert(`Visualisation: ${product.name}\nCatégorie: ${product.category}\nPrix: ${product.price}€\nStock: ${product.stock}\nStatut: ${product.status}`);
@@ -129,8 +116,7 @@ useEffect(()=>{
           </div>
           
           <Link
-            to={"/add-product"} 
-            onClick={handleAddProduct}
+            to={"/add-product"}
             className="flex items-center justify-center px-5 py-3 rounded-lg font-medium text-white transition-all hover:opacity-90"
             style={{ backgroundColor: '#112074' }}
           >
@@ -210,13 +196,13 @@ useEffect(()=>{
                       >
                         <FiEye />
                       </button>
-                      <button 
-                        onClick={() => handleEditProduct(product.id)}
+                      <Link 
+                        to={`/add-product/${product.id}/edit`}
                         className="p-2 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
                         title="Modifier"
                       >
                         <FiEdit />
-                      </button>
+                      </Link>
                       <button 
                         onClick={() => handleDeleteProduct(product.id)}
                         className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"

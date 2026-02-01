@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { FiSave, FiArrowLeft, FiUpload, FiPackage, FiDollarSign, FiHash, FiTag } from 'react-icons/fi';
 import { MdDescription, MdCategory, MdInventory } from 'react-icons/md';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { fetchWithToken } from '../../utils/api';
 
 const AddProduct = () => {
-  const navigate = useNavigate();
+
+  const {id} = useParams()
+ 
+
+
   
   const [productData, setProductData] = useState({
     product_name: '',
@@ -16,6 +20,32 @@ const AddProduct = () => {
     description: '',
     status: 'Disponible',
   });
+
+
+
+  useEffect(()=>{
+    if(id){
+   
+    const fetchSingleProduct = async ()=>{
+          
+      try{
+        const result = await fetchWithToken(`/api/products/${id}`)
+        const data = await result.json()
+        console.log(data)
+        setProductData(data)
+      if(!result.ok){
+         throw new Error("Something went wrong ")
+      }
+    
+      }
+      catch(err){
+        console.log(err)
+      }
+
+    } 
+    fetchSingleProduct()
+  }
+  },[id])
 
   
   const [errors, setErrors] = useState({});
@@ -33,21 +63,10 @@ const AddProduct = () => {
     'Bureau'
   ];
 
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!productData.name.trim()) newErrors.name = 'Le nom est requis';
-    if (!productData.category) newErrors.category = 'La catégorie est requise';
-    if (!productData.price || productData.price <= 0) newErrors.price = 'Prix invalide';
-    if (!productData.stock || productData.stock < 0) newErrors.stock = 'Stock invalide';
-    if (!productData.sku.trim()) newErrors.sku = 'Le SKU est requis';
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+
 
 const handleAddProduct = async() => {
-
+ 
     try{
         const response = await fetchWithToken("/api/products",{
             method : "POST",
@@ -81,9 +100,9 @@ const handleAddProduct = async() => {
   };
 
 
-  useEffect(()=>{
-    console.log(productData)
-  },[productData])
+  // useEffect(()=>{
+  //   console.log(productData)
+  // },[productData])
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -130,7 +149,7 @@ const handleAddProduct = async() => {
                     errors.name ? 'border-red-300 focus:ring-red-200' : 'border-gray-300 focus:ring-blue-200'
                   }`}
                   style={{ color: '#112074' }}
-                  value={productData.product_name}
+                  value={productData.product_name || " " }
                   onChange={(e) => setProductData({...productData, product_name: e.target.value})}
                   placeholder="Ex: iPhone 14 Pro Max"
                 />
@@ -149,7 +168,7 @@ const handleAddProduct = async() => {
                       errors.category ? 'border-red-300 focus:ring-red-200' : 'border-gray-300 focus:ring-blue-200'
                     }`}
                     style={{ color: '#112074' }}
-                    value={productData.category}
+                    value={productData.category || " "}
                     onChange={(e) => setProductData({...productData, category: e.target.value})}
                   >
                     <option value="">Sélectionnez une catégorie</option>
@@ -175,7 +194,7 @@ const handleAddProduct = async() => {
                         errors.sku ? 'border-red-300 focus:ring-red-200' : 'border-gray-300 focus:ring-blue-200'
                       }`}
                       style={{ color: '#112074' }}
-                      value={productData.sku}
+                      value={productData.sku || " "}
                       onChange={(e) => setProductData({...productData, sku: e.target.value})}
                       placeholder="Ex: ELEC-001"
                     />
@@ -269,7 +288,7 @@ const handleAddProduct = async() => {
                     errors.stock ? 'border-red-300 focus:ring-red-200' : 'border-gray-300 focus:ring-blue-200'
                   }`}
                   style={{ color: '#112074' }}
-                  value={productData.stock}
+                  value={productData.stock }
                   onChange={(e) => setProductData({...productData, stock: e.target.value})}
                   placeholder="Ex: 100"
                 />
@@ -293,7 +312,7 @@ const handleAddProduct = async() => {
                 <textarea
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 h-48 resize-none"
                   style={{ color: '#112074' }}
-                  value={productData.description}
+                  value={productData.description || " "}
                   onChange={(e) => setProductData({...productData, description: e.target.value})}
                   placeholder="Décrivez votre produit en détail..."
                 />

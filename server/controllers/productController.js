@@ -1,5 +1,7 @@
 import db from "../config/database.js";
-import { postSingleProduct } from "../models/productModel.js";
+import { getSingleProductModel, postSingleProduct } from "../models/productModel.js";
+
+// Get all products 
 
 export const getProducts = async(req,res)=>{
     try {
@@ -13,6 +15,43 @@ export const getProducts = async(req,res)=>{
     }
 }
 
+
+
+// Get a single product 
+
+
+export const getSingleProduct = async (req,res) =>{
+
+    try{
+
+    const {id} = req.params;
+
+    if (!id) {
+    return res.status(400).json({
+      message: "Product id is required"
+    });
+    }
+
+
+    const result = await getSingleProductModel(id)
+
+    if(result.length > 0){
+        return res.status(200).json(result[0])
+    }
+   return res.status(404).json({ message: "Product not found" });
+    
+
+    } catch(err){
+        console.log(err)
+        res.status(500).json({
+            message:'something went wrong while fetching single product'
+        })
+    }
+
+}
+
+
+// Post a products 
 
 export const postProduct = async(req,res)=>{
     

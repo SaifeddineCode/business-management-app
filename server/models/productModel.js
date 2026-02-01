@@ -1,6 +1,31 @@
 import db from "../config/database.js";
 
 
+
+
+// Get single product model 
+
+
+export const getSingleProductModel = async(id) =>{
+
+    try{
+
+        const getSingleQuery = `SELECT * FROM products WHERE id = ? `
+        const [row] = await db.execute(getSingleQuery,[id])
+
+        return row
+
+    }catch(err){
+        console.log(err)
+    }
+}
+
+
+
+
+
+// Post single product model
+
 export const postSingleProduct = async (productData) =>{
 
     try{
