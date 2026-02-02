@@ -1,5 +1,5 @@
 import db from "../config/database.js";
-import { getSingleProductModel, postSingleProduct } from "../models/productModel.js";
+import { editSingleProductModel, getSingleProductModel, postSingleProduct } from "../models/productModel.js";
 
 // Get all products 
 
@@ -75,3 +75,40 @@ export const postProduct = async(req,res)=>{
         })
     }
 }
+
+
+// Edit a product 
+
+export const editSingleProduct = async (req,res) => {
+
+    console.log(req.body)
+
+    try{
+        const {id} = req.params;
+        const productData = req.body;
+        
+        if(!id){
+            return res.status(400).json({error:"Product id is required"})
+        }
+
+        const result = await editSingleProductModel(productData,id)
+
+        res.status(200).json({
+            success:true,
+            message:"Product updated successfuly",
+            data:result
+        })
+
+
+
+    }catch(err){
+        console.log(err)
+        res.status(500).json({
+            success:false,
+            message:"Error updating user"
+        })
+    }
+
+}
+
+

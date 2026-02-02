@@ -54,3 +54,41 @@ export const postSingleProduct = async (productData) =>{
     }
 
 }
+
+
+
+//Editing single product 
+
+
+export const editSingleProductModel = async(productData,id) =>{
+
+    console.log(productData)
+
+    const {
+        product_name,
+        product_price,
+        description,
+        category,
+        status,
+        stock,
+        sku,
+    } = productData
+
+
+    const [row] = await db.execute(`
+        UPDATE products
+        SET product_name = ? ,
+        product_price = ?,
+        description = ?,
+        category = ?,
+        status = ?,
+        stock = ?,
+        sku = ? 
+        WHERE id = ?
+        `,[product_name,product_price,description,category,status,stock,sku,id])
+
+
+    return row
+
+
+}

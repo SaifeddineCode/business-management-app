@@ -1,7 +1,7 @@
 import React, { use, useEffect, useState } from 'react';
 import { FiSave, FiArrowLeft, FiUpload, FiPackage, FiDollarSign, FiHash, FiTag } from 'react-icons/fi';
 import { MdDescription, MdCategory, MdInventory } from 'react-icons/md';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, resolvePath, useNavigate, useParams } from 'react-router-dom';
 import { fetchWithToken } from '../../utils/api';
 
 const AddProduct = () => {
@@ -90,6 +90,36 @@ const handleAddProduct = async() => {
 
 };
 
+
+const handleEditProduct = async () => {
+
+      try {
+
+        
+
+        const response = await fetchWithToken(`/api/products/${id}`,{
+          method:"PUT",
+          // headers:{
+          //   "Content-type":"application/json"
+          // },
+          body:JSON.stringify(productData)
+          // body:productData
+        })
+
+        if(!response.ok) {
+          throw new Error("something went wrong updating the product")
+        }
+
+        const result = await response.json()
+
+        return result
+
+
+      }catch(err){
+        console.log(err)
+      }
+  
+}
 
 
   const generateSku = () => {
@@ -288,7 +318,7 @@ const handleAddProduct = async() => {
                     errors.stock ? 'border-red-300 focus:ring-red-200' : 'border-gray-300 focus:ring-blue-200'
                   }`}
                   style={{ color: '#112074' }}
-                  value={productData.stock }
+                  value={productData.stock || ""}
                   onChange={(e) => setProductData({...productData, stock: e.target.value})}
                   placeholder="Ex: 100"
                 />
@@ -339,12 +369,12 @@ const handleAddProduct = async() => {
                 </Link>
                 <button
                 type="button"
-                  onClick={()=>handleAddProduct()}
+                  onClick={id ? handleEditProduct : handleAddProduct }
                   className="flex items-center justify-center px-8 py-3 rounded-lg font-medium text-white transition-all hover:opacity-90 shadow-md hover:shadow-lg"
                   style={{ backgroundColor: '#112074' }}
                 >
                   <FiSave className="mr-2" />
-                  Créer le Produit
+                  {id ? "Modifié le Produit" : "Créer le Produit"}
                 </button>
               </div>
             </div>
