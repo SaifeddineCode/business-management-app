@@ -82,6 +82,8 @@ const handleAddProduct = async() => {
         }
 
 
+
+
     }catch(err){
 
         console.log(err)
@@ -110,9 +112,10 @@ const handleEditProduct = async () => {
           throw new Error("something went wrong updating the product")
         }
 
-        const result = await response.json()
+        // const result = await response.json()
 
-        return result
+        // return result
+        alert(`product ${productData.product_name} has been edited successfuly`)
 
 
       }catch(err){
