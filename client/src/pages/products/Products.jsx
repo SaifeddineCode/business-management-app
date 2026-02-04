@@ -34,31 +34,37 @@ const Products = () => {
 //     fetchProducts()
 // },[])
 
-const fetchProducts = async () =>{
-    try{
-        const result = await fetchWithToken("/api/products")  
-        console.log(result)       
-        if(!result.ok){
-        throw new Error("Error while fetching product FS")
-        }
-        // return setProducts(data)
-        const data = await result.json() 
-        return data
-      }
-    catch (err){
-        console.log(err)
-    }
+// const fetchProducts = async () =>{
+
+//         const result = await fetchWithToken("/api/products")         
+//         if(!result.ok){
+//         throw new Error("Error while fetching product FS")
+//         }
+//         // return setProducts(data)
+//         return  result.json() 
+        
+     
+// }
+
+const fetchProducts = async () => {
+  console.log("fetch function called")
+  const result = await fetchWithToken("/api/products")
+  console.log("Response status:", result.status) // Debug here
+  console.log("Response:", result) // See the full response
+  
+  if (!result.ok) {
+    throw new Error(`Error: ${result.status} ${result.statusText}`)
+  }
+  const data = await result.json()
+  console.log("Parsed data:", data) // Verify the data
+  return data
 }
 
-const {data : products ,isLoading,error} = useQuery({
-  queryKey:['products'],
-  queryFn:fetchProducts
+console.log("About to call useQuery")
+const { data: products, isLoading, error } = useQuery({
+  queryKey: ['products'],
+  queryFn: fetchProducts
 })
-
-useEffect(()=>{
-  console.log(products,isLoading,error)
-},[products])
-
 
 
 
@@ -69,6 +75,11 @@ useEffect(()=>{
 
   const categories = ['Tous', 'Electronics', 'ELEC1', 'ELEC2', 'categoryx'];
 
+
+if (isLoading) return <p>Loading...</p>
+if (error) return <p>Error: {error.message}</p>
+if (!products) return <p>No products found</p>
+
   // Filtrer les produits
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -77,11 +88,7 @@ useEffect(()=>{
     return matchesSearch && matchesCategory;
   });
 
-  // Gestionnaires d'événements pour les actions
-
-
-
-  
+  // Gestionnaires d'événements pour les actions  
 
   return ( 
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
