@@ -1,7 +1,7 @@
-import React, { use, useEffect, useState } from 'react';
+import React, {useEffect, useState } from 'react';
 import { FiSave, FiArrowLeft, FiUpload, FiPackage, FiDollarSign, FiHash, FiTag } from 'react-icons/fi';
 import { MdDescription, MdCategory, MdInventory } from 'react-icons/md';
-import { Link, resolvePath, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { fetchWithToken } from '../../utils/api';
 
 const AddProduct = () => {

@@ -1,94 +1,75 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useEffect } from 'react';
 import { FiPlus, FiEye, FiEdit, FiTrash2, FiSearch, FiFilter } from 'react-icons/fi';
 import { MdInventory } from 'react-icons/md';
 import { fetchWithToken } from '../../utils/api';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { use } from 'react';
+import { useProductStore } from '../../store/useProductStore.js';
+
 
 const Products = () => {
+  
+const products = useProductStore((state) => state.products )
+const setProducts = useProductStore((state)=>state.setProducts) 
+
+const [searchTerm, setSearchTerm] = useState('');
+const [selectedCategory, setSelectedCategory] = useState('Tous');
+const categories = ['Tous', 'Electronics', 'ELEC1', 'ELEC2', 'categoryx'];
+
+useEffect(()=>{
+  console.log(products)
+},[])
 
 
-
-
-// const [products,setProducts] = useState([])
-
-
-
-// useEffect(()=>{
-//     const fetchProducts = async () =>{
-//         try{
-//             const result = await fetchWithToken("/api/products")
-//             const data = await result.json()          
-//             if(!result.ok){
-//             throw new Error("Error while fetching product FS")
-//             }
-//             return setProducts(data)
-//         }
-//         catch (err){
-//             console.log(err)
-//         }
-//     }
-
-//     fetchProducts()
-// },[])
-
-// const fetchProducts = async () =>{
-
-//         const result = await fetchWithToken("/api/products")         
-//         if(!result.ok){
-//         throw new Error("Error while fetching product FS")
-//         }
-//         // return setProducts(data)
-//         return  result.json() 
-        
-     
-// }
 
 const fetchProducts = async () => {
-  console.log("fetch function called")
+
   const result = await fetchWithToken("/api/products")
-  console.log("Response status:", result.status) // Debug here
-  console.log("Response:", result) // See the full response
-  
   if (!result.ok) {
     throw new Error(`Error: ${result.status} ${result.statusText}`)
   }
   const data = await result.json()
-  console.log("Parsed data:", data) // Verify the data
   return data
 }
 
-console.log("About to call useQuery")
-const { data: products, isLoading, error } = useQuery({
+const { data  , isLoading, error } = useQuery({
   queryKey: ['products'],
-  queryFn: fetchProducts
+  queryFn: fetchProducts,
+  // onSuccess : (data) =>  setProducts(data),
+  // onError : (error) => {
+  //   console.error("Failed to fetch products :", error)
+  // }
 })
 
+useEffect(() => {
+  if (data) {
+    setProducts(data);
+  }
+}, [data, setProducts]);
 
 
 
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Tous');
-
-  const categories = ['Tous', 'Electronics', 'ELEC1', 'ELEC2', 'categoryx'];
+useEffect(()=>{
+  console.log(isLoading)
+  console.log(error)
+},[isLoading,error])
 
 
 if (isLoading) return <p>Loading...</p>
 if (error) return <p>Error: {error.message}</p>
 if (!products) return <p>No products found</p>
 
-  // Filtrer les produits
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         product.category.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'Tous' || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
 
-  // Gestionnaires d'événements pour les actions  
+// Filtrer les produits
+const filteredProducts = products.filter(product => {
+  const matchesSearch = product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                        product.category.toLowerCase().includes(searchTerm.toLowerCase());
+  const matchesCategory = selectedCategory === 'Tous' || product.category === selectedCategory;
+  return matchesSearch && matchesCategory;
+});
+
+ 
 
   return ( 
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
