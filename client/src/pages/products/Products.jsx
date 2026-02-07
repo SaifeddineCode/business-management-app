@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useEffect } from 'react';
+import React,{ useState ,useEffect} from 'react';
 import { FiPlus, FiEye, FiEdit, FiTrash2, FiSearch, FiFilter } from 'react-icons/fi';
 import { MdInventory } from 'react-icons/md';
 import { fetchWithToken } from '../../utils/api';
@@ -8,9 +7,23 @@ import { useQuery } from '@tanstack/react-query';
 import { useProductStore } from '../../store/useProductStore.js';
 
 
+console.log("About to use store:", useProductStore)
+
+
 const Products = () => {
   
+    console.log("Products component rendering")
+
+try{
 const products = useProductStore((state) => state.products )
+console.log("Got products from store:", products)
+}catch(e){
+  console.log(e)
+  throw e
+}
+
+
+
 const setProducts = useProductStore((state)=>state.setProducts) 
 
 const [searchTerm, setSearchTerm] = useState('');
@@ -45,6 +58,7 @@ const { data  , isLoading, error } = useQuery({
 useEffect(() => {
   if (data) {
     setProducts(data);
+    console.log(data)
   }
 }, [data, setProducts]);
 
