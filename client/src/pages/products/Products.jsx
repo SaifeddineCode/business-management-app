@@ -4,35 +4,17 @@ import { MdInventory } from 'react-icons/md';
 import { fetchWithToken } from '../../utils/api';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useProductStore } from '../../store/useProductStore.js';
-
-
-console.log("About to use store:", useProductStore)
 
 
 const Products = () => {
   
-    console.log("Products component rendering")
 
-try{
-const products = useProductStore((state) => state.products )
-console.log("Got products from store:", products)
-}catch(e){
-  console.log(e)
-  throw e
-}
-
-
-
-const setProducts = useProductStore((state)=>state.setProducts) 
 
 const [searchTerm, setSearchTerm] = useState('');
 const [selectedCategory, setSelectedCategory] = useState('Tous');
 const categories = ['Tous', 'Electronics', 'ELEC1', 'ELEC2', 'categoryx'];
 
-useEffect(()=>{
-  console.log(products)
-},[])
+
 
 
 
@@ -46,7 +28,7 @@ const fetchProducts = async () => {
   return data
 }
 
-const { data  , isLoading, error } = useQuery({
+const { data : products , isLoading, error } = useQuery({
   queryKey: ['products'],
   queryFn: fetchProducts,
   // onSuccess : (data) =>  setProducts(data),
@@ -55,12 +37,6 @@ const { data  , isLoading, error } = useQuery({
   // }
 })
 
-useEffect(() => {
-  if (data) {
-    setProducts(data);
-    console.log(data)
-  }
-}, [data, setProducts]);
 
 
 
