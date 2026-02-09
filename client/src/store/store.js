@@ -1,11 +1,10 @@
-import { createStoreHook } from "react-redux";
+import authReducer from "./slices/authSlice.js"
+import { configureStore } from "@reduxjs/toolkit";
 
 
-
-
-const store = createStoreHook({
+const store = configureStore({
     reducer : {
-        
+        auth : authReducer,
     }
 })
 

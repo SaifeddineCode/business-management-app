@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../../store/slices/authSlice';
 // import { useNavigate } from 'react-router-dom';
 
 
@@ -16,6 +18,8 @@ const Login = ({setIsAuthenticated}) => {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch()
 
 //   const navigate = useNavigate()
 
@@ -52,6 +56,8 @@ const Login = ({setIsAuthenticated}) => {
       // Save token to localStorage
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+
+      dispatch(loginSuccess(data))
 
       console.log('Login successful:', data);
       
