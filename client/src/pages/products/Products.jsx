@@ -154,12 +154,13 @@ const filteredProducts = products.filter(product => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex justify-center space-x-3">
-                      <button
+                      <Link
+                        to={`/Product-details/${product.id}`}
                         className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
                         title="Voir les détails"
                       >
                         <FiEye />
-                      </button>
+                      </Link>
                       <Link 
                         to={`/add-product/${product.id}/edit`}
                         className="p-2 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-colors"

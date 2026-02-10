@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import QuoteDetails from "./pages/quote/QuoteDetails";
 import Products from "./pages/products/Products";
 import AddProduct from "./pages/products/AddProduct";
+import ProductDetails from "./pages/products/ProductDetails";
 
 function App() {
 
@@ -57,6 +58,7 @@ function App() {
               <Route path='/products' element={<Products/>} />
               <Route path='/add-product' element={<AddProduct/>} />
               <Route path='/add-product/:id/edit' element={<AddProduct/>} />
+              <Route path='/product-details/:id' element={<ProductDetails/>} />
             </Routes>
           </main>
         </div>
