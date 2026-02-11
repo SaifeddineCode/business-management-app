@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   FiSearch, 
   FiBell, 
@@ -11,12 +11,11 @@ const Navbar = ({setIsAuthenticated}) => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  // Mock user data
-  const user = {
-    name: 'Saif hassouni',
-    role: 'Ceo',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face'
-  };
+  const user = JSON.parse(localStorage.getItem("user"))
+
+  useEffect(()=>{
+    console.log(user.name)
+  },[user])
 
   const notifications = [
     { id: 1, text: 'New quote request from Client XYZ', time: '5 min ago', unread: true },

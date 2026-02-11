@@ -3,6 +3,7 @@ import { FiSave, FiArrowLeft, FiUpload, FiPackage, FiDollarSign, FiHash, FiTag }
 import { MdDescription, MdCategory, MdInventory } from 'react-icons/md';
 import { Link, useParams } from 'react-router-dom';
 import { fetchWithToken } from '../../utils/api';
+import toast, { Toaster } from 'react-hot-toast';
 
 const AddProduct = () => {
 
@@ -63,6 +64,19 @@ const AddProduct = () => {
     'Bureau'
   ];
 
+const resetProductData = () =>{
+  setProductData((prev)=>({
+    ...prev,
+    product_name : "",
+    product_price:"",
+    description : "",
+    stock : "",
+    category : "",
+    sku:"",
+    status :"Disponible"
+  }))
+}
+
 
 
 const handleAddProduct = async() => {
@@ -81,7 +95,8 @@ const handleAddProduct = async() => {
             throw new Error(err.message)
         }
 
-
+        toast.success(`le produit : ${productData.product_name} a été ajouté avec succès`)
+        resetProductData()
 
 
     }catch(err){
@@ -136,6 +151,9 @@ const handleEditProduct = async () => {
   // useEffect(()=>{
   //   console.log(productData)
   // },[productData])
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -384,6 +402,7 @@ const handleEditProduct = async () => {
           </div>
         </form>
       </div>
+      <Toaster />
     </div>
   );
 };
