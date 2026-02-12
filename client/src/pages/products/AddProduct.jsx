@@ -8,7 +8,6 @@ import toast, { Toaster } from 'react-hot-toast';
 const AddProduct = () => {
 
   const {id} = useParams()
- 
 
 
   
