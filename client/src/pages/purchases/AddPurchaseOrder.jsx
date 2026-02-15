@@ -1,15 +1,568 @@
-import React from 'react'
+import React, { useState } from 'react';
+import { FaMoon, FaPlus, FaTrash } from 'react-icons/fa';
 
-const AddPurchaseOrder = () => {
+export default function AddPurchaserder() {
 
+
+  const [formData, setFormData] = useState({
+
+    numeroBc: 'BC0226-0050',
+    date: '02/15/2026',
+    devise: 'MAD (Dirham Marocain)',
+    objet: 'Saisir l\'objet de la commande...',
+    incoterm: 'DDP',
+    lieuLivraison: '',
+    fournisseur: 'Sélectionnez un fournisseur...',
+    adresseFournisseur: '',
+    typeCodeArticles: 'Notre Société',
+    signature: 'Avec Signature',
+    tva: 20,
+    resume: ''
+
+  });
+
+  const [items, setItems] = useState([]);
+  const [newItem, setNewItem] = useState({
+    ref: '',
+    produit: '',
+    unite: 'U',
+    quantite: '',
+    tarif: '',
+    remise: ''
+  });
+
+  const [activeTab, setActiveTab] = useState('details');
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleItemChange = (e) => {
+    const { name, value } = e.target;
+    setNewItem(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleAddItem = () => {
+    if (newItem.ref && newItem.produit && newItem.quantite && newItem.tarif) {
+      const montant = parseFloat(newItem.quantite) * parseFloat(newItem.tarif) * (1 - (parseFloat(newItem.remise) || 0) / 100);
+      setItems([...items, { 
+        ...newItem, 
+        id: Date.now(),
+        montant: montant.toFixed(2)
+      }]);
+      setNewItem({
+        ref: '',
+        produit: '',
+        unite: 'U',
+        quantite: '',
+        tarif: '',
+        remise: ''
+      });
+    }
+  };
+
+  const handleDeleteItem = (id) => {
+    setItems(items.filter(item => item.id !== id));
+  };
+
+  const formatCurrency = (value) => {
+    return parseFloat(value).toFixed(2).toString().replace('.', ',');
+  };
+
+  const totalHT = items.reduce((sum, item) => sum + parseFloat(item.montant), 0);
+  const montantTva = (totalHT * formData.tva / 100).toFixed(2);
+  const totalTTC = (totalHT + parseFloat(montantTva)).toFixed(2);
+
+  const numberToFrench = (num) => {
+    const ones = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
+    const teens = ['dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf'];
+    const tens = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante-dix', 'quatre-vingt', 'quatre-vingt-dix'];
+
+    if (num === 0) return 'zéro';
+    if (num < 10) return ones[num];
+    if (num < 20) return teens[num - 10];
+    if (num < 100) {
+      const ten = Math.floor(num / 10);
+      const one = num % 10;
+      return tens[ten] + (one > 0 ? '-' + ones[one] : '');
+    }
+    if (num < 1000) {
+      const hundred = Math.floor(num / 100);
+      const rest = num % 100;
+      return (hundred > 1 ? ones[hundred] + ' cents' : 'cent') + (rest > 0 ? ' ' + numberToFrench(rest) : '');
+    }
+    return num.toString();
+  };
+
+  const amountInLetters = totalTTC === '0.00' ? 'Zéro dirhams' : `${numberToFrench(Math.floor(totalTTC))} dirhams`;
 
   return (
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white rounded-lg p-4 mb-6 shadow-lg">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-wrap gap-2 items-center justify-center md:justify-start">
+            <button className="bg-[#1e3a8a] bg-opacity-20 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-opacity-30 transition flex items-center gap-2 border border-white border-opacity-30">
+              <span>📋</span> Liste des BCs
+            </button>
+            <button className="bg-[#1e3a8a] bg-opacity-20 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-opacity-30 transition flex items-center gap-2 border border-white border-opacity-30">
+              <span>➕</span> Ajouter un BC
+            </button>
+            <div className="flex items-center gap-3 ml-2">
+              <span className="text-white font-semibold">●</span>
+              <label className="flex items-center gap-2 cursor-pointer text-white text-sm">
+                <input type="radio" name="signature" checked={formData.signature === 'Avec Signature'} onChange={() => setFormData({...formData, signature: 'Avec Signature'})} className="w-4 h-4" />
+                Avec Signature
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer text-white text-sm">
+                <input type="radio" name="signature" checked={formData.signature === 'Sans Signature'} onChange={() => setFormData({...formData, signature: 'Sans Signature'})} className="w-4 h-4" />
+                Sans Signature
+              </label>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 justify-center md:justify-end">
+            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold text-sm transition flex items-center gap-2">
+              <span>↗️</span> Transformer en BR
+            </button>
+            <button className="bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-opacity-30 transition flex items-center gap-2 border border-white border-opacity-30">
+              <span>🖨️</span> Imprimer Local
+            </button>
+            <button className="bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-opacity-30 transition flex items-center gap-2 border border-white border-opacity-30">
+              <span>🖨️</span> Imprimer Intl.
+            </button>
+          </div>
+        </div>
+      </div>
 
-    <div>AddPurchaseOrder</div>
-    
-  )
+      {/* Three Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        
+        {/* Left Column - Information Commande */}
+        <div className="bg-white rounded-lg p-6 shadow-md border-t-4 border-blue-600">
+          <h3 className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-4">Information Commande</h3>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">N° Bon de Commande</label>
+              <input
+                type="text"
+                name="numeroBc"
+                value={formData.numeroBc}
+                onChange={handleFormChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900"
+              />
+            </div>
 
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Date</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900"
+                />
+                <span className="absolute right-3 top-2.5 text-gray-500">📅</span>
+              </div>
+            </div>
 
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Devise</label>
+              <select
+                name="devise"
+                value={formData.devise}
+                onChange={handleFormChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 bg-white"
+              >
+                <option>MAD (Dirham Marocain)</option>
+                <option>EUR (€)</option>
+                <option>USD ($)</option>
+                <option>GBP (£)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Middle Column - Objet & Incoterm */}
+        <div className="bg-white rounded-lg p-6 shadow-md border-t-4 border-blue-600">
+          <h3 className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-4">Objet & Incoterm</h3>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Objet</label>
+              <textarea
+                name="objet"
+                value={formData.objet}
+                onChange={handleFormChange}
+                rows="4"
+                placeholder="Saisir l'objet de la commande..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 resize-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Incoterm</label>
+              <div className="flex gap-2">
+                <select
+                  name="incoterm"
+                  value={formData.incoterm}
+                  onChange={handleFormChange}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 bg-white"
+                >
+                  <option>DDP</option>
+                  <option>FOB</option>
+                  <option>CIF</option>
+                  <option>EXW</option>
+                </select>
+                <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded-lg transition flex items-center gap-1">
+                  📍
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Lieu de livraison</label>
+              <input
+                type="text"
+                name="lieuLivraison"
+                value={formData.lieuLivraison}
+                onChange={handleFormChange}
+                placeholder="Lieu de livraison"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column - Fournisseur */}
+        <div className="bg-green-50 rounded-lg p-6 shadow-md border-t-4 border-green-600">
+          <h3 className="text-xs font-bold text-green-700 uppercase tracking-wider mb-4">Fournisseur</h3>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Sélectionner Fournisseur</label>
+              <select
+                name="fournisseur"
+                value={formData.fournisseur}
+                onChange={handleFormChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 bg-white"
+              >
+                <option>Sélectionnez un fournisseur...</option>
+                <option>Fournisseur A</option>
+                <option>Fournisseur B</option>
+                <option>Fournisseur C</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Adresse</label>
+              <input
+                type="text"
+                name="adresseFournisseur"
+                value={formData.adresseFournisseur}
+                onChange={handleFormChange}
+                placeholder="L'adresse du fournisseur s'affichera ici..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-600 italic bg-gray-50"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Type de code Articles</label>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="typeCodeArticles"
+                    value="Notre Société"
+                    checked={formData.typeCodeArticles === 'Notre Société'}
+                    onChange={handleFormChange}
+                    className="w-4 h-4 accent-green-600"
+                  />
+                  <span className="text-gray-900 text-sm">Notre Société</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="typeCodeArticles"
+                    value="Fournisseur"
+                    checked={formData.typeCodeArticles === 'Fournisseur'}
+                    onChange={handleFormChange}
+                    className="w-4 h-4 accent-green-600"
+                  />
+                  <span className="text-gray-900 text-sm">Fournisseur</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Card */}
+      <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+        
+        {/* Tabs */}
+        <div className="border-b border-gray-200 flex gap-0">
+          <button
+            onClick={() => setActiveTab('details')}
+            className={`flex-1 px-6 py-4 font-semibold text-sm flex items-center gap-2 transition border-b-2 ${
+              activeTab === 'details'
+                ? 'border-blue-900 text-blue-900 bg-blue-50'
+                : 'border-transparent text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            <span>📋</span> Détails Bon de Commande
+          </button>
+          <button
+            onClick={() => setActiveTab('virement')}
+            className={`flex-1 px-6 py-4 font-semibold text-sm flex items-center gap-2 transition border-b-2 ${
+              activeTab === 'virement'
+                ? 'border-blue-900 text-blue-900 bg-blue-50'
+                : 'border-transparent text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            <span>💳</span> Ordre de virement
+          </button>
+        </div>
+
+        {/* Tab Content */}
+        <div className="p-6">
+          {activeTab === 'details' && (
+            <div>
+              {/* Add Button */}
+              <div className="flex justify-end mb-6">
+                <button
+                  onClick={handleAddItem}
+                  className="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg font-semibold text-sm transition flex items-center gap-2"
+                >
+                  <FaPlus size={18} /> Ajouter un élément
+                </button>
+              </div>
+
+              {/* Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-gray-100 border-b-2 border-gray-300">
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">RÉF</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">PRODUIT / DÉSIGNATION</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">UNITÉ</th>
+                      <th className="px-4 py-3 text-center font-semibold text-gray-700">QTÉ</th>
+                      <th className="px-4 py-3 text-right font-semibold text-gray-700">TARIF U.HT</th>
+                      <th className="px-4 py-3 text-center font-semibold text-gray-700">REMISE %</th>
+                      <th className="px-4 py-3 text-right font-semibold text-gray-700">MONTANT HT</th>
+                      <th className="px-4 py-3 text-center font-semibold text-gray-700"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {items.length === 0 ? (
+                      <tr>
+                        <td colSpan="8" className="px-4 py-8 text-center text-gray-500 italic">
+                          Aucune ligne de commande ajoutée pour le moment.
+                        </td>
+                      </tr>
+                    ) : (
+                      items.map((item) => (
+                        <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-50">
+                          <td className="px-4 py-3 text-gray-900">{item.ref}</td>
+                          <td className="px-4 py-3 text-gray-900">{item.produit}</td>
+                          <td className="px-4 py-3 text-gray-900">{item.unite}</td>
+                          <td className="px-4 py-3 text-center text-gray-900">{item.quantite}</td>
+                          <td className="px-4 py-3 text-right text-gray-900">{formatCurrency(item.tarif)}</td>
+                          <td className="px-4 py-3 text-center text-gray-900">{item.remise || '-'}</td>
+                          <td className="px-4 py-3 text-right font-semibold text-gray-900">{formatCurrency(item.montant)}</td>
+                          <td className="px-4 py-3 text-center">
+                            <button
+                              onClick={() => handleDeleteItem(item.id)}
+                              className="text-red-600 hover:text-red-800 transition"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                    {/* Input Row */}
+                    <tr className="border-t-2 border-gray-400 bg-gray-50">
+                      <td className="px-4 py-3">
+                        <input
+                          type="text"
+                          name="ref"
+                          value={newItem.ref}
+                          onChange={handleItemChange}
+                          placeholder="Réf..."
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600 text-sm"
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <input
+                          type="text"
+                          name="produit"
+                          value={newItem.produit}
+                          onChange={handleItemChange}
+                          placeholder="Nom du produit..."
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600 text-sm"
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <select
+                          name="unite"
+                          value={newItem.unite}
+                          onChange={handleItemChange}
+                          className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600 text-sm bg-white"
+                        >
+                          <option>U</option>
+                          <option>PC</option>
+                          <option>KG</option>
+                          <option>L</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-3">
+                        <input
+                          type="number"
+                          name="quantite"
+                          value={newItem.quantite}
+                          onChange={handleItemChange}
+                          placeholder="0"
+                          step="0.01"
+                          className="w-full px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-1 focus:ring-blue-600 text-sm"
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <input
+                          type="number"
+                          name="tarif"
+                          value={newItem.tarif}
+                          onChange={handleItemChange}
+                          placeholder="0"
+                          step="0.01"
+                          className="w-full px-2 py-1 border border-gray-300 rounded text-right focus:outline-none focus:ring-1 focus:ring-blue-600 text-sm"
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <input
+                          type="number"
+                          name="remise"
+                          value={newItem.remise}
+                          onChange={handleItemChange}
+                          placeholder="%"
+                          step="0.01"
+                          className="w-full px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-1 focus:ring-blue-600 text-sm"
+                        />
+                      </td>
+                      <td className="px-4 py-3 text-right text-gray-900 font-semibold">0.00</td>
+                      <td className="px-4 py-3 text-center">
+                        <button className="text-red-600 hover:text-red-800 transition">
+                          <FaTrash size={18} />
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'virement' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">IBAN</label>
+                <input
+                  type="text"
+                  placeholder="FR76 1234 5678 9012 3456 7890"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">BIC</label>
+                <input
+                  type="text"
+                  placeholder="BNPAFRPP"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Bénéficiaire</label>
+                <input
+                  type="text"
+                  placeholder="Nom du fournisseur"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        
+        {/* Resume / Notes Internes */}
+        <div className="bg-white rounded-lg p-6 shadow-md">
+          <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-4">Résumé / Notes Internes</h3>
+          <textarea
+            value={formData.resume}
+            onChange={(e) => setFormData({...formData, resume: e.target.value})}
+            placeholder="Ajouter un commentaire ou un résumé ici..."
+            rows="6"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
+          />
+        </div>
+
+        {/* Summary */}
+        <div className="bg-white rounded-lg p-6 shadow-md">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-700 font-semibold">Total HT</span>
+              <span className="text-2xl font-bold text-gray-900">{formatCurrency(totalHT)}</span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-700 font-semibold">Montant TVA</span>
+                <span className="text-gray-700 font-semibold">Taux:</span>
+                <input
+                  type="number"
+                  value={formData.tva}
+                  onChange={(e) => setFormData({...formData, tva: parseFloat(e.target.value)})}
+                  className="w-12 px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-1 focus:ring-blue-600 text-sm"
+                />
+                <span className="text-gray-700 font-semibold">%</span>
+              </div>
+              <span className="text-2xl font-bold text-gray-900">{formatCurrency(montantTva)}</span>
+            </div>
+
+            <div className="border-t-2 border-gray-300 pt-4 flex justify-between items-center">
+              <span className="text-gray-700 font-bold text-lg">Total TTC</span>
+              <span className="text-3xl font-bold text-gray-900">{formatCurrency(totalTTC)}</span>
+            </div>
+
+            <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4">
+              <div className="flex justify-between items-center">
+                <span className="text-red-700 font-bold">Net A Payer</span>
+                <span className="text-3xl font-bold text-red-600">{formatCurrency(totalTTC)}</span>
+              </div>
+            </div>
+
+            <div className="border border-gray-300 rounded-lg p-3">
+              <p className="text-xs text-gray-600 mb-1">Montant en lettres</p>
+              <p className="text-gray-900 font-semibold text-sm">{amountInLetters}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Dark Mode Toggle */}
+      <div className="fixed bottom-6 right-6 bg-blue-900 text-white rounded-full p-3 shadow-lg hover:bg-blue-800 cursor-pointer transition">
+        <FaMoon size={24} />
+      </div>
+    </div>
+  );
 }
-
-export default AddPurchaseOrder

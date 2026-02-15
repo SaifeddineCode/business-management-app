@@ -17,6 +17,8 @@ import {
   FiCopy
 } from 'react-icons/fi';
 
+import { Link } from 'react-router-dom';
+
 const Purchases = () => {
 
   
@@ -110,10 +112,12 @@ const Purchases = () => {
               <FiDownload className="w-4 h-4" />
               Exporter
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <Link 
+              to={"/add-purchase-order"}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
               <FiPlus className="w-4 h-4" />
               Nouveau Bon de Commande
-            </button>
+            </Link>
           </div>
         </div>
 

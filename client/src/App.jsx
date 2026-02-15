@@ -17,6 +17,7 @@ import QuoteDetails from "./pages/quote/QuoteDetails";
 import Products from "./pages/products/Products";
 import AddProduct from "./pages/products/AddProduct";
 import ProductDetails from "./pages/products/ProductDetails";
+import AddPurchaserder from "./pages/purchases/AddPurchaseOrder";
 
 function App() {
 
@@ -55,6 +56,7 @@ function App() {
               <Route path='/invoice' element={ <Invoice /> } />
               <Route path='/invoiceList' element={ <InvoiceListPage /> } />
               <Route path='/purchases' element={<Purchases/>} />
+              <Route path='/add-purchase-order' element={<AddPurchaserder />} />
               <Route path='/products' element={<Products/>} />
               <Route path='/add-product' element={<AddProduct/>} />
               <Route path='/add-product/:id/edit' element={<AddProduct/>} />
