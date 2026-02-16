@@ -33,75 +33,37 @@ export default function AddPurchaserder() {
 
   const [activeTab, setActiveTab] = useState('details');
 
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleItemChange = (e) => {
-    const { name, value } = e.target;
-    setNewItem(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleAddItem = () => {
-    if (newItem.ref && newItem.produit && newItem.quantite && newItem.tarif) {
-      const montant = parseFloat(newItem.quantite) * parseFloat(newItem.tarif) * (1 - (parseFloat(newItem.remise) || 0) / 100);
-      setItems([...items, { 
-        ...newItem, 
-        id: Date.now(),
-        montant: montant.toFixed(2)
-      }]);
-      setNewItem({
-        ref: '',
-        produit: '',
-        unite: 'U',
-        quantite: '',
-        tarif: '',
-        remise: ''
-      });
-    }
-  };
-
-  const handleDeleteItem = (id) => {
-    setItems(items.filter(item => item.id !== id));
-  };
-
+ 
+ 
+ 
   const formatCurrency = (value) => {
     return parseFloat(value).toFixed(2).toString().replace('.', ',');
   };
 
-  const totalHT = items.reduce((sum, item) => sum + parseFloat(item.montant), 0);
-  const montantTva = (totalHT * formData.tva / 100).toFixed(2);
-  const totalTTC = (totalHT + parseFloat(montantTva)).toFixed(2);
+ 
 
-  const numberToFrench = (num) => {
-    const ones = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
-    const teens = ['dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf'];
-    const tens = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante-dix', 'quatre-vingt', 'quatre-vingt-dix'];
 
-    if (num === 0) return 'zéro';
-    if (num < 10) return ones[num];
-    if (num < 20) return teens[num - 10];
-    if (num < 100) {
-      const ten = Math.floor(num / 10);
-      const one = num % 10;
-      return tens[ten] + (one > 0 ? '-' + ones[one] : '');
-    }
-    if (num < 1000) {
-      const hundred = Math.floor(num / 100);
-      const rest = num % 100;
-      return (hundred > 1 ? ones[hundred] + ' cents' : 'cent') + (rest > 0 ? ' ' + numberToFrench(rest) : '');
-    }
-    return num.toString();
-  };
+  // const numberToFrench = (num) => {
+  //   const ones = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
+  //   const teens = ['dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf'];
+  //   const tens = ['', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante-dix', 'quatre-vingt', 'quatre-vingt-dix'];
 
-  const amountInLetters = totalTTC === '0.00' ? 'Zéro dirhams' : `${numberToFrench(Math.floor(totalTTC))} dirhams`;
+  //   if (num === 0) return 'zéro';
+  //   if (num < 10) return ones[num];
+  //   if (num < 20) return teens[num - 10];
+  //   if (num < 100) {
+  //     const ten = Math.floor(num / 10);
+  //     const one = num % 10;
+  //     return tens[ten] + (one > 0 ? '-' + ones[one] : '');
+  //   }
+  //   if (num < 1000) {
+  //     const hundred = Math.floor(num / 100);
+  //     const rest = num % 100;
+  //     return (hundred > 1 ? ones[hundred] + ' cents' : 'cent') + (rest > 0 ? ' ' + numberToFrench(rest) : '');
+  //   }
+  //   return num.toString();
+  // };
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -155,7 +117,7 @@ export default function AddPurchaserder() {
                 type="text"
                 name="numeroBc"
                 value={formData.numeroBc}
-                onChange={handleFormChange}
+                // onChange={handleFormChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900"
               />
             </div>
@@ -164,13 +126,12 @@ export default function AddPurchaserder() {
               <label className="block text-sm font-semibold text-gray-700 mb-1">Date</label>
               <div className="relative">
                 <input
-                  type="text"
+                  type="date"
                   name="date"
                   value={formData.date}
-                  onChange={handleFormChange}
+                  // onChange={handleFormChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900"
                 />
-                <span className="absolute right-3 top-2.5 text-gray-500">📅</span>
               </div>
             </div>
 
@@ -179,7 +140,7 @@ export default function AddPurchaserder() {
               <select
                 name="devise"
                 value={formData.devise}
-                onChange={handleFormChange}
+                // onChange={handleFormChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 bg-white"
               >
                 <option>MAD (Dirham Marocain)</option>
@@ -201,7 +162,7 @@ export default function AddPurchaserder() {
               <textarea
                 name="objet"
                 value={formData.objet}
-                onChange={handleFormChange}
+                // onChange={handleFormChange}
                 rows="4"
                 placeholder="Saisir l'objet de la commande..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 resize-none"
@@ -214,7 +175,7 @@ export default function AddPurchaserder() {
                 <select
                   name="incoterm"
                   value={formData.incoterm}
-                  onChange={handleFormChange}
+                  // onChange={handleFormChange}
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 bg-white"
                 >
                   <option>DDP</option>
@@ -234,7 +195,7 @@ export default function AddPurchaserder() {
                 type="text"
                 name="lieuLivraison"
                 value={formData.lieuLivraison}
-                onChange={handleFormChange}
+                // onChange={handleFormChange}
                 placeholder="Lieu de livraison"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900"
               />
@@ -252,7 +213,7 @@ export default function AddPurchaserder() {
               <select
                 name="fournisseur"
                 value={formData.fournisseur}
-                onChange={handleFormChange}
+                // onChange={handleFormChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 bg-white"
               >
                 <option>Sélectionnez un fournisseur...</option>
@@ -268,7 +229,7 @@ export default function AddPurchaserder() {
                 type="text"
                 name="adresseFournisseur"
                 value={formData.adresseFournisseur}
-                onChange={handleFormChange}
+                // onChange={handleFormChange}
                 placeholder="L'adresse du fournisseur s'affichera ici..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-600 italic bg-gray-50"
               />
@@ -283,7 +244,7 @@ export default function AddPurchaserder() {
                     name="typeCodeArticles"
                     value="Notre Société"
                     checked={formData.typeCodeArticles === 'Notre Société'}
-                    onChange={handleFormChange}
+                    // onChange={handleFormChange}
                     className="w-4 h-4 accent-green-600"
                   />
                   <span className="text-gray-900 text-sm">Notre Société</span>
@@ -294,7 +255,7 @@ export default function AddPurchaserder() {
                     name="typeCodeArticles"
                     value="Fournisseur"
                     checked={formData.typeCodeArticles === 'Fournisseur'}
-                    onChange={handleFormChange}
+                    // onChange={handleFormChange}
                     className="w-4 h-4 accent-green-600"
                   />
                   <span className="text-gray-900 text-sm">Fournisseur</span>
@@ -339,7 +300,7 @@ export default function AddPurchaserder() {
               {/* Add Button */}
               <div className="flex justify-end mb-6">
                 <button
-                  onClick={handleAddItem}
+                  // onClick={handleAddItem}
                   className="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg font-semibold text-sm transition flex items-center gap-2"
                 >
                   <FaPlus size={18} /> Ajouter un élément
@@ -380,7 +341,7 @@ export default function AddPurchaserder() {
                           <td className="px-4 py-3 text-right font-semibold text-gray-900">{formatCurrency(item.montant)}</td>
                           <td className="px-4 py-3 text-center">
                             <button
-                              onClick={() => handleDeleteItem(item.id)}
+                              // onClick={() => handleDeleteItem(item.id)}
                               className="text-red-600 hover:text-red-800 transition"
                             >
                               <Trash2 size={18} />
@@ -396,7 +357,7 @@ export default function AddPurchaserder() {
                           type="text"
                           name="ref"
                           value={newItem.ref}
-                          onChange={handleItemChange}
+                          // onChange={handleItemChange}
                           placeholder="Réf..."
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600 text-sm"
                         />
@@ -406,7 +367,7 @@ export default function AddPurchaserder() {
                           type="text"
                           name="produit"
                           value={newItem.produit}
-                          onChange={handleItemChange}
+                          // onChange={handleItemChange}
                           placeholder="Nom du produit..."
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600 text-sm"
                         />
@@ -415,7 +376,7 @@ export default function AddPurchaserder() {
                         <select
                           name="unite"
                           value={newItem.unite}
-                          onChange={handleItemChange}
+                          // onChange={handleItemChange}
                           className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600 text-sm bg-white"
                         >
                           <option>U</option>
@@ -429,7 +390,7 @@ export default function AddPurchaserder() {
                           type="number"
                           name="quantite"
                           value={newItem.quantite}
-                          onChange={handleItemChange}
+                          // onChange={handleItemChange}
                           placeholder="0"
                           step="0.01"
                           className="w-full px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-1 focus:ring-blue-600 text-sm"
@@ -440,7 +401,7 @@ export default function AddPurchaserder() {
                           type="number"
                           name="tarif"
                           value={newItem.tarif}
-                          onChange={handleItemChange}
+                          // onChange={handleItemChange}
                           placeholder="0"
                           step="0.01"
                           className="w-full px-2 py-1 border border-gray-300 rounded text-right focus:outline-none focus:ring-1 focus:ring-blue-600 text-sm"
@@ -451,7 +412,7 @@ export default function AddPurchaserder() {
                           type="number"
                           name="remise"
                           value={newItem.remise}
-                          onChange={handleItemChange}
+                          // onChange={handleItemChange}
                           placeholder="%"
                           step="0.01"
                           className="w-full px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-1 focus:ring-blue-600 text-sm"
@@ -521,7 +482,7 @@ export default function AddPurchaserder() {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-gray-700 font-semibold">Total HT</span>
-              <span className="text-2xl font-bold text-gray-900">{formatCurrency(totalHT)}</span>
+              {/* <span className="text-2xl font-bold text-gray-900">{formatCurrency(totalHT)}</span> */}
             </div>
 
             <div className="flex justify-between items-center">
@@ -536,33 +497,30 @@ export default function AddPurchaserder() {
                 />
                 <span className="text-gray-700 font-semibold">%</span>
               </div>
-              <span className="text-2xl font-bold text-gray-900">{formatCurrency(montantTva)}</span>
+              {/* <span className="text-2xl font-bold text-gray-900">{formatCurrency(montantTva)}</span> */}
             </div>
 
             <div className="border-t-2 border-gray-300 pt-4 flex justify-between items-center">
               <span className="text-gray-700 font-bold text-lg">Total TTC</span>
-              <span className="text-3xl font-bold text-gray-900">{formatCurrency(totalTTC)}</span>
+              {/* <span className="text-3xl font-bold text-gray-900">{formatCurrency(totalTTC)}</span> */}
             </div>
 
             <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4">
               <div className="flex justify-between items-center">
                 <span className="text-red-700 font-bold">Net A Payer</span>
-                <span className="text-3xl font-bold text-red-600">{formatCurrency(totalTTC)}</span>
+                {/* <span className="text-3xl font-bold text-red-600">{formatCurrency(totalTTC)}</span> */}
               </div>
             </div>
 
             <div className="border border-gray-300 rounded-lg p-3">
               <p className="text-xs text-gray-600 mb-1">Montant en lettres</p>
-              <p className="text-gray-900 font-semibold text-sm">{amountInLetters}</p>
+              {/* <p className="text-gray-900 font-semibold text-sm">{amountInLetters}</p> */}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Dark Mode Toggle */}
-      <div className="fixed bottom-6 right-6 bg-blue-900 text-white rounded-full p-3 shadow-lg hover:bg-blue-800 cursor-pointer transition">
-        <FaMoon size={24} />
-      </div>
+     
     </div>
   );
 }
