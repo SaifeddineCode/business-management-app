@@ -1,35 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaMoon, FaPlus, FaTrash } from 'react-icons/fa';
 
 export default function AddPurchaserder() {
 
 
-  const [formData, setFormData] = useState({
+  const [purchaseOrderData, setPurchaseOrderData] = useState({
 
-    numeroBc: 'BC0226-0050',
-    date: '02/15/2026',
-    devise: 'MAD (Dirham Marocain)',
-    objet: 'Saisir l\'objet de la commande...',
+    po_number: 'BC0226-0050',
+    order_date: '02/15/2026',
+    currency: 'MAD (Dirham Marocain)',
+    subject: 'Saisir l\'objet de la commande...',
     incoterm: 'DDP',
-    lieuLivraison: '',
-    fournisseur: 'Sélectionnez un fournisseur...',
+    delivery_location: '',
+    supplier_id: 'Sélectionnez un fournisseur...',
     adresseFournisseur: '',
-    typeCodeArticles: 'Notre Société',
-    signature: 'Avec Signature',
-    tva: 20,
-    resume: ''
-
+    article_code_type: 'Notre Société',
+    requires_signature: 'Avec Signature',
+    tva_rate: 20,
+    internal_notes: '',
+    purchaseOrderItems :[]
   });
 
-  const [items, setItems] = useState([]);
-  const [newItem, setNewItem] = useState({
-    ref: '',
-    produit: '',
-    unite: 'U',
-    quantite: '',
-    tarif: '',
-    remise: ''
-  });
+  
 
   const [activeTab, setActiveTab] = useState('details');
 
@@ -64,6 +56,9 @@ export default function AddPurchaserder() {
   //   return num.toString();
   // };
 
+  useEffect(()=>{
+    console.log(purchaseOrderData)
+  },[purchaseOrderData])
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -80,11 +75,11 @@ export default function AddPurchaserder() {
             <div className="flex items-center gap-3 ml-2">
               <span className="text-white font-semibold">●</span>
               <label className="flex items-center gap-2 cursor-pointer text-white text-sm">
-                <input type="radio" name="signature" checked={formData.signature === 'Avec Signature'} onChange={() => setFormData({...formData, signature: 'Avec Signature'})} className="w-4 h-4" />
+                <input type="radio" name="signature" checked={purchaseOrderData.requires_signature === 'Avec Signature'} onChange={() => setPurchaseOrderData({...purchaseOrderData, requires_signature: 'Avec Signature'})} className="w-4 h-4" />
                 Avec Signature
               </label>
               <label className="flex items-center gap-2 cursor-pointer text-white text-sm">
-                <input type="radio" name="signature" checked={formData.signature === 'Sans Signature'} onChange={() => setFormData({...formData, signature: 'Sans Signature'})} className="w-4 h-4" />
+                <input type="radio" name="signature" checked={purchaseOrderData.requires_signature === 'Sans Signature'} onChange={() => setPurchaseOrderData({...purchaseOrderData, requires_signature: 'Sans Signature'})} className="w-4 h-4" />
                 Sans Signature
               </label>
             </div>
@@ -116,8 +111,8 @@ export default function AddPurchaserder() {
               <input
                 type="text"
                 name="numeroBc"
-                value={formData.numeroBc}
-                // onChange={handleFormChange}
+                value={purchaseOrderData.po_number}
+                onChange={(e)=>setPurchaseOrderData((prev)=>({...prev,po_number : e.target.value}))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900"
               />
             </div>
@@ -128,8 +123,8 @@ export default function AddPurchaserder() {
                 <input
                   type="date"
                   name="date"
-                  value={formData.date}
-                  // onChange={handleFormChange}
+                  value={purchaseOrderData.date}
+                  onChange={(e)=>setPurchaseOrderData((prev)=>({...prev,order_date : e.target.value}))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900"
                 />
               </div>
@@ -139,8 +134,8 @@ export default function AddPurchaserder() {
               <label className="block text-sm font-semibold text-gray-700 mb-1">Devise</label>
               <select
                 name="devise"
-                value={formData.devise}
-                // onChange={handleFormChange}
+                value={purchaseOrderData.currency}
+                onChange={(e)=>setPurchaseOrderData((prev)=>({...prev,currency : e.target.value}))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 bg-white"
               >
                 <option>MAD (Dirham Marocain)</option>
@@ -161,8 +156,8 @@ export default function AddPurchaserder() {
               <label className="block text-sm font-semibold text-gray-700 mb-1">Objet</label>
               <textarea
                 name="objet"
-                value={formData.objet}
-                // onChange={handleFormChange}
+                value={purchaseOrderData.subject}
+                onChange={(e)=>setPurchaseOrderData((prev)=>({...prev,subject : e.target.value}))}
                 rows="4"
                 placeholder="Saisir l'objet de la commande..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 resize-none"
@@ -174,8 +169,8 @@ export default function AddPurchaserder() {
               <div className="flex gap-2">
                 <select
                   name="incoterm"
-                  value={formData.incoterm}
-                  // onChange={handleFormChange}
+                  value={purchaseOrderData.incoterm}
+                  onChange={(e)=>setPurchaseOrderData((prev)=>({...prev,incoterm : e.target.value}))}
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 bg-white"
                 >
                   <option>DDP</option>
@@ -194,8 +189,8 @@ export default function AddPurchaserder() {
               <input
                 type="text"
                 name="lieuLivraison"
-                value={formData.lieuLivraison}
-                // onChange={handleFormChange}
+                value={purchaseOrderData.delivery_location}
+                onChange={(e)=>setPurchaseOrderData((prev)=>({...prev,delivery_location : e.target.value}))}
                 placeholder="Lieu de livraison"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900"
               />
@@ -212,8 +207,8 @@ export default function AddPurchaserder() {
               <label className="block text-sm font-semibold text-gray-700 mb-1">Sélectionner Fournisseur</label>
               <select
                 name="fournisseur"
-                value={formData.fournisseur}
-                // onChange={handleFormChange}
+                value={purchaseOrderData.supplier_id}
+                onChange={(e)=>setPurchaseOrderData((prev)=>({...prev,supplier_id : e.target.value}))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 bg-white"
               >
                 <option>Sélectionnez un fournisseur...</option>
@@ -228,7 +223,7 @@ export default function AddPurchaserder() {
               <input
                 type="text"
                 name="adresseFournisseur"
-                value={formData.adresseFournisseur}
+                value={purchaseOrderData.adresseFournisseur}
                 // onChange={handleFormChange}
                 placeholder="L'adresse du fournisseur s'affichera ici..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-600 italic bg-gray-50"
@@ -243,8 +238,8 @@ export default function AddPurchaserder() {
                     type="radio"
                     name="typeCodeArticles"
                     value="Notre Société"
-                    checked={formData.typeCodeArticles === 'Notre Société'}
-                    // onChange={handleFormChange}
+                    checked={purchaseOrderData.article_code_type === 'Notre Société'}
+                    onChange={(e)=>setPurchaseOrderData((prev)=>({...prev,article_code_type : e.target.value}))}
                     className="w-4 h-4 accent-green-600"
                   />
                   <span className="text-gray-900 text-sm">Notre Société</span>
@@ -254,8 +249,8 @@ export default function AddPurchaserder() {
                     type="radio"
                     name="typeCodeArticles"
                     value="Fournisseur"
-                    checked={formData.typeCodeArticles === 'Fournisseur'}
-                    // onChange={handleFormChange}
+                    checked={purchaseOrderData.article_code_type === 'Fournisseur'}
+                    onChange={(e)=>setPurchaseOrderData((prev)=>({...prev,article_code_type : e.target.value}))}
                     className="w-4 h-4 accent-green-600"
                   />
                   <span className="text-gray-900 text-sm">Fournisseur</span>
@@ -323,14 +318,14 @@ export default function AddPurchaserder() {
                     </tr>
                   </thead>
                   <tbody>
-                    {items.length === 0 ? (
+                    {purchaseOrderData.purchaseOrderItems.length === 0 ? (
                       <tr>
                         <td colSpan="8" className="px-4 py-8 text-center text-gray-500 italic">
                           Aucune ligne de commande ajoutée pour le moment.
                         </td>
                       </tr>
                     ) : (
-                      items.map((item) => (
+                      purchaseOrderData.purchaseOrderItems.map((item) => (
                         <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-50">
                           <td className="px-4 py-3 text-gray-900">{item.ref}</td>
                           <td className="px-4 py-3 text-gray-900">{item.produit}</td>
@@ -351,7 +346,7 @@ export default function AddPurchaserder() {
                       ))
                     )}
                     {/* Input Row */}
-                    <tr className="border-t-2 border-gray-400 bg-gray-50">
+                    {/* <tr className="border-t-2 border-gray-400 bg-gray-50">
                       <td className="px-4 py-3">
                         <input
                           type="text"
@@ -424,7 +419,7 @@ export default function AddPurchaserder() {
                           <FaTrash size={18} />
                         </button>
                       </td>
-                    </tr>
+                    </tr> */}
                   </tbody>
                 </table>
               </div>
@@ -469,8 +464,8 @@ export default function AddPurchaserder() {
         <div className="bg-white rounded-lg p-6 shadow-md">
           <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-4">Résumé / Notes Internes</h3>
           <textarea
-            value={formData.resume}
-            onChange={(e) => setFormData({...formData, resume: e.target.value})}
+            value={purchaseOrderData.internal_notes}
+            onChange={(e) => setPurchaseOrderData({...purchaseOrderData, internal_notes: e.target.value})}
             placeholder="Ajouter un commentaire ou un résumé ici..."
             rows="6"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
@@ -491,8 +486,8 @@ export default function AddPurchaserder() {
                 <span className="text-gray-700 font-semibold">Taux:</span>
                 <input
                   type="number"
-                  value={formData.tva}
-                  onChange={(e) => setFormData({...formData, tva: parseFloat(e.target.value)})}
+                  value={purchaseOrderData.tva_rate}
+                  onChange={(e) => setPurchaseOrderData({...purchaseOrderData, tva_rate: parseFloat(e.target.value)})}
                   className="w-12 px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-1 focus:ring-blue-600 text-sm"
                 />
                 <span className="text-gray-700 font-semibold">%</span>
