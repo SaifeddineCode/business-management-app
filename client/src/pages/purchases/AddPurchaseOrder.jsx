@@ -13,7 +13,6 @@ export default function AddPurchaserder() {
     incoterm: 'DDP',
     delivery_location: '',
     supplier_id: 'Sélectionnez un fournisseur...',
-    adresseFournisseur: '',
     article_code_type: 'Notre Société',
     requires_signature: 'Avec Signature',
     tva_rate: 20,
@@ -32,6 +31,29 @@ export default function AddPurchaserder() {
     return parseFloat(value).toFixed(2).toString().replace('.', ',');
   };
 
+  const addPurchaseOrderItem = () =>{
+    setPurchaseOrderData((prev)=>({...prev,
+      purchaseOrderItems : [...purchaseOrderData.purchaseOrderItems ,{
+        id:Date.now().toString(36) + Math.random().toString(36).substring(2),
+        reference : "",
+        product_id : "",
+        unit : "",
+        quantity : "",
+        unit_price : "" , 
+        discount_percent :"",
+        line_total : ""
+      }]
+    }))
+  }
+
+  const deletePurchaseOrderItem =  (item_ID) =>{
+    setPurchaseOrderData((prev)=>({
+      ...prev,
+      purchaseOrderItems : purchaseOrderData.purchaseOrderItems.filter((item)=>{
+        return item.id !== item_ID
+      })
+    }))
+  }
  
 
 
@@ -57,8 +79,8 @@ export default function AddPurchaserder() {
   // };
 
   useEffect(()=>{
-    console.log(purchaseOrderData)
-  },[purchaseOrderData])
+    console.log(purchaseOrderData.purchaseOrderItems)
+  },[purchaseOrderData.purchaseOrderItems])
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -220,14 +242,13 @@ export default function AddPurchaserder() {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Adresse</label>
-              <input
+              {/* <input
                 type="text"
                 name="adresseFournisseur"
-                value={purchaseOrderData.adresseFournisseur}
                 // onChange={handleFormChange}
                 placeholder="L'adresse du fournisseur s'affichera ici..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-600 italic bg-gray-50"
-              />
+              /> */}
             </div>
 
             <div>
@@ -295,7 +316,7 @@ export default function AddPurchaserder() {
               {/* Add Button */}
               <div className="flex justify-end mb-6">
                 <button
-                  // onClick={handleAddItem}
+                  onClick={addPurchaseOrderItem}
                   className="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded-lg font-semibold text-sm transition flex items-center gap-2"
                 >
                   <FaPlus size={18} /> Ajouter un élément
@@ -308,7 +329,7 @@ export default function AddPurchaserder() {
                   <thead>
                     <tr className="bg-gray-100 border-b-2 border-gray-300">
                       <th className="px-4 py-3 text-left font-semibold text-gray-700">RÉF</th>
-                      <th className="px-4 py-3 text-left font-semibold text-gray-700">PRODUIT / DÉSIGNATION</th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">PRODUIT</th>
                       <th className="px-4 py-3 text-left font-semibold text-gray-700">UNITÉ</th>
                       <th className="px-4 py-3 text-center font-semibold text-gray-700">QTÉ</th>
                       <th className="px-4 py-3 text-right font-semibold text-gray-700">TARIF U.HT</th>
@@ -327,19 +348,19 @@ export default function AddPurchaserder() {
                     ) : (
                       purchaseOrderData.purchaseOrderItems.map((item) => (
                         <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-50">
-                          <td className="px-4 py-3 text-gray-900">{item.ref}</td>
-                          <td className="px-4 py-3 text-gray-900">{item.produit}</td>
-                          <td className="px-4 py-3 text-gray-900">{item.unite}</td>
-                          <td className="px-4 py-3 text-center text-gray-900">{item.quantite}</td>
-                          <td className="px-4 py-3 text-right text-gray-900">{formatCurrency(item.tarif)}</td>
-                          <td className="px-4 py-3 text-center text-gray-900">{item.remise || '-'}</td>
-                          <td className="px-4 py-3 text-right font-semibold text-gray-900">{formatCurrency(item.montant)}</td>
+                          <td className="px-4 py-3 text-gray-900">{item.reference}</td>
+                          <td className="px-4 py-3 text-gray-900">{item.product_id}</td>
+                          <td className="px-4 py-3 text-gray-900">{item.unit}</td>
+                          <td className="px-4 py-3 text-center text-gray-900">{item.quantity}</td>
+                          <td className="px-4 py-3 text-right text-gray-900">{item.unit_price}</td>
+                          <td className="px-4 py-3 text-center text-gray-900">{item.discount_percent || '-'}</td>
+                          <td className="px-4 py-3 text-right font-semibold text-gray-900">{item.line_total}</td>
                           <td className="px-4 py-3 text-center">
                             <button
-                              // onClick={() => handleDeleteItem(item.id)}
+                              onClick={()=>deletePurchaseOrderItem(item.id)}
                               className="text-red-600 hover:text-red-800 transition"
                             >
-                              <Trash2 size={18} />
+                              <FaTrash size={18} />
                             </button>
                           </td>
                         </tr>
