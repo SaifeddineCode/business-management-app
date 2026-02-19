@@ -3,16 +3,15 @@ import { FaMoon, FaPlus, FaTrash } from 'react-icons/fa';
 
 export default function AddPurchaserder() {
 
-
+  const [sequenceNumber,setSequenceNumber] = useState(1)
   const [purchaseOrderData, setPurchaseOrderData] = useState({
-
-    po_number: 'BC0226-0050',
+    po_number: `PO-${String(sequenceNumber).padStart(3, '0')}-${new Date().getFullYear().toString().slice(-2)}`,
     order_date: '02/15/2026',
     currency: 'MAD (Dirham Marocain)',
-    subject: 'Saisir l\'objet de la commande...',
+    subject: '',
     incoterm: 'DDP',
     delivery_location: '',
-    supplier_id: 'Sélectionnez un fournisseur...',
+    supplier_id: '',
     article_code_type: 'Notre Société',
     requires_signature: 'Avec Signature',
     tva_rate: 20,
@@ -27,10 +26,7 @@ export default function AddPurchaserder() {
  
  
  
-  const formatCurrency = (value) => {
-    return parseFloat(value).toFixed(2).toString().replace('.', ',');
-  };
-
+ 
   const addPurchaseOrderItem = () =>{
     setPurchaseOrderData((prev)=>({...prev,
       purchaseOrderItems : [...purchaseOrderData.purchaseOrderItems ,{
@@ -78,9 +74,16 @@ export default function AddPurchaserder() {
   //   return num.toString();
   // };
 
+
+
+
+  // const addPurchaseOrder = () =>{
+  //   setSequenceNumber((prev)=>prev + 1)
+  // }
+
   useEffect(()=>{
-    console.log(purchaseOrderData.purchaseOrderItems)
-  },[purchaseOrderData.purchaseOrderItems])
+    console.log(purchaseOrderData)
+  },[purchaseOrderData])
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -91,7 +94,9 @@ export default function AddPurchaserder() {
             <button className="bg-[#1e3a8a] bg-opacity-20 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-opacity-30 transition flex items-center gap-2 border border-white border-opacity-30">
               <span>📋</span> Liste des BCs
             </button>
-            <button className="bg-[#1e3a8a] bg-opacity-20 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-opacity-30 transition flex items-center gap-2 border border-white border-opacity-30">
+            <button
+              // onClick={()=>addPurchaseOrder()}
+              className="bg-[#1e3a8a] bg-opacity-20 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-opacity-30 transition flex items-center gap-2 border border-white border-opacity-30">
               <span>➕</span> Ajouter un BC
             </button>
             <div className="flex items-center gap-3 ml-2">

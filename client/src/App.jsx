@@ -18,6 +18,7 @@ import Products from "./pages/products/Products";
 import AddProduct from "./pages/products/AddProduct";
 import ProductDetails from "./pages/products/ProductDetails";
 import AddPurchaserder from "./pages/purchases/AddPurchaseOrder";
+import Suppliers from "./pages/suppliers/Suppliers";
 
 function App() {
 
@@ -61,6 +62,7 @@ function App() {
               <Route path='/add-product' element={<AddProduct/>} />
               <Route path='/add-product/:id/edit' element={<AddProduct/>} />
               <Route path='/product-details/:id' element={<ProductDetails/>} />
+              <Route path='/suppliers' element={<Suppliers />} />
             </Routes>
           </main>
         </div>
