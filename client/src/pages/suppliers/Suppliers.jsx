@@ -1,11 +1,34 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { FaEdit, FaMailBulk, FaMap, FaPhone, FaPlus, FaSearch, FaTrash, FaUser } from 'react-icons/fa';
+import { fetchWithToken } from '../../utils/api';
+import { useEffect } from 'react';
 
 export default function Suppliers() {
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const [suppliers, setSuppliers] = useState([
+
+  const fetchSuppliers = async () =>{
+    
+    const result = await fetchWithToken("/api/suppliers")
+    if(!result.ok){
+      throw new Error("error while fetching suppliers")
+    }
+    return result.json()
+
+  }
+
+  const {data : suppliers ,isLoading,error} = useQuery({
+    queryKey : ["suppliers"],
+    queryFn : fetchSuppliers
+  })
+
+  useEffect(()=>{
+    console.log(suppliers)
+  },[suppliers])
+
+  const [dummySuppliers, setDummySuppliers] = useState([
     {
       id: 1,
       name: 'Fournisseur ABC SARL',
@@ -132,7 +155,7 @@ export default function Suppliers() {
         </button>
       </div>
 
-      {/* Suppliers Grid / List */}
+      {/* dummySuppliers Grid / List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredSuppliers.length === 0 ? (
           <div className="col-span-full bg-white rounded-lg shadow p-12 text-center">

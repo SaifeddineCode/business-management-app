@@ -7,6 +7,7 @@ import salesOrders from "./routes/salesOrders.js"
 import invoiceRoute from "./routes/invoiceRoute.js"
 import sales_orders_items from "./routes/sales_orders_items.js"
 import authRoutes from "./routes/authRoutes.js"
+import suppliersRoutes from "./routes/suppliersRoutes.js"
 
 
 const app = express();
@@ -27,6 +28,7 @@ app.use('/api/quote_item', quote_item);
 app.use('/api/salesOrders',salesOrders);
 app.use('/api/invoice',invoiceRoute);
 app.use('/api/sales_orders_items',sales_orders_items);
+app.use('/api/suppliers',suppliersRoutes);
 
 
 app.get("/",(req,res)=>{
