@@ -28,58 +28,58 @@ export default function Suppliers() {
     console.log(suppliers)
   },[suppliers])
 
-  const [dummySuppliers, setDummySuppliers] = useState([
-    {
-      id: 1,
-      name: 'Fournisseur ABC SARL',
-      email: 'contact@abc.com',
-      phone: '+212 5 35 94 46 00',
-      address: '123 Rue Mohammed V',
-      city: 'Casablanca',
-      contact_person: 'Ahmed Bennani',
-      created_at: '2025-01-15'
-    },
-    {
-      id: 2,
-      name: 'Supplier XYZ Ltd',
-      email: 'info@xyz.com',
-      phone: '+212 6 61 23 45 67',
-      address: '456 Avenue Hassan II',
-      city: 'Rabat',
-      contact_person: 'Fatima Al-Mansouri',
-      created_at: '2025-02-01'
-    },
-    {
-      id: 3,
-      name: 'Global Imports Co',
-      email: 'sales@globalimports.com',
-      phone: '+212 5 24 39 99 99',
-      address: '789 Boulevard de la Paix',
-      city: 'Marrakech',
-      contact_person: 'Mohamed Alaoui',
-      created_at: '2025-02-10'
-    },
-    {
-      id: 4,
-      name: 'Tech Solutions Morocco',
-      email: 'tech@techsolutions.ma',
-      phone: '+212 6 77 88 99 00',
-      address: '321 Rue de l\'Innovation',
-      city: 'Fès',
-      contact_person: 'Nadia Zahra',
-      created_at: '2025-02-05'
-    },
-    {
-      id: 5,
-      name: 'Premium Distributors',
-      email: 'premium@distributors.com',
-      phone: '+212 5 22 45 67 89',
-      address: '654 Chemin de Meknes',
-      city: 'Salé',
-      contact_person: 'Hassan Chakir',
-      created_at: '2025-02-12'
-    }
-  ]);
+  // const [dummySuppliers, setDummySuppliers] = useState([
+  //   {
+  //     id: 1,
+  //     name: 'Fournisseur ABC SARL',
+  //     email: 'contact@abc.com',
+  //     phone: '+212 5 35 94 46 00',
+  //     address: '123 Rue Mohammed V',
+  //     city: 'Casablanca',
+  //     contact_person: 'Ahmed Bennani',
+  //     created_at: '2025-01-15'
+  //   },
+  //   {
+  //     id: 2,
+  //     name: 'Supplier XYZ Ltd',
+  //     email: 'info@xyz.com',
+  //     phone: '+212 6 61 23 45 67',
+  //     address: '456 Avenue Hassan II',
+  //     city: 'Rabat',
+  //     contact_person: 'Fatima Al-Mansouri',
+  //     created_at: '2025-02-01'
+  //   },
+  //   {
+  //     id: 3,
+  //     name: 'Global Imports Co',
+  //     email: 'sales@globalimports.com',
+  //     phone: '+212 5 24 39 99 99',
+  //     address: '789 Boulevard de la Paix',
+  //     city: 'Marrakech',
+  //     contact_person: 'Mohamed Alaoui',
+  //     created_at: '2025-02-10'
+  //   },
+  //   {
+  //     id: 4,
+  //     name: 'Tech Solutions Morocco',
+  //     email: 'tech@techsolutions.ma',
+  //     phone: '+212 6 77 88 99 00',
+  //     address: '321 Rue de l\'Innovation',
+  //     city: 'Fès',
+  //     contact_person: 'Nadia Zahra',
+  //     created_at: '2025-02-05'
+  //   },
+  //   {
+  //     id: 5,
+  //     name: 'Premium Distributors',
+  //     email: 'premium@distributors.com',
+  //     phone: '+212 5 22 45 67 89',
+  //     address: '654 Chemin de Meknes',
+  //     city: 'Salé',
+  //     contact_person: 'Hassan Chakir',
+  //     created_at: '2025-02-12'
+  //   }
+  // ]);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [newSupplier, setNewSupplier] = useState({
@@ -91,11 +91,7 @@ export default function Suppliers() {
     contact_person: ''
   });
 
-  const filteredSuppliers = suppliers.filter(supplier =>
-    supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    supplier.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    supplier.city.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  
 
   const handleAddSupplier = () => {
     // Functionality to be added
@@ -120,6 +116,16 @@ export default function Suppliers() {
     // Functionality to be added
     console.log('Edit supplier:', supplier);
   };
+
+  if(isLoading) return <> is loading </>
+  if(error) return <> {error}</>
+
+  const filteredSuppliers = suppliers.filter(supplier =>
+    supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    supplier.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    supplier.city.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">

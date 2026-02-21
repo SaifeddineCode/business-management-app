@@ -1,5 +1,7 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { FaMoon, FaPlus, FaTrash } from 'react-icons/fa';
+import { fetchWithToken } from '../../utils/api';
 
 export default function AddPurchaserder() {
 
@@ -81,9 +83,30 @@ export default function AddPurchaserder() {
   //   setSequenceNumber((prev)=>prev + 1)
   // }
 
+  const fetchSuppliers = async () =>{
+      
+      const result = await fetchWithToken("/api/suppliers")
+      if(!result.ok){
+        throw new Error("error while fetching suppliers")
+      }
+      return result.json()
+  
+    }
+
+  const {data : suppliers,isloading,error} = useQuery({
+    queryKey:["suppliers"],
+    queryFn:fetchSuppliers
+  })
+
+
   useEffect(()=>{
-    console.log(purchaseOrderData)
-  },[purchaseOrderData])
+    console.log(purchaseOrderData.supplier_id)
+  },[purchaseOrderData.supplier_id])
+
+
+
+  if(isloading) return <div> isloading </div>
+  if(error) return <div> {error} </div>
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -238,10 +261,16 @@ export default function AddPurchaserder() {
                 onChange={(e)=>setPurchaseOrderData((prev)=>({...prev,supplier_id : e.target.value}))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 bg-white"
               >
-                <option>Sélectionnez un fournisseur...</option>
+                <option value=" "> Choisissez un fournisseur </option>
+                {/* <option>Sélectionnez un fournisseur...</option>
                 <option>Fournisseur A</option>
                 <option>Fournisseur B</option>
-                <option>Fournisseur C</option>
+                <option>Fournisseur C</option> */}
+                {suppliers?.map((supplier,index)=>{
+                  return (
+                    <option key={index} value={supplier.id}> {supplier.contact_person} </option>
+                  )
+                })}
               </select>
             </div>
 
