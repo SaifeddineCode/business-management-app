@@ -27,8 +27,6 @@ export default function AddPurchaserder() {
 
  
  
- 
- 
   const addPurchaseOrderItem = () =>{
     setPurchaseOrderData((prev)=>({...prev,
       purchaseOrderItems : [...purchaseOrderData.purchaseOrderItems ,{
@@ -53,6 +51,25 @@ export default function AddPurchaserder() {
     }))
   }
  
+  const handleChangePurchaseItem = (item_ID,field,value) =>{
+
+    // const targetItem = purchaseOrderData.purchaseOrderItems.filter((po_i)=>{
+    //   return po_i.id = item_ID
+    // })
+
+    setPurchaseOrderData((prev)=>({
+
+      ...prev,
+      purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
+        item.id === item_ID ? {...item,[field]:value} : item
+      )
+
+    }))
+
+   
+
+    
+  }
 
 
   // const numberToFrench = (num) => {
@@ -97,6 +114,8 @@ export default function AddPurchaserder() {
     queryKey:["suppliers"],
     queryFn:fetchSuppliers
   })
+
+  
 
 
   useEffect(()=>{
@@ -381,14 +400,72 @@ export default function AddPurchaserder() {
                       </tr>
                     ) : (
                       purchaseOrderData.purchaseOrderItems.map((item) => (
+                        // <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-50">
+                        //   <td className="px-4 py-3 text-gray-900">
+                        //     <input 
+                        //       className="w-full px-4 py-2 border border-gray-300 rounded"
+                        //       value={item.reference} />
+                        //   </td>
+                        //   <td className="px-4 py-3 text-gray-900">{item.product_id}</td>
+                        //   <td className="px-4 py-3 text-gray-900">{item.unit}</td>
+                        //   <td className="px-4 py-3 text-center text-gray-900">{item.quantity}</td>
+                        //   <td className="px-4 py-3 text-right text-gray-900">{item.unit_price}</td>
+                        //   <td className="px-4 py-3 text-center text-gray-900">{item.discount_percent || '-'}</td>
+                        //   <td className="px-4 py-3 text-right font-semibold text-gray-900">{item.line_total}</td>
+                        //   <td className="px-4 py-3 text-center">
+                        //     <button
+                        //       onClick={()=>deletePurchaseOrderItem(item.id)}
+                        //       className="text-red-600 hover:text-red-800 transition"
+                        //     >
+                        //       <FaTrash size={18} />
+                        //     </button>
+                        //   </td>
+                        // </tr>
                         <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-50">
-                          <td className="px-4 py-3 text-gray-900">{item.reference}</td>
-                          <td className="px-4 py-3 text-gray-900">{item.product_id}</td>
-                          <td className="px-4 py-3 text-gray-900">{item.unit}</td>
-                          <td className="px-4 py-3 text-center text-gray-900">{item.quantity}</td>
-                          <td className="px-4 py-3 text-right text-gray-900">{item.unit_price}</td>
-                          <td className="px-4 py-3 text-center text-gray-900">{item.discount_percent || '-'}</td>
-                          <td className="px-4 py-3 text-right font-semibold text-gray-900">{item.line_total}</td>
+                          <td className="px-4 py-3 text-gray-900">
+                            <input 
+                              className="w-full px-4 py-2 border border-gray-300 rounded"
+                              value={item.reference} 
+                              onChange={(e)=>handleChangePurchaseItem(item.id,"reference",e.target.value)}
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-gray-900">
+                            <input 
+                              className="w-full px-4 py-2 border border-gray-300 rounded"
+                              value={item.product_id} 
+                              onChange={(e)=>handleChangePurchaseItem(item.id,"product_id",e.target.value)}
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-gray-900">
+                            <input 
+                              className="w-full px-4 py-2 border border-gray-300 rounded"
+                              value={item.unit} 
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-center text-gray-900">
+                            <input 
+                              className="w-full px-4 py-2 border border-gray-300 rounded text-center"
+                              value={item.quantity} 
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-right text-gray-900">
+                            <input 
+                              className="w-full px-4 py-2 border border-gray-300 rounded text-right"
+                              value={item.unit_price} 
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-center text-gray-900">
+                            <input 
+                              className="w-full px-4 py-2 border border-gray-300 rounded text-center"
+                              value={item.discount_percent || '-'} 
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-right font-semibold text-gray-900">
+                            <input 
+                              className="w-full px-4 py-2 border border-gray-300 rounded text-right"
+                              value={item.line_total} 
+                            />
+                          </td>
                           <td className="px-4 py-3 text-center">
                             <button
                               onClick={()=>deletePurchaseOrderItem(item.id)}
