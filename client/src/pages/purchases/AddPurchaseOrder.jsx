@@ -115,12 +115,25 @@ export default function AddPurchaserder() {
     queryFn:fetchSuppliers
   })
 
+  const fetchProductsSuppliers = async() =>{
+    const result = await fetchWithToken(`/api/suppliersProducts?supplier_ID=${purchaseOrderData.supplier_id}`)
+    return result.json()
+  }
+
+  const {
+    data : productsSupplier,
+    isloading : productsSupplierLoading,
+    error : productsSupplierError} = useQuery({
+    queryKey : ["ProductsSupplier",purchaseOrderData.supplier_id],
+    queryFn : fetchProductsSuppliers
+  })
+
   
 
 
   useEffect(()=>{
-    console.log(purchaseOrderData.supplier_id)
-  },[purchaseOrderData.supplier_id])
+    console.log(productsSupplierError,productsSupplierLoading,productsSupplier)
+  },[productsSupplier])
 
 
 
@@ -430,11 +443,35 @@ export default function AddPurchaserder() {
                             />
                           </td>
                           <td className="px-4 py-3 text-gray-900">
-                            <input 
+                            <select 
                               className="w-full px-4 py-2 border border-gray-300 rounded"
                               value={item.product_id} 
                               onChange={(e)=>handleChangePurchaseItem(item.id,"product_id",e.target.value)}
-                            />
+                            >
+                              <option>Choisir un produit</option>
+                              {/* {productsSupplier?.length === 0 ?
+                              
+                              <p> Ce fournisseur n'a aucun produit pour le moment  </p> 
+                              :
+                              productsSupplier.map((product,index)=>{
+                                return (
+                                  <option key={index} value={product.id}> {product.product_name} </option>
+                                )
+                              }) 
+                               
+                              } */}
+                              {
+                                productsSupplierLoading ?
+                                <option> Loading products </option>
+                                : 
+                                productsSupplier.map((product,index)=>{
+                                return (
+                                  <option key={index} value={product.id}> {product.product_name} </option>
+                                )
+                              }) 
+                              }
+                            </select>
+
                           </td>
                           <td className="px-4 py-3 text-gray-900">
                             <input 
