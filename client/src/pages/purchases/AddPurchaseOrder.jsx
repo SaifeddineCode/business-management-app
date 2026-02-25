@@ -51,25 +51,7 @@ export default function AddPurchaserder() {
     }))
   }
  
-  const handleChangePurchaseItem = (item_ID,field,value) =>{
 
-    // const targetItem = purchaseOrderData.purchaseOrderItems.filter((po_i)=>{
-    //   return po_i.id = item_ID
-    // })
-
-    setPurchaseOrderData((prev)=>({
-
-      ...prev,
-      purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
-        item.id === item_ID ? {...item,[field]:value} : item
-      )
-
-    }))
-
-   
-
-    
-  }
 
 
   // const numberToFrench = (num) => {
@@ -132,8 +114,46 @@ export default function AddPurchaserder() {
 
 
   useEffect(()=>{
-    console.log(productsSupplierError,productsSupplierLoading,productsSupplier)
-  },[productsSupplier])
+    // console.log(purchaseOrderData.purchaseOrderItems)
+    // console.log(productsSupplier,purchaseOrderData.purchaseOrderItems)
+  },[purchaseOrderData.purchaseOrderItems])
+
+    const handleChangePurchaseItem = (item_ID,field,value,item) =>{
+
+    // const targetItem = purchaseOrderData.purchaseOrderItems.filter((po_i)=>{
+    //   return po_i.id = item_ID
+    // })
+
+    if(field === "product_id"){
+
+      const selectedProduct = productsSupplier.find((product)=>{
+        return product.id === parseFloat(item.product_id)
+      }) 
+      // console.log(selectedProduct)
+       setPurchaseOrderData((prev)=>({
+
+      ...prev,
+      purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
+        item.id === item_ID 
+      ? 
+      {...item,"unit_price": selectedProduct?.supplier_price} 
+      : 
+      item
+      )
+
+    }))
+    }
+
+    setPurchaseOrderData((prev)=>({
+
+      ...prev,
+      purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
+        item.id === item_ID ? {...item,[field]:value} : item
+      )
+
+    }))
+    
+  }
 
 
 
@@ -437,7 +457,7 @@ export default function AddPurchaserder() {
                         <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-50">
                           <td className="px-4 py-3 text-gray-900">
                             <input 
-                              className="w-full px-4 py-2 border border-gray-300 rounded"
+                              className="w-full px-2 py-2 border border-gray-300 rounded"
                               value={item.reference} 
                               onChange={(e)=>handleChangePurchaseItem(item.id,"reference",e.target.value)}
                             />
@@ -446,7 +466,7 @@ export default function AddPurchaserder() {
                             <select 
                               className="w-full px-4 py-2 border border-gray-300 rounded"
                               value={item.product_id} 
-                              onChange={(e)=>handleChangePurchaseItem(item.id,"product_id",e.target.value)}
+                              onChange={(e)=>handleChangePurchaseItem(item.id,"product_id",e.target.value,item)}
                             >
                               <option>Choisir un produit</option>
                               {/* {productsSupplier?.length === 0 ?
@@ -461,12 +481,12 @@ export default function AddPurchaserder() {
                                
                               } */}
                               {
-                                productsSupplierLoading ?
+                                !productsSupplier ?
                                 <option> Loading products </option>
                                 : 
                                 productsSupplier.map((product,index)=>{
                                 return (
-                                  <option key={index} value={product.id}> {product.product_name} </option>
+                                  <option key={index} value={product.id} > {product.product_name} </option>
                                 )
                               }) 
                               }
