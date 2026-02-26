@@ -25,16 +25,19 @@ export default function AddPurchaserder() {
 
   const [activeTab, setActiveTab] = useState('details');
 
- 
+ const generateReference = () => {
+  const random = Math.floor(Math.random() * 10000)
+  return `REF-${Date.now()}-${random}`
+}
  
   const addPurchaseOrderItem = () =>{
     setPurchaseOrderData((prev)=>({...prev,
       purchaseOrderItems : [...purchaseOrderData.purchaseOrderItems ,{
         id:Date.now().toString(36) + Math.random().toString(36).substring(2),
-        reference : "",
+        reference : generateReference(),
         product_id : "",
-        unit : "",
-        quantity : "",
+        unit : "KG",
+        quantity : 1,
         unit_price : "" , 
         discount_percent :"",
         line_total : ""
@@ -114,12 +117,11 @@ export default function AddPurchaserder() {
 
 
   useEffect(()=>{
-    // console.log(purchaseOrderData.purchaseOrderItems)
+    console.log(purchaseOrderData.purchaseOrderItems)
     // console.log(productsSupplier,purchaseOrderData.purchaseOrderItems)
   },[purchaseOrderData.purchaseOrderItems])
 
-    const handleChangePurchaseItem = (item_ID,field,value,item) =>{
-
+  const handleChangePurchaseItem = (item_ID,field,value,item) =>{
     // const targetItem = purchaseOrderData.purchaseOrderItems.filter((po_i)=>{
     //   return po_i.id = item_ID
     // })
@@ -127,7 +129,7 @@ export default function AddPurchaserder() {
     if(field === "product_id"){
 
       const selectedProduct = productsSupplier.find((product)=>{
-        return product.id === parseFloat(item.product_id)
+        return product.id === parseFloat(value)
       }) 
       // console.log(selectedProduct)
        setPurchaseOrderData((prev)=>({
@@ -136,7 +138,35 @@ export default function AddPurchaserder() {
       purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
         item.id === item_ID 
       ? 
-      {...item,"unit_price": selectedProduct?.supplier_price} 
+      // {...item,
+      //   unit_price: selectedProduct?.supplier_price,
+      //   line_total:parseFloat(item.quantity) * parseFloat(item.unit_price)
+      // }
+      {
+  ...item,
+  unit_price: selectedProduct?.supplier_price,
+  line_total: parseFloat(item.quantity) * parseFloat(selectedProduct?.supplier_price), // ✅ use the new value directly
+} 
+      : 
+      item
+      )
+
+    }))
+    }
+
+    if(field === "quantity"){
+
+      // const selectedProduct = productsSupplier.find((product)=>{
+      //   return product.id === parseFloat(item.product_id)
+      // }) 
+      // console.log(selectedProduct)
+       setPurchaseOrderData((prev)=>({
+
+      ...prev,
+      purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
+        item.id === item_ID 
+      ? 
+      {...item,"line_total": parseFloat(value) * parseFloat(item.unit_price)} 
       : 
       item
       )
@@ -497,30 +527,36 @@ export default function AddPurchaserder() {
                             <input 
                               className="w-full px-4 py-2 border border-gray-300 rounded"
                               value={item.unit} 
+                              onChange={(e)=>handleChangePurchaseItem(item.id,"unit",e.target.value)}
                             />
                           </td>
                           <td className="px-4 py-3 text-center text-gray-900">
                             <input 
                               className="w-full px-4 py-2 border border-gray-300 rounded text-center"
                               value={item.quantity} 
+                              onChange={(e)=>handleChangePurchaseItem(item.id,"quantity",e.target.value,item)}
+                              type='number'
                             />
                           </td>
                           <td className="px-4 py-3 text-right text-gray-900">
                             <input 
                               className="w-full px-4 py-2 border border-gray-300 rounded text-right"
                               value={item.unit_price} 
+                              onChange={(e)=>handleChangePurchaseItem(item.id,"unit_price",e.target.value)}
                             />
                           </td>
                           <td className="px-4 py-3 text-center text-gray-900">
                             <input 
                               className="w-full px-4 py-2 border border-gray-300 rounded text-center"
                               value={item.discount_percent || '-'} 
+                              onChange={(e)=>handleChangePurchaseItem(item.id,"discount_percent",e.target.value)}
                             />
                           </td>
                           <td className="px-4 py-3 text-right font-semibold text-gray-900">
                             <input 
                               className="w-full px-4 py-2 border border-gray-300 rounded text-right"
                               value={item.line_total} 
+                              onChange={(e)=>handleChangePurchaseItem(item.id,"line_total",e.target.value)}
                             />
                           </td>
                           <td className="px-4 py-3 text-center">
