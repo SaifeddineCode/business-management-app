@@ -8,7 +8,7 @@ export default function AddPurchaserder() {
   const [sequenceNumber,setSequenceNumber] = useState(1)
   const [purchaseOrderData, setPurchaseOrderData] = useState({
     po_number: `PO-${String(sequenceNumber).padStart(3, '0')}-${new Date().getFullYear().toString().slice(-2)}`,
-    order_date: '02/15/2026',
+    order_date: new Date().toISOString().split("T")[0],
     currency: 'MAD (Dirham Marocain)',
     subject: '',
     incoterm: 'DDP',
@@ -117,9 +117,9 @@ export default function AddPurchaserder() {
 
 
   useEffect(()=>{
-    console.log(purchaseOrderData.purchaseOrderItems)
+    console.log(purchaseOrderData)
     // console.log(productsSupplier,purchaseOrderData.purchaseOrderItems)
-  },[purchaseOrderData.purchaseOrderItems])
+  },[purchaseOrderData])
 
   const handleChangePurchaseItem = (item_ID,field,value,item) =>{
     // const targetItem = purchaseOrderData.purchaseOrderItems.filter((po_i)=>{
@@ -143,10 +143,10 @@ export default function AddPurchaserder() {
       //   line_total:parseFloat(item.quantity) * parseFloat(item.unit_price)
       // }
       {
-  ...item,
-  unit_price: selectedProduct?.supplier_price,
-  line_total: parseFloat(item.quantity) * parseFloat(selectedProduct?.supplier_price), // ✅ use the new value directly
-} 
+        ...item,
+        unit_price: selectedProduct?.supplier_price,
+        line_total: parseFloat(item.quantity) * parseFloat(selectedProduct?.supplier_price), // ✅ use the new value directly
+      } 
       : 
       item
       )
@@ -167,6 +167,26 @@ export default function AddPurchaserder() {
         item.id === item_ID 
       ? 
       {...item,"line_total": parseFloat(value) * parseFloat(item.unit_price)} 
+      : 
+      item
+      )
+
+    }))
+    }
+
+    if(field === "discount_percent"){
+
+      // const selectedProduct = productsSupplier.find((product)=>{
+      //   return product.id === parseFloat(item.product_id)
+      // }) 
+      // console.log(selectedProduct)
+       setPurchaseOrderData((prev)=>({
+
+      ...prev,
+      purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
+        item.id === item_ID 
+      ? 
+      {...item,"line_total": (parseFloat(value) * parseFloat(item.unit_price)) - ((parseFloat(value) * parseFloat(item.unit_price)) * value) } 
       : 
       item
       )
@@ -255,7 +275,7 @@ export default function AddPurchaserder() {
                 <input
                   type="date"
                   name="date"
-                  value={purchaseOrderData.date}
+                  value={purchaseOrderData.order_date}
                   onChange={(e)=>setPurchaseOrderData((prev)=>({...prev,order_date : e.target.value}))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900"
                 />
@@ -532,6 +552,7 @@ export default function AddPurchaserder() {
                           </td>
                           <td className="px-4 py-3 text-center text-gray-900">
                             <input 
+                              min={0}
                               className="w-full px-4 py-2 border border-gray-300 rounded text-center"
                               value={item.quantity} 
                               onChange={(e)=>handleChangePurchaseItem(item.id,"quantity",e.target.value,item)}
@@ -548,8 +569,10 @@ export default function AddPurchaserder() {
                           <td className="px-4 py-3 text-center text-gray-900">
                             <input 
                               className="w-full px-4 py-2 border border-gray-300 rounded text-center"
-                              value={item.discount_percent || '-'} 
+                              value={item.discount_percent || ''} 
                               onChange={(e)=>handleChangePurchaseItem(item.id,"discount_percent",e.target.value)}
+                              type='number'
+                              min={0}
                             />
                           </td>
                           <td className="px-4 py-3 text-right font-semibold text-gray-900">
