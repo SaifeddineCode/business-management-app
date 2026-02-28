@@ -3,7 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { FaMoon, FaPlus, FaTrash } from 'react-icons/fa';
 import { fetchWithToken } from '../../utils/api';
 
+import writtenNumber from 'written-number';
+
 export default function AddPurchaserder() {
+  writtenNumber.defaults.lang = 'fr'
 
   const [sequenceNumber,setSequenceNumber] = useState(1)
   const [purchaseOrderData, setPurchaseOrderData] = useState({
@@ -13,6 +16,7 @@ export default function AddPurchaserder() {
     subject: '',
     incoterm: 'DDP',
     delivery_location: '',
+    supplier_address:"",
     supplier_id: '',
     article_code_type: 'Notre Société',
     requires_signature: 'Avec Signature',
@@ -21,6 +25,7 @@ export default function AddPurchaserder() {
     purchaseOrderItems :[]
   });
 
+  const [selectedSupplier,setSelectedSupplier] = useState({})
   
 
   const [activeTab, setActiveTab] = useState('details');
@@ -91,14 +96,32 @@ export default function AddPurchaserder() {
       if(!result.ok){
         throw new Error("error while fetching suppliers")
       }
+
       return result.json()
   
-    }
+  }
+
 
   const {data : suppliers,isloading,error} = useQuery({
     queryKey:["suppliers"],
     queryFn:fetchSuppliers
   })
+
+  useEffect(()=>{
+    
+    if(suppliers){
+    const targetSupplier = suppliers.find((supplier)=>{
+      return supplier.id === parseFloat(purchaseOrderData.supplier_id)
+    })
+
+    setSelectedSupplier(targetSupplier)
+    setPurchaseOrderData((prev)=>({...prev,supplier_address:targetSupplier.address}))
+    }
+    
+  
+
+  },[purchaseOrderData.supplier_id])
+
 
   const fetchProductsSuppliers = async() =>{
     const result = await fetchWithToken(`/api/suppliersProducts?supplier_ID=${purchaseOrderData.supplier_id}`)
@@ -228,7 +251,7 @@ const handleChangePurchaseItem = (item_ID, field, value) => {
         };
       }
 
-      updatedItem.line_total = (quantity * unit_price) - (quantity * unit_price * (discount / 100));
+      updatedItem.line_total = (quantity * unit_price) - (quantity * unit_price * (discount / 100)).toFixed(2) ;
 
       return updatedItem;
     }),
@@ -236,13 +259,33 @@ const handleChangePurchaseItem = (item_ID, field, value) => {
 };
 
 
-const total_HT = purchaseOrderData.purchaseOrderItems.reduce((a,b)=>{
-  return a.line_total + b.line_total
+const total_HT = purchaseOrderData.purchaseOrderItems.reduce((acc,item)=>{
+  return acc + (parseFloat(item.line_total) || 0 )
 },0)
 
+const ammount_TVA = total_HT * (purchaseOrderData.tva_rate / 100)
+
+const total_TTC = total_HT + ammount_TVA
+
+
+
+const numberToLettersFr = (number) => {
+  const n = Math.floor(number)
+  const cents = Math.round((number - n) * 100)
+
+  let result = writtenNumber(n, { lang: 'fr' }) + " dirham"
+
+  if(cents > 0){
+    result += " et " + writtenNumber(cents, { lang: 'fr' }) + " centimes"
+  }
+
+  return result
+}
+
+
 useEffect(()=>{
-  console.log(total_HT)
-},[total_HT])
+  console.log(writtenNumber(3000))
+},[])
 
   if(isloading) return <div> isloading </div>
   if(error) return <div> {error} </div>
@@ -415,13 +458,14 @@ useEffect(()=>{
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Adresse</label>
-              {/* <input
+              <input
                 type="text"
-                name="adresseFournisseur"
-                // onChange={handleFormChange}
+                value={purchaseOrderData.supplier_address}
+                // name="adresseFournisseur"
+                onChange={(e)=>setPurchaseOrderData((prev)=> ({...prev,supplier_address : e.target.value}) )}
                 placeholder="L'adresse du fournisseur s'affichera ici..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-600 italic bg-gray-50"
-              /> */}
+              />
             </div>
 
             <div>
@@ -763,7 +807,7 @@ useEffect(()=>{
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-gray-700 font-semibold">Total HT</span>
-              {/* <span className="text-2xl font-bold text-gray-900">{formatCurrency(totalHT)}</span> */}
+               <span className="text-2xl font-bold text-gray-900">{total_HT}</span> 
             </div>
 
             <div className="flex justify-between items-center">
@@ -778,24 +822,24 @@ useEffect(()=>{
                 />
                 <span className="text-gray-700 font-semibold">%</span>
               </div>
-              {/* <span className="text-2xl font-bold text-gray-900">{formatCurrency(montantTva)}</span> */}
+              <span className="text-2xl font-bold text-gray-900">{ammount_TVA}</span>
             </div>
 
             <div className="border-t-2 border-gray-300 pt-4 flex justify-between items-center">
               <span className="text-gray-700 font-bold text-lg">Total TTC</span>
-              {/* <span className="text-3xl font-bold text-gray-900">{formatCurrency(totalTTC)}</span> */}
+              <span className="text-3xl font-bold text-gray-900">{total_TTC}</span>
             </div>
 
             <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4">
               <div className="flex justify-between items-center">
                 <span className="text-red-700 font-bold">Net A Payer</span>
-                {/* <span className="text-3xl font-bold text-red-600">{formatCurrency(totalTTC)}</span> */}
+                <span className="text-3xl font-bold text-red-600">{total_TTC}</span>
               </div>
             </div>
 
             <div className="border border-gray-300 rounded-lg p-3">
               <p className="text-xs text-gray-600 mb-1">Montant en lettres</p>
-              {/* <p className="text-gray-900 font-semibold text-sm">{amountInLetters}</p> */}
+              <p className="text-gray-900 font-semibold text-sm">{ `${numberToLettersFr(total_TTC)}` }</p>
             </div>
           </div>
         </div>
