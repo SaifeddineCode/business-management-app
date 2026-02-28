@@ -116,96 +116,133 @@ export default function AddPurchaserder() {
   
 
 
-  useEffect(()=>{
-    console.log(purchaseOrderData)
-    // console.log(productsSupplier,purchaseOrderData.purchaseOrderItems)
-  },[purchaseOrderData])
+  // useEffect(()=>{
+  //   console.log(purchaseOrderData)
+  //   // console.log(productsSupplier,purchaseOrderData.purchaseOrderItems)
+  // },[purchaseOrderData])
 
-  const handleChangePurchaseItem = (item_ID,field,value,item) =>{
-    // const targetItem = purchaseOrderData.purchaseOrderItems.filter((po_i)=>{
-    //   return po_i.id = item_ID
-    // })
+  // const handleChangePurchaseItem = (item_ID,field,value,item) =>{
+  //   // const targetItem = purchaseOrderData.purchaseOrderItems.filter((po_i)=>{
+  //   //   return po_i.id = item_ID
+  //   // })
 
-    if(field === "product_id"){
+  //   if(field === "product_id"){
 
-      const selectedProduct = productsSupplier.find((product)=>{
-        return product.id === parseFloat(value)
-      }) 
-      // console.log(selectedProduct)
-       setPurchaseOrderData((prev)=>({
+  //     const selectedProduct = productsSupplier.find((product)=>{
+  //       return product.id === parseFloat(value)
+  //     }) 
+  //     // console.log(selectedProduct)
+  //      setPurchaseOrderData((prev)=>({
 
-      ...prev,
-      purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
-        item.id === item_ID 
-      ? 
-      // {...item,
-      //   unit_price: selectedProduct?.supplier_price,
-      //   line_total:parseFloat(item.quantity) * parseFloat(item.unit_price)
-      // }
-      {
-        ...item,
-        unit_price: selectedProduct?.supplier_price,
-        line_total: parseFloat(item.quantity) * parseFloat(selectedProduct?.supplier_price), // ✅ use the new value directly
-      } 
-      : 
-      item
-      )
+  //     ...prev,
+  //     purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
+  //       item.id === item_ID 
+  //     ? 
+  //     // {...item,
+  //     //   unit_price: selectedProduct?.supplier_price,
+  //     //   line_total:parseFloat(item.quantity) * parseFloat(item.unit_price)
+  //     // }
+  //     {
+  //       ...item,
+  //       unit_price: selectedProduct?.supplier_price,
+  //       line_total: parseFloat(item.quantity) * parseFloat(selectedProduct?.supplier_price), // ✅ use the new value directly
+  //     } 
+  //     : 
+  //     item
+  //     )
 
-    }))
-    }
+  //   }))
+  //   }
 
-    if(field === "quantity"){
+  //   if(field === "quantity"){
 
-      // const selectedProduct = productsSupplier.find((product)=>{
-      //   return product.id === parseFloat(item.product_id)
-      // }) 
-      // console.log(selectedProduct)
-       setPurchaseOrderData((prev)=>({
+  //     // const selectedProduct = productsSupplier.find((product)=>{
+  //     //   return product.id === parseFloat(item.product_id)
+  //     // }) 
+  //     // console.log(selectedProduct)
+  //      setPurchaseOrderData((prev)=>({
 
-      ...prev,
-      purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
-        item.id === item_ID 
-      ? 
-      {...item,"line_total": parseFloat(value) * parseFloat(item.unit_price)} 
-      : 
-      item
-      )
+  //     ...prev,
+  //     purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
+  //       item.id === item_ID 
+  //     ? 
+  //     {...item,"line_total": parseFloat(value) * parseFloat(item.unit_price)} 
+  //     : 
+  //     item
+  //     )
 
-    }))
-    }
+  //   }))
+  //   }
 
-    if(field === "discount_percent"){
+  //   if(field === "discount_percent"){
 
-      // const selectedProduct = productsSupplier.find((product)=>{
-      //   return product.id === parseFloat(item.product_id)
-      // }) 
-      // console.log(selectedProduct)
-       setPurchaseOrderData((prev)=>({
+  //     // const selectedProduct = productsSupplier.find((product)=>{
+  //     //   return product.id === parseFloat(item.product_id)
+  //     // }) 
+  //     // console.log(selectedProduct)
+  //      setPurchaseOrderData((prev)=>({
 
-      ...prev,
-      purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
-        item.id === item_ID 
-      ? 
-      {...item,"line_total": (parseFloat(value) * parseFloat(item.unit_price)) - ((parseFloat(value) * parseFloat(item.unit_price)) * value) } 
-      : 
-      item
-      )
+  //     ...prev,
+  //     purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
+  //       item.id === item_ID 
+  //     ? 
+  //     {...item,"line_total": (parseFloat(item.quantity) * parseFloat(item.unit_price)) - ((parseFloat(value) * parseFloat(item.unit_price)) * value).toFixed(2) } 
+  //     : 
+  //     item
+  //     )
 
-    }))
-    }
+  //   }))
+  //   }
 
-    setPurchaseOrderData((prev)=>({
+  //   setPurchaseOrderData((prev)=>({
 
-      ...prev,
-      purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
-        item.id === item_ID ? {...item,[field]:value} : item
-      )
+  //     ...prev,
+  //     purchaseOrderItems : prev.purchaseOrderItems.map((item)=>
+  //       item.id === item_ID ? {...item,[field]:value} : item
+  //     )
 
-    }))
+  //   }))
     
-  }
+  // }
+const handleChangePurchaseItem = (item_ID, field, value) => {
+  setPurchaseOrderData((prev) => ({
+    ...prev,
+    purchaseOrderItems: prev.purchaseOrderItems.map((item) => {
+      if (item.id !== item_ID) return item;
+
+      const updatedItem = { ...item, [field]: value };
+
+      const quantity = parseFloat(field === "quantity" ? value : item.quantity) || 0;
+      const unit_price = field === "unit_price" ? parseFloat(value) : parseFloat(item.unit_price) || 0;
+      const discount = parseFloat(field === "discount_percent" ? value : item.discount_percent) || 0;
+
+      if (field === "product_id") {
+        const selectedProduct = productsSupplier.find(
+          (product) => product.id === parseFloat(value)
+        );
+        const newPrice = parseFloat(selectedProduct?.supplier_price) || 0;
+        return {
+          ...updatedItem,
+          unit_price: newPrice,
+          line_total: quantity * newPrice,
+        };
+      }
+
+      updatedItem.line_total = (quantity * unit_price) - (quantity * unit_price * (discount / 100));
+
+      return updatedItem;
+    }),
+  }));
+};
 
 
+const total_HT = purchaseOrderData.purchaseOrderItems.reduce((a,b)=>{
+  return a.line_total + b.line_total
+},0)
+
+useEffect(()=>{
+  console.log(total_HT)
+},[total_HT])
 
   if(isloading) return <div> isloading </div>
   if(error) return <div> {error} </div>
@@ -572,6 +609,7 @@ export default function AddPurchaserder() {
                               value={item.discount_percent || ''} 
                               onChange={(e)=>handleChangePurchaseItem(item.id,"discount_percent",e.target.value)}
                               type='number'
+                              step={0.1}
                               min={0}
                             />
                           </td>
