@@ -9,6 +9,7 @@ export default function AddPurchaserder() {
   writtenNumber.defaults.lang = 'fr'
 
   const [sequenceNumber,setSequenceNumber] = useState(1)
+  
   const [purchaseOrderData, setPurchaseOrderData] = useState({
     po_number: `PO-${String(sequenceNumber).padStart(3, '0')}-${new Date().getFullYear().toString().slice(-2)}`,
     order_date: new Date().toISOString().split("T")[0],
@@ -25,10 +26,34 @@ export default function AddPurchaserder() {
     purchaseOrderItems :[]
   });
 
-  const [selectedSupplier,setSelectedSupplier] = useState({})
   
 
-  const [activeTab, setActiveTab] = useState('details');
+  useEffect(()=>{
+    const totalOfPurchaseOrders = async () =>{
+    try {
+
+      const result = await fetch("/api/purchaseOrders/total")
+
+      if(!result.ok){
+        throw new Error("something went wrong")
+      }
+
+      const count = await result.json()
+
+      return setSequenceNumber(count + 1)
+
+    }catch (err){
+      console.log(err)
+    }
+
+  }
+  totalOfPurchaseOrders()
+  },[])
+
+
+
+
+const [activeTab, setActiveTab] = useState('details');
 
  const generateReference = () => {
   const random = Math.floor(Math.random() * 10000)
@@ -114,8 +139,7 @@ export default function AddPurchaserder() {
       return supplier.id === parseFloat(purchaseOrderData.supplier_id)
     })
 
-    setSelectedSupplier(targetSupplier)
-    setPurchaseOrderData((prev)=>({...prev,supplier_address:targetSupplier.address}))
+    setPurchaseOrderData((prev)=>({...prev,supplier_address:targetSupplier?.address}))
     }
     
   
