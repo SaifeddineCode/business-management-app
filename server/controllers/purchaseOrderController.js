@@ -1,7 +1,7 @@
-import getTotalOfPurchaseOrdersModel from "../models/purchaseOrderModel.js"
+import {getTotalOfPurchaseOrdersModel, insertIntoPurchaseOrderModel} from "../models/purchaseOrderModel.js"
 
 
-const  getTotalOfPOController = async (req,res) =>{
+export const  getTotalOfPOController = async (req,res) =>{
 
     try{
 
@@ -19,4 +19,18 @@ const  getTotalOfPOController = async (req,res) =>{
 
 }
 
-export default getTotalOfPOController
+
+export const postPurchaseOrderController = async (req,res) =>{
+
+    try{
+        const purchaseOrder = await req.body
+        const result = await insertIntoPurchaseOrderModel(purchaseOrder)
+
+        return res.status(201).json({
+            result
+        })
+
+    }catch(err){
+        console.log(err)
+    }
+}

@@ -13,7 +13,7 @@ export default function AddPurchaserder() {
   const [purchaseOrderData, setPurchaseOrderData] = useState({
     po_number: `PO-${String(sequenceNumber).padStart(3, '0')}-${new Date().getFullYear().toString().slice(-2)}`,
     order_date: new Date().toISOString().split("T")[0],
-    currency: 'MAD (Dirham Marocain)',
+    currency: 'MAD',
     subject: '',
     incoterm: 'DDP',
     delivery_location: '',
@@ -23,6 +23,9 @@ export default function AddPurchaserder() {
     requires_signature: 'Avec Signature',
     tva_rate: 20,
     internal_notes: '',
+    total_before_tax:"",
+    tva_amount:"",
+    total_with_tax:"",
     purchaseOrderItems :[]
   });
 
@@ -262,6 +265,7 @@ const handleChangePurchaseItem = (item_ID, field, value) => {
       const quantity = parseFloat(field === "quantity" ? value : item.quantity) || 0;
       const unit_price = field === "unit_price" ? parseFloat(value) : parseFloat(item.unit_price) || 0;
       const discount = parseFloat(field === "discount_percent" ? value : item.discount_percent) || 0;
+      
 
       if (field === "product_id") {
         const selectedProduct = productsSupplier.find(
@@ -276,6 +280,7 @@ const handleChangePurchaseItem = (item_ID, field, value) => {
       }
 
       updatedItem.line_total = (quantity * unit_price) - (quantity * unit_price * (discount / 100)).toFixed(2) ;
+      
 
       return updatedItem;
     }),
@@ -283,13 +288,31 @@ const handleChangePurchaseItem = (item_ID, field, value) => {
 };
 
 
-const total_HT = purchaseOrderData.purchaseOrderItems.reduce((acc,item)=>{
+// const total_HT = purchaseOrderData.purchaseOrderItems.reduce((acc,item)=>{
+//   return acc + (parseFloat(item.line_total) || 0 )
+// },0)
+
+// const ammount_TVA = total_HT * (purchaseOrderData.tva_rate / 100)
+
+// const total_TTC = total_HT + ammount_TVA
+
+useEffect(()=>{
+  const total_HT = purchaseOrderData.purchaseOrderItems.reduce((acc,item)=>{
   return acc + (parseFloat(item.line_total) || 0 )
 },0)
 
 const ammount_TVA = total_HT * (purchaseOrderData.tva_rate / 100)
 
 const total_TTC = total_HT + ammount_TVA
+
+setPurchaseOrderData((prev)=>({
+  ...prev,
+  total_before_tax : total_HT,
+  tva_amount:ammount_TVA,
+  total_with_tax:total_TTC
+}))
+
+},[purchaseOrderData.purchaseOrderItems])
 
 
 
@@ -308,8 +331,33 @@ const numberToLettersFr = (number) => {
 
 
 useEffect(()=>{
-  console.log(writtenNumber(3000))
-},[])
+  console.log(purchaseOrderData)
+},[purchaseOrderData])
+
+
+
+const addPurchaseOrder = async() =>{
+  try{
+    const result = await fetch("/api/purchaseOrders",
+    {
+      method : "POST",
+      headers:{
+        "content-type" : "application/json"
+      },
+      body : JSON.stringify(purchaseOrderData)
+    })
+
+    if(!result.ok){
+      throw new Error("something went wrong while adding new purchase Order")
+    }
+
+  } catch(err){
+    console.log(err)
+  }
+
+}
+
+
 
   if(isloading) return <div> isloading </div>
   if(error) return <div> {error} </div>
@@ -324,7 +372,7 @@ useEffect(()=>{
               <span>📋</span> Liste des BCs
             </button>
             <button
-              // onClick={()=>addPurchaseOrder()}
+              onClick={()=>addPurchaseOrder()}
               className="bg-[#1e3a8a] bg-opacity-20 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-opacity-30 transition flex items-center gap-2 border border-white border-opacity-30">
               <span>➕</span> Ajouter un BC
             </button>
@@ -394,10 +442,10 @@ useEffect(()=>{
                 onChange={(e)=>setPurchaseOrderData((prev)=>({...prev,currency : e.target.value}))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900 bg-white"
               >
-                <option>MAD (Dirham Marocain)</option>
-                <option>EUR (€)</option>
-                <option>USD ($)</option>
-                <option>GBP (£)</option>
+                <option>MAD</option>
+                <option>EUR</option>
+                <option>USD</option>
+                <option>GBP</option>
               </select>
             </div>
           </div>
@@ -464,7 +512,7 @@ useEffect(()=>{
               <select
                 name="fournisseur"
                 value={purchaseOrderData.supplier_id}
-                onChange={(e)=>setPurchaseOrderData((prev)=>({...prev,supplier_id : e.target.value}))}
+                onChange={(e)=>setPurchaseOrderData((prev)=>({...prev,supplier_id :  parseFloat(e.target.value) }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-gray-900 bg-white"
               >
                 <option value=" "> Choisissez un fournisseur </option>
@@ -831,7 +879,7 @@ useEffect(()=>{
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-gray-700 font-semibold">Total HT</span>
-               <span className="text-2xl font-bold text-gray-900">{total_HT}</span> 
+               <span className="text-2xl font-bold text-gray-900">{purchaseOrderData.total_before_tax}</span> 
             </div>
 
             <div className="flex justify-between items-center">
@@ -846,24 +894,24 @@ useEffect(()=>{
                 />
                 <span className="text-gray-700 font-semibold">%</span>
               </div>
-              <span className="text-2xl font-bold text-gray-900">{ammount_TVA}</span>
+              <span className="text-2xl font-bold text-gray-900">{purchaseOrderData.tva_amount}</span>
             </div>
 
             <div className="border-t-2 border-gray-300 pt-4 flex justify-between items-center">
               <span className="text-gray-700 font-bold text-lg">Total TTC</span>
-              <span className="text-3xl font-bold text-gray-900">{total_TTC}</span>
+              <span className="text-3xl font-bold text-gray-900">{purchaseOrderData.total_before_tax}</span>
             </div>
 
             <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4">
               <div className="flex justify-between items-center">
                 <span className="text-red-700 font-bold">Net A Payer</span>
-                <span className="text-3xl font-bold text-red-600">{total_TTC}</span>
+                <span className="text-3xl font-bold text-red-600">{purchaseOrderData.total_with_tax}</span>
               </div>
             </div>
 
             <div className="border border-gray-300 rounded-lg p-3">
               <p className="text-xs text-gray-600 mb-1">Montant en lettres</p>
-              <p className="text-gray-900 font-semibold text-sm">{ `${numberToLettersFr(total_TTC)}` }</p>
+              <p className="text-gray-900 font-semibold text-sm">{ `${numberToLettersFr(purchaseOrderData.total_with_tax)}` }</p>
             </div>
           </div>
         </div>
