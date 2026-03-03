@@ -7,11 +7,9 @@ import writtenNumber from 'written-number';
 
 export default function AddPurchaserder() {
   writtenNumber.defaults.lang = 'fr'
-
-  const [sequenceNumber,setSequenceNumber] = useState(1)
   
   const [purchaseOrderData, setPurchaseOrderData] = useState({
-    po_number: `PO-${String(sequenceNumber).padStart(3, '0')}-${new Date().getFullYear().toString().slice(-2)}`,
+    po_number: ``,
     order_date: new Date().toISOString().split("T")[0],
     currency: 'MAD',
     subject: '',
@@ -29,29 +27,30 @@ export default function AddPurchaserder() {
     purchaseOrderItems :[]
   });
 
+useEffect(() => {
+  const totalOfPurchaseOrders = async () => {
+    try {
+      const result = await fetch("/api/purchaseOrders/total");
+
+      if (!result.ok) throw new Error("Something went wrong");
+
+      const count = await result.json();
+      const year = new Date().getFullYear().toString().slice(-2);
+      const po_number = `PO-${String(count).padStart(4, '0')}-${year}`;
+
+      
+      setPurchaseOrderData(prev => ({ ...prev, po_number })); // ✅ update po_number
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  totalOfPurchaseOrders();
+}, []);
   
 
-  useEffect(()=>{
-    const totalOfPurchaseOrders = async () =>{
-    try {
-
-      const result = await fetch("/api/purchaseOrders/total")
-
-      if(!result.ok){
-        throw new Error("something went wrong")
-      }
-
-      const count = await result.json()
-
-      return setSequenceNumber(count + 1)
-
-    }catch (err){
-      console.log(err)
-    }
-
-  }
-  totalOfPurchaseOrders()
-  },[])
+  
 
 
 
@@ -379,11 +378,11 @@ const addPurchaseOrder = async() =>{
             <div className="flex items-center gap-3 ml-2">
               <span className="text-white font-semibold">●</span>
               <label className="flex items-center gap-2 cursor-pointer text-white text-sm">
-                <input type="radio" name="signature" checked={purchaseOrderData.requires_signature === 'Avec Signature'} onChange={() => setPurchaseOrderData({...purchaseOrderData, requires_signature: 'Avec Signature'})} className="w-4 h-4" />
+                <input type="radio" name="signature" checked={purchaseOrderData.requires_signature === 1} onChange={() => setPurchaseOrderData({...purchaseOrderData, requires_signature: 1})} className="w-4 h-4" />
                 Avec Signature
               </label>
               <label className="flex items-center gap-2 cursor-pointer text-white text-sm">
-                <input type="radio" name="signature" checked={purchaseOrderData.requires_signature === 'Sans Signature'} onChange={() => setPurchaseOrderData({...purchaseOrderData, requires_signature: 'Sans Signature'})} className="w-4 h-4" />
+                <input type="radio" name="signature" checked={purchaseOrderData.requires_signature === 0} onChange={() => setPurchaseOrderData({...purchaseOrderData, requires_signature: 0})} className="w-4 h-4" />
                 Sans Signature
               </label>
             </div>

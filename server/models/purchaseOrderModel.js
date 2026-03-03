@@ -3,11 +3,13 @@ import db from "../config/database.js"
 
 export const  getTotalOfPurchaseOrdersModel = async() =>{
     const totalPurchaseOrderQuery = `
-    SELECT COUNT(*) as total FROM purchase_orders
+    SELECT max(id) as maxID FROM purchase_orders
     `
-    const [row] =  await db.query(totalPurchaseOrderQuery)
+    const [rows] =  await db.query(totalPurchaseOrderQuery)
 
-    return row[0].total
+    const lastID = rows[0].maxID ?? 0; 
+  
+    return lastID + 1;
 
 }
 
