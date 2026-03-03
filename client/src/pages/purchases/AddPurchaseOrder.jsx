@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
-import { FaMoon, FaPlus, FaTrash } from 'react-icons/fa';
+import {FaPlus, FaTrash } from 'react-icons/fa';
 import { fetchWithToken } from '../../utils/api';
+import {toast,Toaster} from "react-hot-toast"
+
 
 import writtenNumber from 'written-number';
 
@@ -336,6 +338,13 @@ useEffect(()=>{
 
 
 const addPurchaseOrder = async() =>{
+
+  const {supplier_id,subject} = purchaseOrderData
+  
+  if(!supplier_id || !subject ){
+    return toast.error(`fill the obligatory fields before adding a purchase order`)
+  }
+  
   try{
     const result = await fetch("/api/purchaseOrders",
     {
@@ -350,11 +359,15 @@ const addPurchaseOrder = async() =>{
       throw new Error("something went wrong while adding new purchase Order")
     }
 
+    return toast.success(`${purchaseOrderData.po_number} was added succussefuly`)
+
   } catch(err){
     console.log(err)
+    return toast.error(err)
   }
 
 }
+
 
 
 
@@ -916,6 +929,7 @@ const addPurchaseOrder = async() =>{
         </div>
       </div>
 
+          <Toaster />
      
     </div>
   );

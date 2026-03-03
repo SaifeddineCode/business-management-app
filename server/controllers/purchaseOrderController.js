@@ -26,6 +26,21 @@ export const postPurchaseOrderController = async (req,res) =>{
         const purchaseOrder = await req.body
         const result = await insertIntoPurchaseOrderModel(purchaseOrder)
 
+        const purchaseOrderID = await result[0].insertId
+        // console.log(purchaseOrderID)
+
+        const items = purchaseOrder.purchaseOrderItems
+
+        for (const item of items) {
+
+            const queryItem = `
+            INSERT INTO purchase_order_items
+            ()
+            `
+            
+        }
+
+
         return res.status(201).json({
             result
         })
