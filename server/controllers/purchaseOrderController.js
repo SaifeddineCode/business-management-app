@@ -1,3 +1,4 @@
+import db from "../config/database.js"
 import {getTotalOfPurchaseOrdersModel, insertIntoPurchaseOrderModel} from "../models/purchaseOrderModel.js"
 
 
@@ -33,19 +34,48 @@ export const postPurchaseOrderController = async (req,res) =>{
 
         for (const item of items) {
 
+            const {
+                product_id,
+                reference,
+                unit,
+                quantity,
+                unit_price,
+                discount_percent,
+                line_total
+            } = item
+
             const queryItem = `
             INSERT INTO purchase_order_items
-            ()
+            (purchase_order_id,
+            product_id,
+            reference,
+            unit,
+            quantity,
+            unit_price,
+            discount_percent,
+            line_total)
+            VALUES (?,?,?,?,?,?,?,?)
             `
-            
+
+            const row = await db.execute(queryItem,[
+                purchaseOrderID,
+                product_id,
+                reference,
+                unit,
+                quantity,
+                unit_price,
+                discount_percent,
+                line_total
+            ])
+            // return row
         }
-
-
-        return res.status(201).json({
-            result
-        })
+        // return res.status(201).json({
+        //     result
+        // })
+        return res.status(201).json({ result });
 
     }catch(err){
-        console.log(err)
+        console.error(err);
+    return res.status(500).json({ error: 'Failed to create purchase order' });
     }
 }

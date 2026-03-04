@@ -363,7 +363,7 @@ const addPurchaseOrder = async() =>{
 
   } catch(err){
     console.log(err)
-    return toast.error(err)
+    return toast.error(err.message)
   }
 
 }
@@ -372,7 +372,7 @@ const addPurchaseOrder = async() =>{
 
 
   if(isloading) return <div> isloading </div>
-  if(error) return <div> {error} </div>
+  if(error) return <div> {error.message} </div>
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -681,7 +681,7 @@ const addPurchaseOrder = async() =>{
                             <select 
                               className="w-full px-4 py-2 border border-gray-300 rounded"
                               value={item.product_id} 
-                              onChange={(e)=>handleChangePurchaseItem(item.id,"product_id",e.target.value,item)}
+                              onChange={(e)=>handleChangePurchaseItem(item.id,"product_id",parseFloat(e.target.value),item)}
                             >
                               <option>Choisir un produit</option>
                               {/* {productsSupplier?.length === 0 ?
@@ -720,7 +720,7 @@ const addPurchaseOrder = async() =>{
                               min={0}
                               className="w-full px-4 py-2 border border-gray-300 rounded text-center"
                               value={item.quantity} 
-                              onChange={(e)=>handleChangePurchaseItem(item.id,"quantity",e.target.value,item)}
+                              onChange={(e)=>handleChangePurchaseItem(item.id,"quantity",parseFloat(e.target.value),item)}
                               type='number'
                             />
                           </td>
@@ -735,7 +735,7 @@ const addPurchaseOrder = async() =>{
                             <input 
                               className="w-full px-4 py-2 border border-gray-300 rounded text-center"
                               value={item.discount_percent || ''} 
-                              onChange={(e)=>handleChangePurchaseItem(item.id,"discount_percent",e.target.value)}
+                              onChange={(e)=>handleChangePurchaseItem(item.id,"discount_percent",parseFloat(e.target.value))}
                               type='number'
                               step={0.1}
                               min={0}
