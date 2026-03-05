@@ -41,7 +41,7 @@ useEffect(() => {
       const po_number = `PO-${String(count).padStart(4, '0')}-${year}`;
 
       
-      setPurchaseOrderData(prev => ({ ...prev, po_number })); // ✅ update po_number
+      setPurchaseOrderData(prev => ({ ...prev, po_number })); 
 
     } catch (err) {
       console.error(err);
@@ -335,6 +335,27 @@ useEffect(()=>{
   console.log(purchaseOrderData)
 },[purchaseOrderData])
 
+const resetPurchaseData = () =>{
+ setPurchaseOrderData((prev)=>({
+  ...prev,
+   po_number: ``,
+    order_date: new Date().toISOString().split("T")[0],
+    currency: 'MAD',
+    subject: '',
+    incoterm: 'DDP',
+    delivery_location: '',
+    supplier_address:"",
+    supplier_id: '',
+    article_code_type: 'Notre Société',
+    requires_signature: 'Avec Signature',
+    tva_rate: 20,
+    internal_notes: '',
+    total_before_tax:"",
+    tva_amount:"",
+    total_with_tax:"",
+    purchaseOrderItems :[]
+ })) 
+}
 
 
 const addPurchaseOrder = async() =>{
@@ -358,7 +379,8 @@ const addPurchaseOrder = async() =>{
     if(!result.ok){
       throw new Error("something went wrong while adding new purchase Order")
     }
-
+    
+    resetPurchaseData()
     return toast.success(`${purchaseOrderData.po_number} was added succussefuly`)
 
   } catch(err){
