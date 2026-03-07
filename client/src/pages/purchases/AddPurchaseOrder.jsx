@@ -6,6 +6,7 @@ import {toast,Toaster} from "react-hot-toast"
 
 
 import writtenNumber from 'written-number';
+import { Link } from 'react-router-dom';
 
 export default function AddPurchaserder() {
   writtenNumber.defaults.lang = 'fr'
@@ -402,9 +403,11 @@ const addPurchaseOrder = async() =>{
       <div className="bg-gradient-to-r from-blue-900 to-blue-800 text-white rounded-lg p-4 mb-6 shadow-lg">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex flex-wrap gap-2 items-center justify-center md:justify-start">
-            <button className="bg-[#1e3a8a] bg-opacity-20 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-opacity-30 transition flex items-center gap-2 border border-white border-opacity-30">
+            <Link 
+            to={`/Purchase-orders-liste`}
+            className="bg-[#1e3a8a] bg-opacity-20 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-opacity-30 transition flex items-center gap-2 border border-white border-opacity-30">
               <span>📋</span> Liste des BCs
-            </button>
+            </Link>
             <button
               onClick={()=>addPurchaseOrder()}
               className="bg-[#1e3a8a] bg-opacity-20 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-opacity-30 transition flex items-center gap-2 border border-white border-opacity-30">
