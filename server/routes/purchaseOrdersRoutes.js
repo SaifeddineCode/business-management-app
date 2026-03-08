@@ -1,10 +1,12 @@
 import express from "express"
-import {getTotalOfPOController, postPurchaseOrderController} from "../controllers/purchaseOrderController.js"
+import {getAllPurchaseOrdersController, getTotalOfPOController, postPurchaseOrderController} from "../controllers/purchaseOrderController.js"
 
 const router = express.Router()
 
 
 router.get("/total",getTotalOfPOController)
+
+router.get("/",getAllPurchaseOrdersController)
 
 
 router.post("/",postPurchaseOrderController)

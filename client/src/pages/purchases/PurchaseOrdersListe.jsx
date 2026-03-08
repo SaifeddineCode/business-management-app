@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import {
   FiSearch,
   FiFilter,
@@ -53,24 +54,51 @@ export default function PurchaseOrdersListe() {
   const [activeMenu, setActiveMenu] = useState(null);
   const itemsPerPage = 7;
 
+
+
+  const fetchPurchaseOrders = async() =>{
+    const result = await fetch(`/api/purchaseOrders?page=${1}&limit=${6}`)
+    if(!result.ok){
+        throw new Error ("something went wrong while feching PO's")
+    }
+    return result.json()
+  }
+
+  const {data  ,isLoading,error} = useQuery({
+    queryKey : ["Purchase Orders"],
+    queryFn : fetchPurchaseOrders
+  })
+
+//   useEffect(()=>{
+    if(!isLoading){
+        console.log(data.purchaseOrders)
+        console.log(data.totalPO)
+    }
+//   },[])
+
+
   const statuts = ["Tous", "Approuvé", "En attente", "Livré", "Annulé"];
 
-  const filtered = bonsDeCommande.filter((bc) => {
+  
+    if(isLoading) return null;
+    
+  const filtered = data.purchaseOrders.filter((po) => {
     const matchSearch =
-      bc.id.toLowerCase().includes(search.toLowerCase()) ||
-      bc.fournisseur.toLowerCase().includes(search.toLowerCase()) ||
-      bc.createur.toLowerCase().includes(search.toLowerCase());
-    const matchStatut = selectedStatut === "Tous" || bc.statut === selectedStatut;
+      po.po_number.toLowerCase().includes(search.toLowerCase()) ||
+      po.subject.toLowerCase().includes(search.toLowerCase()) 
+    //   ||
+    //   po.createur.toLowerCase().includes(search.toLowerCase());
+    const matchStatut = selectedStatut === "Tous" || po.statut === selectedStatut;
     return matchSearch && matchStatut;
   });
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  const totalMontant = filtered.reduce((sum, bc) => sum + bc.montant, 0);
-  const approuves = bonsDeCommande.filter((bc) => bc.statut === "Approuvé").length;
-  const enAttente = bonsDeCommande.filter((bc) => bc.statut === "En attente").length;
-  const livres = bonsDeCommande.filter((bc) => bc.statut === "Livré").length;
+//   const totalMontant = filtered.reduce((sum, bc) => sum + bc.montant, 0);
+//   const approuves = bonsDeCommande.filter((bc) => bc.statut === "Approuvé").length;
+//   const enAttente = bonsDeCommande.filter((bc) => bc.statut === "En attente").length;
+//   const livres = bonsDeCommande.filter((bc) => bc.statut === "Livré").length;
 
   return (
     <div
@@ -107,7 +135,7 @@ export default function PurchaseOrdersListe() {
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
           {/* KPI CARDS */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { label: "Total des commandes", value: bonsDeCommande.length, sub: "Ce mois", icon: FiPackage, color: "from-indigo-500 to-indigo-700", light: "bg-indigo-50 text-indigo-600" },
               { label: "Approuvées", value: approuves, sub: `${Math.round((approuves / bonsDeCommande.length) * 100)}% du total`, icon: FiCheckCircle, color: "from-emerald-500 to-emerald-700", light: "bg-emerald-50 text-emerald-600" },
@@ -125,7 +153,7 @@ export default function PurchaseOrdersListe() {
                 <p className="text-xs text-slate-400 mt-0.5">{kpi.sub}</p>
               </div>
             ))}
-          </div>
+          </div> */}
 
           {/* FILTERS BAR */}
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
@@ -189,7 +217,8 @@ export default function PurchaseOrdersListe() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {paginated.map((bc) => {
+                    {isLoading ? <span>Loading ...</span> : 
+                    filtered.map((bc) => {
                     const sc = statutConfig[bc.statut];
                     return (
                       <tr key={bc.id} className="hover:bg-slate-50/70 transition-colors group">
@@ -249,12 +278,14 @@ export default function PurchaseOrdersListe() {
                       </tr>
                     );
                   })}
+                    }
+                  
                 </tbody>
               </table>
             </div>
 
             {/* Mobile Cards */}
-            <div className="md:hidden divide-y divide-slate-100">
+            {/* <div className="md:hidden divide-y divide-slate-100">
               {paginated.map((bc) => {
                 const sc = statutConfig[bc.statut];
                 return (
@@ -307,7 +338,7 @@ export default function PurchaseOrdersListe() {
                   </div>
                 );
               })}
-            </div>
+            </div> */}
 
             {/* Empty state */}
             {filtered.length === 0 && (
@@ -321,7 +352,7 @@ export default function PurchaseOrdersListe() {
             )}
 
             {/* PAGINATION */}
-            {filtered.length > 0 && (
+            {/* {filtered.length > 0 && (
               <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
                 <p className="text-sm text-slate-500">
                   Affichage de <span className="font-semibold text-slate-700">{(currentPage - 1) * itemsPerPage + 1}</span>–
@@ -358,7 +389,7 @@ export default function PurchaseOrdersListe() {
                   </button>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         </main>
       </div>

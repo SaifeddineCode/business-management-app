@@ -1,6 +1,28 @@
 import db from "../config/database.js"
 
 
+
+
+export const getAllPurchaseOrdersModel = async(page,limit) =>{
+    const offset = (page - 1) * limit
+
+    const query = `
+        SELECT * FROM purchase_orders LIMIT ? OFFSET ?
+    `
+    const [purchaseOrders] = await db.query(query,[limit,offset])
+
+    const [count] = await db.query(
+    "SELECT COUNT(*) as total FROM purchase_orders"
+  );
+
+    return {
+        purchaseOrders,
+        totalPO : count[0].total
+    }
+}
+
+
+
 export const  getTotalOfPurchaseOrdersModel = async() =>{
     const totalPurchaseOrderQuery = `
     SELECT max(id) as maxID FROM purchase_orders
