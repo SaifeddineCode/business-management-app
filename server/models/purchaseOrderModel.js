@@ -7,7 +7,12 @@ export const getAllPurchaseOrdersModel = async(page,limit) =>{
     const offset = (page - 1) * limit
 
     const query = `
-        SELECT * FROM purchase_orders LIMIT ? OFFSET ?
+        SELECT po.*, sp.contact_person  
+        from
+        purchase_orders as po     
+        JOIN  suppliers  as sp
+        on po.supplier_id = sp.id
+        LIMIT ? OFFSET ?
     `
     const [purchaseOrders] = await db.query(query,[limit,offset])
 

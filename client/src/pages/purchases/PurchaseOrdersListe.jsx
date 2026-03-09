@@ -20,26 +20,16 @@ import {
   FiCalendar,
   FiPackage,
 } from "react-icons/fi";
+import Pagination from "../../components/Pagination";
 
-const bonsDeCommande = [
-  { id: "BC-2024-0081", fournisseur: "Maroc Papier & Bureau", date: "2025-03-01", datelivraison: "2025-03-15", montant: 14750.0, statut: "Approuvé", articles: 12, createur: "Youssef Alami" },
-  { id: "BC-2024-0082", fournisseur: "TechSupply Maroc", date: "2025-03-02", datelivraison: "2025-03-20", montant: 87320.5, statut: "En attente", articles: 5, createur: "Fatima Benali" },
-  { id: "BC-2024-0083", fournisseur: "Officeworks Casablanca", date: "2025-03-03", datelivraison: "2025-03-18", montant: 3200.0, statut: "Livré", articles: 8, createur: "Omar Tazi" },
-  { id: "BC-2024-0084", fournisseur: "MédiaNet Solutions", date: "2025-03-04", datelivraison: "2025-03-22", montant: 52100.75, statut: "Annulé", articles: 3, createur: "Sanae Moussaoui" },
-  { id: "BC-2024-0085", fournisseur: "Atlas Informatique", date: "2025-03-05", datelivraison: "2025-03-25", montant: 120500.0, statut: "Approuvé", articles: 15, createur: "Khalid Idrissi" },
-  { id: "BC-2024-0086", fournisseur: "Rabat Office Pro", date: "2025-03-05", datelivraison: "2025-03-19", montant: 9875.25, statut: "En attente", articles: 6, createur: "Nadia Cherkaoui" },
-  { id: "BC-2024-0087", fournisseur: "DataSystems Maroc", date: "2025-03-06", datelivraison: "2025-03-28", montant: 67450.0, statut: "Livré", articles: 9, createur: "Mehdi Lamrani" },
-  { id: "BC-2024-0088", fournisseur: "Maroc Papier & Bureau", date: "2025-03-06", datelivraison: "2025-03-21", montant: 4300.0, statut: "En attente", articles: 4, createur: "Youssef Alami" },
-  { id: "BC-2024-0089", fournisseur: "Équipements Fès", date: "2025-03-07", datelivraison: "2025-03-30", montant: 33600.5, statut: "Approuvé", articles: 11, createur: "Leila Sefrioui" },
-  { id: "BC-2024-0090", fournisseur: "TechSupply Maroc", date: "2025-03-07", datelivraison: "2025-04-02", montant: 215000.0, statut: "En attente", articles: 20, createur: "Fatima Benali" },
-];
 
-const statutConfig = {
-  Approuvé: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500", icon: FiCheckCircle },
-  "En attente": { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500", icon: FiAlertCircle },
-  Livré: { bg: "bg-sky-50", text: "text-sky-700", dot: "bg-sky-500", icon: FiCheckCircle },
-  Annulé: { bg: "bg-rose-50", text: "text-rose-700", dot: "bg-rose-500", icon: FiXCircle },
-};
+
+// const statutConfig = {
+//   Approuvé: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500", icon: FiCheckCircle },
+//   "En attente": { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500", icon: FiAlertCircle },
+//   Livré: { bg: "bg-sky-50", text: "text-sky-700", dot: "bg-sky-500", icon: FiCheckCircle },
+//   Annulé: { bg: "bg-rose-50", text: "text-rose-700", dot: "bg-rose-500", icon: FiXCircle },
+// };
 
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("fr-MA", { style: "currency", currency: "MAD", minimumFractionDigits: 2 }).format(amount);
@@ -52,12 +42,12 @@ export default function PurchaseOrdersListe() {
   const [selectedStatut, setSelectedStatut] = useState("Tous");
   const [currentPage, setCurrentPage] = useState(1);
   const [activeMenu, setActiveMenu] = useState(null);
-  const itemsPerPage = 7;
+  const itemsPerPage = 5;
 
-
+console.log(currentPage)
 
   const fetchPurchaseOrders = async() =>{
-    const result = await fetch(`/api/purchaseOrders?page=${1}&limit=${6}`)
+    const result = await fetch(`/api/purchaseOrders?page=${currentPage}&limit=${itemsPerPage}`)
     if(!result.ok){
         throw new Error ("something went wrong while feching PO's")
     }
@@ -65,9 +55,11 @@ export default function PurchaseOrdersListe() {
   }
 
   const {data  ,isLoading,error} = useQuery({
-    queryKey : ["Purchase Orders"],
+    queryKey : ["Purchase Orders",currentPage],
     queryFn : fetchPurchaseOrders
   })
+
+  
 
 //   useEffect(()=>{
     if(!isLoading){
@@ -81,7 +73,7 @@ export default function PurchaseOrdersListe() {
 
   
     if(isLoading) return null;
-    
+
   const filtered = data.purchaseOrders.filter((po) => {
     const matchSearch =
       po.po_number.toLowerCase().includes(search.toLowerCase()) ||
@@ -92,8 +84,8 @@ export default function PurchaseOrdersListe() {
     return matchSearch && matchStatut;
   });
 
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
-  const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = (data?.totalPO / itemsPerPage)
+//   const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
 //   const totalMontant = filtered.reduce((sum, bc) => sum + bc.montant, 0);
 //   const approuves = bonsDeCommande.filter((bc) => bc.statut === "Approuvé").length;
@@ -200,7 +192,7 @@ export default function PurchaseOrdersListe() {
                 </span>
               </div>
               <span className="text-xs text-slate-400">
-                Page {currentPage} sur {totalPages || 1}
+                {/* Page {currentPage} sur {totalPages || 1} */}
               </span>
             </div>
 
@@ -209,7 +201,7 @@ export default function PurchaseOrdersListe() {
               <table className="w-full">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-100">
-                    {["N° Bon", "Fournisseur", "Date", "Livraison", "Articles", "Montant", "Statut", "Créateur", ""].map((h) => (
+                    {["N° Bon", "Fournisseur", "Date", "Livraison","Montant HT", "Montant TTC", ""].map((h) => (
                       <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
                         {h}
                       </th>
@@ -218,50 +210,53 @@ export default function PurchaseOrdersListe() {
                 </thead>
                 <tbody className="divide-y divide-slate-50">
                     {isLoading ? <span>Loading ...</span> : 
-                    filtered.map((bc) => {
-                    const sc = statutConfig[bc.statut];
+                    filtered.map((po,index) => {
+                    // const sc = statutConfig[bc.statut];
                     return (
-                      <tr key={bc.id} className="hover:bg-slate-50/70 transition-colors group">
+                      <tr key={index} className="hover:bg-slate-50/70 transition-colors group">
                         <td className="px-5 py-4">
-                          <span className="font-mono text-sm font-semibold text-indigo-600">{bc.id}</span>
+                          <span className="font-mono text-sm font-semibold text-indigo-600">{po.po_number}</span>
                         </td>
                         <td className="px-5 py-4">
-                          <span className="text-sm font-medium text-slate-800">{bc.fournisseur}</span>
+                          <span className="text-sm font-medium text-slate-800">{po.contact_person}</span>
                         </td>
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-1.5 text-sm text-slate-500">
                             <FiCalendar className="text-slate-300 text-xs" />
-                            {formatDate(bc.date)}
+                            {formatDate(po.order_date)}
                           </div>
                         </td>
                         <td className="px-5 py-4">
-                          <span className="text-sm text-slate-500">{formatDate(bc.datelivraison)}</span>
+                          <span className="text-sm text-slate-500">{formatDate(po.order_date)}</span>
                         </td>
-                        <td className="px-5 py-4">
+                        {/* <td className="px-5 py-4">
                           <div className="flex items-center gap-1.5">
                             <div className="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center">
                               <FiPackage className="text-slate-500 text-xs" />
                             </div>
                             <span className="text-sm font-medium text-slate-700">{bc.articles}</span>
                           </div>
+                        </td> */}
+                        <td className="px-5 py-4">
+                          <span className="text-sm font-bold text-slate-800">{formatCurrency(po.total_before_tax)}</span>
                         </td>
                         <td className="px-5 py-4">
-                          <span className="text-sm font-bold text-slate-800">{formatCurrency(bc.montant)}</span>
+                          <span className="text-sm font-bold text-slate-800">{formatCurrency(po.total_with_tax)}</span>
                         </td>
-                        <td className="px-5 py-4">
+                        {/* <td className="px-5 py-4">
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${sc.bg} ${sc.text}`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${sc.dot}`} />
                             {bc.statut}
                           </span>
-                        </td>
-                        <td className="px-5 py-4">
+                        </td> */}
+                        {/* <td className="px-5 py-4">
                           <div className="flex items-center gap-2">
                             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-xs font-bold">
                               {bc.createur.charAt(0)}
                             </div>
                             <span className="text-sm text-slate-600 hidden lg:inline">{bc.createur}</span>
                           </div>
-                        </td>
+                        </td> */}
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button className="w-8 h-8 rounded-lg hover:bg-indigo-50 flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-colors">
@@ -278,7 +273,7 @@ export default function PurchaseOrdersListe() {
                       </tr>
                     );
                   })}
-                    }
+                    
                   
                 </tbody>
               </table>
@@ -350,7 +345,8 @@ export default function PurchaseOrdersListe() {
                 <p className="text-slate-400 text-sm mt-1">Essayez de modifier vos critères de recherche</p>
               </div>
             )}
-
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage}  />
+            
             {/* PAGINATION */}
             {/* {filtered.length > 0 && (
               <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
