@@ -21,6 +21,7 @@ import {
   FiPackage,
 } from "react-icons/fi";
 import Pagination from "../../components/Pagination";
+import { Link } from "react-router-dom";
 
 
 
@@ -259,9 +260,11 @@ console.log(currentPage)
                         </td> */}
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button className="w-8 h-8 rounded-lg hover:bg-indigo-50 flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-colors">
+                            <Link
+                              to={`/purchaseOrderDetails`}
+                              className="w-8 h-8 rounded-lg hover:bg-indigo-50 flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-colors">
                               <FiEye className="text-sm" />
-                            </button>
+                            </Link>
                             <button className="w-8 h-8 rounded-lg hover:bg-amber-50 flex items-center justify-center text-slate-400 hover:text-amber-600 transition-colors">
                               <FiEdit2 className="text-sm" />
                             </button>
