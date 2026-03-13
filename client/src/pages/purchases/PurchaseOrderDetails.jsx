@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { FaFilePdf } from "react-icons/fa";
 import { CiBoxList } from "react-icons/ci";
+import { FaRegBuilding } from "react-icons/fa";
 
 
 const PurchaseOrderDetails = () =>{
@@ -45,18 +46,72 @@ const PurchaseOrderDetails = () =>{
             <div className="mt-10">
                 {/* title */}
                 <div className="flex justify-start gap-2 items-center bg-[#f8fafc] border border-[#f1f5f9] px-8 py-6 rounded-tr-xl rounded-tl-xl">
-                    <CiBoxList color="black" size={25} />
+                    <CiBoxList color="black" size={20} />
                     <span className="text-[#6474a8] text-md ">  Informations Commande</span>
                 </div>
                 {/* infos */}
-                <div className="bg-white">
-                    <div>
-                        <h3 className="text-[#697c95] text-sm ">N° Bon de Commande</h3>
-                        <span className=" font-medium">BC-2025-0089</span>
+                <div className="bg-white px-8 py-6 flex flex-col gap-5  rounded-br-xl rounded-bl-xl">
+                    <div className="flex justify-between items-center">
+                        <div className="w-1/2">
+                            <h3 className="text-[#697c95] text-sm ">N° Bon de Commande</h3>
+                            <span className=" font-medium">BC-2025-0089</span>
+                        </div>
+                        <div className="w-1/2">
+                            <h3 className="text-[#697c95] text-sm ">Date</h3>
+                            <span className=" font-medium">07 mars 2025</span>
+                        </div>
                     </div>
+                    <div className="flex justify-between items-center">
+                        <div className="w-1/2">
+                            <h3 className="text-[#697c95] text-sm ">Devise</h3>
+                            <span className=" font-medium">MAD</span>
+                        </div>
+                        <div className="w-1/2">
+                            <h3 className="text-[#697c95] text-sm ">Type de code</h3>
+                            <span className=" font-medium">Sociéte</span>
+                        </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                        <div className="w-1/2">
+                            <h3 className="text-[#697c95] text-sm ">Incoterm</h3>
+                            <span className=" font-medium">DDP</span>
+                        </div>
+                        <div className="w-1/2">
+                            <h3 className="text-[#697c95] text-sm ">Lieu de livraison</h3>
+                            <span className=" font-medium">Casablanca, Zone Industrielle Oukacha</span>
+                        </div>
+                    </div>
+                    <div className="w-1/2">
+                        <h3 className="text-[#697c95] text-sm ">Objet</h3>
+                        <span className=" font-medium">Fourniture de matériel informatique et périphériques</span>
+                    </div>
+                
                 </div>
             </div>
 
+            {/* Informations about supplier */}
+
+            <div className="mt-10">
+                {/* title */}
+                <div className="flex justify-start gap-2 items-center bg-[#f8fafc] border border-[#f1f5f9] px-8 py-6 rounded-tr-xl rounded-tl-xl">
+                    <FaRegBuilding color="black" size={20} />
+                    <span className="text-[#6474a8] text-md ">  Fournisseur</span>
+                </div>
+                {/* infos supplier */}
+                <div className="bg-white px-8 py-6 flex flex-col gap-5  rounded-br-xl rounded-bl-xl">
+                    <div className="flex justify-between items-center">
+                        <div className="w-1/2">
+                            <h3 className="text-[#697c95] text-sm ">N° Bon de Commande</h3>
+                            <span className=" font-medium">BC-2025-0089</span>
+                        </div>
+                        <div className="w-1/2">
+                            <h3 className="text-[#697c95] text-sm ">Date</h3>
+                            <span className=" font-medium">07 mars 2025</span>
+                        </div>
+                    </div>
+                
+                </div>
+            </div>
         </div>
     )
 
