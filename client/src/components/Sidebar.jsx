@@ -163,19 +163,19 @@ const Sidebar = () => {
 
 
 
-  const toggleSidebar = () => {
-    setIsExpanded(!isExpanded);
-  };
+  // const toggleSidebar = () => {
+  //   setIsExpanded(!isExpanded);
+  // };
 
   return (
     <>
       
-      {isExpanded && (
+      {/* {isExpanded && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={() => setIsExpanded(false)}
         />
-      )}
+      )} */}
 
       {/* Sidebar */}
       <div className={`
@@ -192,7 +192,7 @@ const Sidebar = () => {
             <h2 className="text-xl font-bold text-gray-800">Ebtikargestion commercial</h2>
           )}
           <button
-            onClick={toggleSidebar}
+            // onClick={toggleSidebar}
             className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600 hover:text-gray-800"
           >
             {isExpanded ? <FiChevronLeft size={20} /> : <FiChevronRight size={20} />}

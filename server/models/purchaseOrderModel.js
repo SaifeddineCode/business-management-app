@@ -27,6 +27,25 @@ export const getAllPurchaseOrdersModel = async(page,limit) =>{
 }
 
 
+export const getSinglePurchaseOrderModel = async (id) =>{
+    const querySingle = `
+        SELECT po.*,
+        sp.name as supplier_name,
+        sp.address as supplier_address,
+        sp.email as supplier_email,
+        sp.phone as supplier_phone
+        FROM purchase_orders as po
+        JOIN suppliers as sp
+        ON po.supplier_id = sp.id
+        WHERE po.id = ?;
+    `
+
+    const [row] = await db.execute(querySingle,[id])
+    return row
+}
+
+
+
 
 export const  getTotalOfPurchaseOrdersModel = async() =>{
     const totalPurchaseOrderQuery = `

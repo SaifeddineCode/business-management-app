@@ -42,10 +42,10 @@ export default function PurchaseOrdersListe() {
   const [search, setSearch] = useState("");
   const [selectedStatut, setSelectedStatut] = useState("Tous");
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeMenu, setActiveMenu] = useState(null);
+  // const [activeMenu, setActiveMenu] = useState(null);
   const itemsPerPage = 5;
 
-console.log(currentPage)
+
 
   const fetchPurchaseOrders = async() =>{
     const result = await fetch(`/api/purchaseOrders?page=${currentPage}&limit=${itemsPerPage}`)
@@ -62,12 +62,6 @@ console.log(currentPage)
 
   
 
-//   useEffect(()=>{
-    if(!isLoading){
-        console.log(data.purchaseOrders)
-        console.log(data.totalPO)
-    }
-//   },[])
 
 
   const statuts = ["Tous", "Approuvé", "En attente", "Livré", "Annulé"];
@@ -97,7 +91,7 @@ console.log(currentPage)
     <div
       className="min-h-screen bg-slate-50"
       style={{ fontFamily: "'DM Sans', 'Segoe UI', sans-serif" }}
-      onClick={() => setActiveMenu(null)}
+      // onClick={() => setActiveMenu(null)}
     >
       {/* Sidebar strip accent */}
       <div className="fixed left-0 top-0 h-full w-1 bg-gradient-to-b from-indigo-600 via-violet-600 to-indigo-800 z-50" />
@@ -261,7 +255,7 @@ console.log(currentPage)
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <Link
-                              to={`/purchaseOrderDetails`}
+                              to={`/purchaseOrderDetails/${po.id}`}
                               className="w-8 h-8 rounded-lg hover:bg-indigo-50 flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-colors">
                               <FiEye className="text-sm" />
                             </Link>

@@ -1,15 +1,47 @@
-import { Link } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { FaFilePdf } from "react-icons/fa";
 import { CiBoxList } from "react-icons/ci";
 import { FaRegBuilding } from "react-icons/fa";
 import { BsBoxSeam } from "react-icons/bs";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 
 
 const PurchaseOrderDetails = () =>{
 
 
+    const [selectedPo,setSelectedPo] = useState({})
+
+    const params = useParams()
+
+    const fetchSinglePurchaseOrder = async() =>{
+
+        const {id} = params
+
+        try{
+            const result = await fetch(`/api/purchaseOrders/${id}`)
+            const data = await result.json()
+
+            if(result.ok){
+            //   setSelectedPo( data)
+            console.log(data)
+            }
+        }catch(err){
+            console.log(err)
+        }
+    }
+
+    // const {data,isloading,err} = useQuery({
+    //     queryKey:["SinglePurchaseOrder"],
+    //     queryFn:fetchSinglePurchaseOrder
+    // })
+
+    useEffect(()=>{
+        fetchSinglePurchaseOrder()
+        // console.log(selectedPo)
+    },[])
 
 
     return (

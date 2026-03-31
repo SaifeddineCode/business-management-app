@@ -1,5 +1,5 @@
 import db from "../config/database.js"
-import {getAllPurchaseOrdersModel, getTotalOfPurchaseOrdersModel, insertIntoPurchaseOrderModel} from "../models/purchaseOrderModel.js"
+import {getAllPurchaseOrdersModel, getSinglePurchaseOrderModel, getTotalOfPurchaseOrdersModel, insertIntoPurchaseOrderModel} from "../models/purchaseOrderModel.js"
 
 
 
@@ -22,7 +22,25 @@ export const getAllPurchaseOrdersController = async (req,res) =>{
 }
 
 
+export const getSinglePurchaseOrderController = async (req,res) =>{
 
+    try{
+        const {id} = await req.params;
+
+        const result = await getSinglePurchaseOrderModel(id)
+
+
+        return res.status(200).json(result)
+
+        // console.log(id)
+
+    }catch(err){
+        console.log(err)
+        res.status(500).json(err)
+    }
+
+
+}
 
 
 

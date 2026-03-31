@@ -60,7 +60,7 @@ function App() {
               <Route path='/invoiceList' element={ <InvoiceListPage /> } />
               <Route path='/purchases' element={<Purchases/>} />
               <Route path='/Purchase-orders-liste' element={<PurchaseOrdersListe/>} />
-              <Route path='/purchaseOrderDetails' element={<PurchaseOrderDetails/>} />
+              <Route path='/purchaseOrderDetails/:id' element={<PurchaseOrderDetails/>} />
               <Route path='/add-purchase-order' element={<AddPurchaserder />} />
               <Route path='/products' element={<Products/>} />
               <Route path='/add-product' element={<AddProduct/>} />

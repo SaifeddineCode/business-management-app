@@ -1,5 +1,5 @@
 import express from "express"
-import {getAllPurchaseOrdersController, getTotalOfPOController, postPurchaseOrderController} from "../controllers/purchaseOrderController.js"
+import {getAllPurchaseOrdersController, getSinglePurchaseOrderController, getTotalOfPOController, postPurchaseOrderController} from "../controllers/purchaseOrderController.js"
 
 const router = express.Router()
 
@@ -7,6 +7,7 @@ const router = express.Router()
 router.get("/total",getTotalOfPOController)
 
 router.get("/",getAllPurchaseOrdersController)
+router.get("/:id",getSinglePurchaseOrderController)
 
 
 router.post("/",postPurchaseOrderController)
