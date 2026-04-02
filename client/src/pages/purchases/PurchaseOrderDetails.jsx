@@ -16,20 +16,23 @@ const PurchaseOrderDetails = () =>{
 
     const params = useParams()
 
-    const fetchSinglePurchaseOrder = async() =>{
+    
 
-        const {id} = params
+    const fetchSinglePurchaseOrder = async () =>{
+
+         const {id} = params;
 
         try{
             const result = await fetch(`/api/purchaseOrders/${id}`)
             const data = await result.json()
 
             if(result.ok){
-            //   setSelectedPo( data)
-            console.log(data)
+                setSelectedPo(data[0])
             }
+            console.log(data[0])
+            
         }catch(err){
-            console.log(err)
+            return console.log(err)
         }
     }
 
@@ -40,9 +43,11 @@ const PurchaseOrderDetails = () =>{
 
     useEffect(()=>{
         fetchSinglePurchaseOrder()
-        // console.log(selectedPo)
     },[])
 
+
+    if(!selectedPo.po_number) return (<>Loading...</>)
+    
 
     return (
         <div>
@@ -60,13 +65,13 @@ const PurchaseOrderDetails = () =>{
                     <div>
                         <div className="flex justify-start gap-2 ">
                             {/* PO Number */}
-                            <h3 className=" font-bold text-lg "> BC6778-1APO </h3>
+                            <h3 className=" font-bold text-lg "> {selectedPo.po_number} </h3>
                             {/* status */}
                             <span className="bg-green-100 text-green-700 font-bold rounded-full py-1 px-4 text-sm">Apprové</span>
                         </div>
                         <div
                             className="text-gray-400 text-sm "
-                        >Bon de Commande ·  <span>07 mars 2025</span> </div>
+                        >Bon de Commande ·  <span> {selectedPo.order_date.split("T")[0]} </span> </div>
                     </div>
                 </div>
                 {/* Right side */}
@@ -88,17 +93,17 @@ const PurchaseOrderDetails = () =>{
                     <div className="flex justify-between items-center">
                         <div className="w-1/2">
                             <h3 className="text-[#697c95] text-sm ">N° Bon de Commande</h3>
-                            <span className=" font-medium">BC-2025-0089</span>
+                            <span className=" font-medium"> {selectedPo.po_number} </span>
                         </div>
                         <div className="w-1/2">
                             <h3 className="text-[#697c95] text-sm ">Date</h3>
-                            <span className=" font-medium">07 mars 2025</span>
+                            <span className=" font-medium"> {selectedPo.order_date.split("T")[0]} </span>
                         </div>
                     </div>
                     <div className="flex justify-between items-center">
                         <div className="w-1/2">
                             <h3 className="text-[#697c95] text-sm ">Devise</h3>
-                            <span className=" font-medium">MAD</span>
+                            <span className=" font-medium"> {selectedPo.currency} </span>
                         </div>
                         <div className="w-1/2">
                             <h3 className="text-[#697c95] text-sm ">Type de code</h3>
@@ -108,16 +113,16 @@ const PurchaseOrderDetails = () =>{
                     <div className="flex justify-between items-center">
                         <div className="w-1/2">
                             <h3 className="text-[#697c95] text-sm ">Incoterm</h3>
-                            <span className=" font-medium">DDP</span>
+                            <span className=" font-medium"> {selectedPo.incoterm} </span>
                         </div>
                         <div className="w-1/2">
                             <h3 className="text-[#697c95] text-sm ">Lieu de livraison</h3>
-                            <span className=" font-medium">Casablanca, Zone Industrielle Oukacha</span>
+                            <span className=" font-medium"> {selectedPo.delivery_location} </span>
                         </div>
                     </div>
                     <div className="w-1/2">
                         <h3 className="text-[#697c95] text-sm ">Objet</h3>
-                        <span className=" font-medium">Fourniture de matériel informatique et périphériques</span>
+                        <span className=" font-medium"> {selectedPo.subject} </span>
                     </div>
                 
                 </div>
@@ -139,20 +144,20 @@ const PurchaseOrderDetails = () =>{
                     <div className="flex flex-col gap-4">
                         <div>
                             <h3 className="text-[#697c95] text-sm ">Nom</h3>
-                            <span className=" font-medium">Atlas Informatique SARL </span>
+                            <span className=" font-medium"> {selectedPo.supplier_name}  </span>
                         </div>
                         <div>
                             <h3 className="text-[#697c95] text-sm ">Adresse</h3>
-                            <span className=" font-medium">123 Bd Mohammed V, Casablanca 20000, Maroc </span>
+                            <span className=" font-medium">{selectedPo.supplier_address} </span>
                         </div>
                         <div className="flex flex-col gap-4">
                             <div>
                                 <h3 className="text-[#697c95] text-sm ">Contact</h3>
-                                <span className=" font-medium">contact@atlas-info.ma </span>
+                                <span className=" font-medium"> {selectedPo.supplier_email} </span>
                             </div>
                             <div>
                                 <h3 className="text-[#697c95] text-sm ">Téléphone</h3>
-                                <span className=" font-medium">+212 522 456 789 </span>
+                                <span className=" font-medium"> {selectedPo.supplier_phone} </span>
                             </div>
                         </div>
                     </div>    
