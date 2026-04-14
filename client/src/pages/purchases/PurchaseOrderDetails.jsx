@@ -13,23 +13,27 @@ const PurchaseOrderDetails = () =>{
 
 
     const [selectedPo,setSelectedPo] = useState({})
+    const [purchaseDetails,setPurchaseDetails] = useState([])
 
     const params = useParams()
 
     
 
     const fetchSinglePurchaseOrder = async () =>{
-
          const {id} = params;
-
         try{
             const result = await fetch(`/api/purchaseOrders/${id}`)
             const data = await result.json()
+            // console.log(data.purchaseOrder[0])
+            console.log(data.purchaseOrderItems)
+            
 
             if(result.ok){
-                setSelectedPo(data[0])
+                // setSelectedPo(data[0])
+                setSelectedPo(data.purchaseOrder[0])
+                setPurchaseDetails(data.purchaseOrderItems)
             }
-            console.log(data[0])
+            // console.log(data[0])
             
         }catch(err){
             return console.log(err)
@@ -44,6 +48,7 @@ const PurchaseOrderDetails = () =>{
     useEffect(()=>{
         fetchSinglePurchaseOrder()
     },[])
+
 
 
     if(!selectedPo.po_number) return (<>Loading...</>)
@@ -172,6 +177,8 @@ const PurchaseOrderDetails = () =>{
                 </div>
                 {/* infos supplier */}
                 <div className="bg-white px-8 py-6   rounded-br-xl rounded-bl-xl">
+                    {purchaseDetails.length > 0 
+                    ?
                     <table className="w-full ">
                         <thead className="border-b-2 border-[#DDD] ">
                             <tr >
@@ -199,31 +206,44 @@ const PurchaseOrderDetails = () =>{
                             </tr>
                         </thead>
                         <tbody className="">
-                            <tr>
+                            {purchaseDetails.length > 0 ? 
+                            purchaseDetails.map((po_item,index)=>{
+
+                                return (
+                                    <tr key={index}>
                                 <td className="p-1"> 
-                                    <span className=" bg-blue-100  font-medium text-sm  rounded-xl text-center px-3 py-1 text-blue-800">Lap-001</span>
+                                    <span className=" bg-blue-100  font-medium text-sm  rounded-xl text-center px-3 py-1 text-blue-800"> {po_item.reference} </span>
                                 </td>
                                 <td className="p-1">
-                                    <span className="font-bold text-sm">LAPTOP DELL latitude</span>
+                                    <span className="font-bold text-sm">{po_item.product_name}</span>
                                 </td>
                                 <td className="p-1">
-                                    <span className="text-sm text-gray-400">PCE</span>
+                                    <span className="text-sm text-gray-400">{po_item.unit}</span>
                                 </td>
                                 <td className="p-1">
-                                    <span>5</span>
+                                    <span> {po_item.quantity} </span>
                                 </td>
                                 <td className="p-1">
-                                    <span>12.500,00 MAD</span>
+                                    <span> {po_item.unit_price} </span>
                                 </td>
                                 <td className="p-1">
-                                    <span className="text-sm bg-pink-100 text-pink-600 py-1 px-3 rounded-lg text-center">5%</span>
+                                    <span className="text-sm bg-pink-100 text-pink-600 py-1 px-3 rounded-lg text-center">{po_item.discount_percent}%</span>
                                 </td>
                                 <td className="p-1">
-                                    <span className="font-bold">59.375,00 MAD</span>
+                                    <span className="font-bold">{po_item.unit_price}MAD</span>
                                 </td>
                             </tr>
+                                )
+
+                            })
+                            :
+                            <p> Ce bon de commande n'a pas encore des produits </p>
+                            }
                         </tbody>
                     </table>
+                    :
+                    <p> Ce bon de commande n'a pas encore des produits </p>
+                    }
                 </div>
             </div>
         </div>

@@ -40,8 +40,19 @@ export const getSinglePurchaseOrderModel = async (id) =>{
         WHERE po.id = ?;
     `
 
-    const [row] = await db.execute(querySingle,[id])
-    return row
+    const querySinglePoDetails = `
+        SELECT poi.*, pdt.product_name 
+        FROM purchase_order_items as poi
+        join products as pdt
+        ON poi.product_id = pdt.id
+        where poi.purchase_order_id = ?;
+    `
+
+
+    const [purchaseOrder] = await db.execute(querySingle,[id])
+    const [purchaseOrderItems] = await db.execute(querySinglePoDetails,[id])
+
+    return {purchaseOrder,purchaseOrderItems}
 }
 
 
