@@ -10,16 +10,24 @@ export const getAllSuppliers = async(req,res) =>{
 
     }catch(err){
         console.log(err)
+        return res.status(500).json({ message: 'Internal server error' });
     }
 }
 
 
 export const postSupplier = async(req,res) =>{
 
-    console.log(req)
+    console.log(req.body)
 
    try{
     const newSupplier = req.body
+
+    const {name,email,phone} = newSupplier
+
+    if(!name,!email,!phone){
+        return res.status(400).json({ message: 'Missing required fields' });
+    }
+
     const result = await postSupplierModel(newSupplier)
 
     return res.status(201).json(result.message)
@@ -27,6 +35,7 @@ export const postSupplier = async(req,res) =>{
     
    }catch(err){
     console.log(err)
+    return res.status(500).json({ message: 'Internal server error' });
    }
 
 }
