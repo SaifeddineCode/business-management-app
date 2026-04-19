@@ -24,64 +24,11 @@ export default function Suppliers() {
     queryFn : fetchSuppliers
   })
 
-  useEffect(()=>{
-    console.log(suppliers)
-  },[suppliers])
 
-  // const [dummySuppliers, setDummySuppliers] = useState([
-  //   {
-  //     id: 1,
-  //     name: 'Fournisseur ABC SARL',
-  //     email: 'contact@abc.com',
-  //     phone: '+212 5 35 94 46 00',
-  //     address: '123 Rue Mohammed V',
-  //     city: 'Casablanca',
-  //     contact_person: 'Ahmed Bennani',
-  //     created_at: '2025-01-15'
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'Supplier XYZ Ltd',
-  //     email: 'info@xyz.com',
-  //     phone: '+212 6 61 23 45 67',
-  //     address: '456 Avenue Hassan II',
-  //     city: 'Rabat',
-  //     contact_person: 'Fatima Al-Mansouri',
-  //     created_at: '2025-02-01'
-  //   },
-  //   {
-  //     id: 3,
-  //     name: 'Global Imports Co',
-  //     email: 'sales@globalimports.com',
-  //     phone: '+212 5 24 39 99 99',
-  //     address: '789 Boulevard de la Paix',
-  //     city: 'Marrakech',
-  //     contact_person: 'Mohamed Alaoui',
-  //     created_at: '2025-02-10'
-  //   },
-  //   {
-  //     id: 4,
-  //     name: 'Tech Solutions Morocco',
-  //     email: 'tech@techsolutions.ma',
-  //     phone: '+212 6 77 88 99 00',
-  //     address: '321 Rue de l\'Innovation',
-  //     city: 'Fès',
-  //     contact_person: 'Nadia Zahra',
-  //     created_at: '2025-02-05'
-  //   },
-  //   {
-  //     id: 5,
-  //     name: 'Premium Distributors',
-  //     email: 'premium@distributors.com',
-  //     phone: '+212 5 22 45 67 89',
-  //     address: '654 Chemin de Meknes',
-  //     city: 'Salé',
-  //     contact_person: 'Hassan Chakir',
-  //     created_at: '2025-02-12'
-  //   }
-  // ]);
+
 
   const [showAddModal, setShowAddModal] = useState(false);
+
   const [newSupplier, setNewSupplier] = useState({
     name: '',
     email: '',
@@ -93,9 +40,28 @@ export default function Suppliers() {
 
   
 
-  const handleAddSupplier = () => {
-    // Functionality to be added
-    console.log('Add supplier:', newSupplier);
+  const handleAddSupplier =  async () => {
+    
+    try{
+
+      const result = await fetch("/api/suppliers",
+        {
+         method : "POST",
+         headers:{
+          "Content-type" : "application/json",
+         },
+         body:JSON.stringify(newSupplier)
+        }
+        
+      )
+
+      if(!result.ok) {
+        throw new Error("problem when adding a new supplier")
+      }
+
+      alert("supplier was added successfuly")
+
+
     setShowAddModal(false);
     setNewSupplier({
       name: '',
@@ -105,7 +71,15 @@ export default function Suppliers() {
       city: '',
       contact_person: ''
     });
+
+
+    }catch(err){
+      console.log(err)
+    }
+    
   };
+
+
 
   const handleDeleteSupplier = (id) => {
     // Functionality to be added

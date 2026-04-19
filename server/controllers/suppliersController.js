@@ -1,5 +1,4 @@
-import {getAllSuppliersModel} from "../models/suppliersModel.js"
-
+import {getAllSuppliersModel, postSupplierModel} from "../models/suppliersModel.js"
 
 
 export const getAllSuppliers = async(req,res) =>{
@@ -12,7 +11,22 @@ export const getAllSuppliers = async(req,res) =>{
     }catch(err){
         console.log(err)
     }
+}
 
 
+export const postSupplier = async(req,res) =>{
+
+    console.log(req)
+
+   try{
+    const newSupplier = req.body
+    const result = await postSupplierModel(newSupplier)
+
+    return res.status(201).json(result.message)
+
+    
+   }catch(err){
+    console.log(err)
+   }
 
 }
