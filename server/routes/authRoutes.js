@@ -1,5 +1,6 @@
 import express from "express"
 import { login, register } from "../controllers/authController.js"
+import { loginLimiter } from "../middlewares/loginLimiter.js"
 
 const router = express.Router()
 
@@ -10,7 +11,7 @@ router.post("/register",register)
 
 //login endpoint
 
-router.post("/login",login)
+router.post("/login",loginLimiter,login)
 
 export default router;
 

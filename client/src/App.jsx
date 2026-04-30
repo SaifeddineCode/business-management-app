@@ -26,6 +26,7 @@ function App() {
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+
    useEffect(() => {
     // Check if token exists in localStorage
     const token = localStorage.getItem('token');
@@ -48,6 +49,7 @@ function App() {
               {/* <Route path='/login' element={<Login />} />
               <Route path='/' element={<Navigate to={'/login'} />} /> */}
               <Route path='/dashboard' element={<Dashboard/>} />
+              <Route path='/' element={<Dashboard/>} />
               <Route path='/sales' element={<Sales/>} />
               <Route path='/add-quote' element={<AddQuote />} />
               <Route path="/quote" element={<Quote />} />

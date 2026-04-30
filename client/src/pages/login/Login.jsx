@@ -18,6 +18,7 @@ const Login = ({setIsAuthenticated}) => {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isExceed,setIsExceed] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -48,10 +49,23 @@ const Login = ({setIsAuthenticated}) => {
 
       const data = await response.json();
 
+      console.log(response )
+
+      
+
       if (!response.ok) {
-        // If response status is not 2xx, throw error
-        throw new Error(data.message || 'Login failed');
+        let errorMessage = 'Login failed';
+
+        if(response.status === 429){
+        errorMessage = `Too many login attempts. Please wait before trying again.`;
+        setIsExceed(true)
+      }else {
+        errorMessage = data.message || data.error || 'Login failed';
       }
+        // If response status is not 2xx, throw error
+         throw new Error(errorMessage);
+      }
+
 
       // Save token to localStorage
       localStorage.setItem('token', data.token);
@@ -68,6 +82,7 @@ const Login = ({setIsAuthenticated}) => {
 
     } catch (err) {
       setError(err.message || 'Login failed');
+      // setError(err.message );
     } finally {
       setLoading(false);
     }
@@ -143,8 +158,9 @@ const Login = ({setIsAuthenticated}) => {
 
           <button
             type="submit"
-            disabled={loading}
-            className={`w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200 ${
+            disabled={isExceed}
+
+            className={`w-full ${isExceed ? "cursor-not-allowed" : " cursor-pointer"}  py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200 ${
               loading ? 'opacity-60 cursor-not-allowed' : 'hover:shadow-lg'
             }`}
           >

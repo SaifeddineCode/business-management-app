@@ -13,9 +13,7 @@ const Navbar = ({setIsAuthenticated}) => {
 
   const user = JSON.parse(localStorage.getItem("user"))
 
-  useEffect(()=>{
-    console.log(user.name)
-  },[user])
+
 
   const notifications = [
     { id: 1, text: 'New quote request from Client XYZ', time: '5 min ago', unread: true },
