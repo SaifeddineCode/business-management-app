@@ -10,6 +10,7 @@ import {
 const Navbar = ({setIsAuthenticated}) => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+   const [isSettingOpen, setIsSettingOpen] = useState(false)
 
   const user = JSON.parse(localStorage.getItem("user"))
 
@@ -21,11 +22,17 @@ const Navbar = ({setIsAuthenticated}) => {
     { id: 3, text: 'Inventory low for Product #123', time: '2 hours ago', unread: false }
   ];
 
+ 
+
   const signOut = () =>{
     localStorage.removeItem("token")
     localStorage.removeItem("user")
     setIsAuthenticated(false)
   }
+
+  useEffect(()=>{
+    console.log(isSettingOpen)
+  },[isSettingOpen])
 
   return (
     <nav className="bg-white border-b border-gray-200 px-6 py-4">
@@ -93,9 +100,17 @@ const Navbar = ({setIsAuthenticated}) => {
           </div>
 
           {/* Settings Icon */}
-          <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-            <FiSettings className="h-5 w-5" />
-          </button>
+          <div className='relative'>
+            <button  
+              onClick={()=>setIsSettingOpen((prev)=>!prev)}
+              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+              <FiSettings className="h-5 w-5" />
+            </button>
+            {/* details */}
+            {isSettingOpen && <div className='absolute z-50 top-10 right-0 bg-white rounded-xl p-4 shadow-sm w-[200px]' >
+              <button className='bg-blue-900 text-white text-sm rounded-xl p-3'> Gestion des utilisateurs</button>
+            </div>}
+          </div>
 
           {/* Profile Dropdown */}
           <div className="relative">

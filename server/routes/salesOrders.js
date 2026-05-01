@@ -1,6 +1,7 @@
 import express from "express"
 import { getSalesOrders, postSaleOrder } from "../controllers/salesOrderController.js"
 import { verifyToken } from "../middlewares/authMiddlware.js"
+import { requireRole } from "../middlewares/requireRole.js"
 
 const router = express.Router()
 

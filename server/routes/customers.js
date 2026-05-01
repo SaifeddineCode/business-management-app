@@ -1,6 +1,7 @@
 import express from 'express'
 import { getClients } from '../controllers/customersController.js';
 import { verifyToken } from '../middlewares/authMiddlware.js';
+import { requireRole } from '../middlewares/requireRole.js';
 
 
 
