@@ -21,6 +21,7 @@ import AddPurchaserder from "./pages/purchases/AddPurchaseOrder";
 import Suppliers from "./pages/suppliers/Suppliers";
 import PurchaseOrdersListe from "./pages/purchases/PurchaseOrdersListe";
 import PurchaseOrderDetails from "./pages/purchases/PurchaseOrderDetails";
+import ListsPages from "./pages/clients/ListsClients";
 
 function App() {
 
@@ -67,6 +68,7 @@ function App() {
               <Route path='/purchaseOrderDetails/:id' element={<PurchaseOrderDetails/>} />
               <Route path='/add-purchase-order' element={<AddPurchaserder />} />
               <Route path='/products' element={<Products/>} />
+              <Route path='/clients' element={<ListsPages/>} />
               <Route path='/add-product' element={<AddProduct/>} />
               <Route path='/add-product/:id/edit' element={<AddProduct/>} />
               <Route path='/product-details/:id' element={<ProductDetails/>} />
