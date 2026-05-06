@@ -80,28 +80,6 @@ const Sales = () => {
 }, []);
 
 
-// useEffect(()=>{
-//   const fetchingPendingQuotes = async() =>{
-//     try{
-//       const result = await fetch("/api/quote")
-//       const data = await result.json()
-      
-//       if(!data){
-//         throw new Error("Error while fetching pending quotes")
-//       }
-//       setRecentQuotes(data)
-//       const filtredQuotesPending = data.filter((quote)=>{
-//         return quote?.status === "brouillon"
-//       })
-
-//       setPendingQuotes(filtredQuotesPending)    
-//     }catch(err){
-//       console.log(err.message)
-//     }
-//   }
-
-//   fetchingPendingQuotes()
-// },[])
 
 
 const fetchQuotes = async() =>{
@@ -168,33 +146,7 @@ const handleDeleteSingleQuote = async(id) =>{
   );
 
 
-  const updateQuote = async(id,columnUpdated = "",valueUpdated = "") =>{
-
-    try{
-      const data = {columnUpdated,valueUpdated}
-
-      const result = await fetch(`/api/quote/${id}/edit`,{
-        method : "PATCH",
-        headers: {
-          "Content-Type": "application/json" 
-        },
-        body: JSON.stringify(data) 
-          }
-      )
-
-    if(!result.ok){
-      return console.log("client side message error  :",result.status,result.statusText)
-    }
-
-    return result.json()
-
-    }catch(err){
-
-      console.log(err)
-
-    }
-  }
-
+  
 
 
 

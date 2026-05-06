@@ -1,6 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+
 import { createUser, findUserByEmail } from "../models/userModel.js";
+import prisma from "../config/prisma.js";
+
 
 
 
@@ -68,8 +71,15 @@ export const login = async (req,res) =>{
             })
         }
 
-        const user = await findUserByEmail(email)
-        
+        // const user = await findUserByEmail(email)
+
+        const user = await prisma.user.findUnique({
+        where: { email },
+        });
+
+        console.log(user)
+
+
         if(!user){
             return res.status(401).json({
                 message:"Invalid email or password"

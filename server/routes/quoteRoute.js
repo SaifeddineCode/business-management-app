@@ -8,7 +8,8 @@ import { verifyToken } from '../middlewares/authMiddlware.js';
 // router.get("/",verifyToken, getQuotes)
 
 // get all quotes
-router.get("/",verifyToken, getQuotes)
+router.get("/",getQuotes)
+// router.get("/",verifyToken, getQuotes)
 
 // get single quote
 router.get('/:id',getQuoteById)

@@ -37,9 +37,9 @@ function App() {
 
 
 
-  if (!isAuthenticated) {
-    return <Login setIsAuthenticated={setIsAuthenticated} />;
-  }
+  // if (!isAuthenticated) {
+  //   return <Login setIsAuthenticated={setIsAuthenticated} />;
+  // }
 
   return (
     <div className="flex flex-col">
@@ -49,8 +49,8 @@ function App() {
           <Navbar setIsAuthenticated={setIsAuthenticated} />
           <main className="flex-1 p-6">
             <Routes>
-              {/* <Route path='/login' element={<Login />} />
-              <Route path='/' element={<Navigate to={'/login'} />} /> */}
+              {/* <Route path='/login' element={<Login />} />  */}
+              {/* <Route path='/' element={<Navigate to={'/login'} />} />  */}
               <Route path='/dashboard' element={<Dashboard/>} />
               <Route path='/' element={<Dashboard/>} />
               <Route path='/sales' element={<Sales/>} />

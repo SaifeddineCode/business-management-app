@@ -8,9 +8,11 @@ const router = express.Router()
 
 
 
-router.get("/",verifyToken,getSalesOrders)
+router.get("/",getSalesOrders)
+// router.get("/",verifyToken,getSalesOrders)
 
-router.post("/",verifyToken ,postSaleOrder)
+router.post("/",postSaleOrder)
+// router.post("/",verifyToken ,postSaleOrder)
 
 
 export default router

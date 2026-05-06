@@ -11,13 +11,13 @@ const Dashboard = () => {
 
   const user =  JSON.parse(localStorage.getItem("user"))
 
-  const userName = user.name
+  // const userName = user.name
 
   return (
     <div >
       {/* Welcome top part */}
       <div className="mb-3">
-        <h1 className="text-2xl font-bold">Welcome back, {userName}  </h1>
+        {/* <h1 className="text-2xl font-bold">Welcome back, {userName}  </h1> */}
         <p className="text-gray-500 "> voici ce qui se passe dans votre entreprise aujourd'hui.</p>
       </div>
 
