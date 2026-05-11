@@ -10,9 +10,10 @@ import {
 const Navbar = ({setIsAuthenticated}) => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-   const [isSettingOpen, setIsSettingOpen] = useState(false)
+  const [isSettingOpen, setIsSettingOpen] = useState(false)
 
-  const user = JSON.parse(localStorage.getItem("user"))
+  // const user = JSON.parse(localStorage.getItem("user"))
+
 
 
 
@@ -21,8 +22,6 @@ const Navbar = ({setIsAuthenticated}) => {
     { id: 2, text: 'Payment received from ABC Corp', time: '1 hour ago', unread: true },
     { id: 3, text: 'Inventory low for Product #123', time: '2 hours ago', unread: false }
   ];
-
- 
 
   const signOut = () =>{
     localStorage.removeItem("token")

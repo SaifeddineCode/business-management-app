@@ -11,7 +11,7 @@ import AddSalesOrder from "./pages/sales/forms/AddSalesOrder";
 import SalesOrdersList from "./pages/salesOrders/SalesOrders";
 import Invoice from "./pages/invoice/Invoice";
 import InvoiceListPage from "./pages/invoice/InvoiceListPage";
-import Login from "./pages/login/Login";
+import Login from "./pages/auth/Login";
 import { useEffect, useState } from "react";
 import QuoteDetails from "./pages/quote/QuoteDetails";
 import Products from "./pages/products/Products";

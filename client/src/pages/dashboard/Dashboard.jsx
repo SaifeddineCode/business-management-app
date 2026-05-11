@@ -9,7 +9,7 @@ import { FaListCheck } from "react-icons/fa6";
 const Dashboard = () => {
 
 
-  const user =  JSON.parse(localStorage.getItem("user"))
+  // const user =  JSON.parse(localStorage.getItem("user"))
 
   // const userName = user.name
 

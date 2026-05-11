@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../store/slices/authSlice';
+import Register from './Register';
 // import { useNavigate } from 'react-router-dom';
 
 
@@ -10,10 +11,14 @@ import { loginSuccess } from '../../store/slices/authSlice';
 const Login = ({setIsAuthenticated}) => {
 
 
+
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+
+  const [mode,setMode] = useState("register")
 
 
   const [error, setError] = useState('');
@@ -87,6 +92,12 @@ const Login = ({setIsAuthenticated}) => {
       setLoading(false);
     }
   };
+
+  if( mode ==="register" ){
+    return(
+      <Register setMode ={setMode} />
+    )
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
@@ -181,9 +192,9 @@ const Login = ({setIsAuthenticated}) => {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Don't have an account?{' '}
-            <a href="/register" className="text-blue-600 hover:text-blue-500 font-semibold">
+            <span onClick={()=>setMode("register")}  className="text-blue-600 cursor-pointer hover:text-blue-500 font-semibold">
               Sign up
-            </a>
+            </span>
           </p>
         </div>
       </div>

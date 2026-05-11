@@ -1,4 +1,5 @@
 import express from "express";
+import prisma from "./config/prisma.js";
 import customers from './routes/customers.js'
 import products from "./routes/products.js"
 import quoteRoute from "./routes/quoteRoute.js"
@@ -43,4 +44,15 @@ app.get("/",(req,res)=>{
 
 
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+
+// Graceful shutdown - disconnect Prisma when server stops
+process.on('SIGINT', async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
 
