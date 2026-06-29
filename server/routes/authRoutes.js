@@ -11,7 +11,7 @@ router.post("/register",register)
 
 //login endpoint
 
-router.post("/login",loginLimiter,login)
+router.post("/login",login)
 
 export default router;
 

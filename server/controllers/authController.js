@@ -13,40 +13,50 @@ export const register = async(req,res) =>{
 
         const {name,email,password} = req.body 
 
+        console.log(req.body)
+
+
         // validation
 
-        if(!email || !password){
-            return res.status(400).json({
-                message:"Email ans password are required"
-            })
-        }
+        // if(!email || !password){
+        //     return res.status(400).json({
+        //         message:"Email ans password are required"
+        //     })
+        // }
 
-        if(password.length < 6){
-            return res.status(400).json({
-                message:"Password must be at least 6 characters"
-            })
-        }
+        // if(password.length < 6){
+        //     return res.status(400).json({
+        //         message:"Password must be at least 6 characters"
+        //     })
+        // }
 
-        // check if user already exists
+        // // check if user already exists
 
-        const existingUser = await findUserByEmail(email)
-        if(existingUser){
-            return res.status(400).json({
-                message:"User already exisits with this email"
-            })
-        }
+        // // const existingUser = await findUserByEmail(email)
+        // const existingUser = await prisma.user.findUnique({
+        // where: {
+        //     email: formData.email,
+        // },
+        // });
 
-        // hash password
-        const hashedPassword = await bcrypt.hash(password,10)
 
-        // Create user in databse
+        // if(existingUser){
+        //     return res.status(400).json({
+        //         message:"User already exisits with this email"
+        //     })
+        // }
 
-        const userId  = await createUser(name,email,hashedPassword)
+        // // hash password
+        // const hashedPassword = await bcrypt.hash(password,10)
 
-        res.status(201).json({
-            message:"User registered successfully",
-            userId
-        })
+        // // Create user in databse
+
+        // const userId  = await createUser(name,email,hashedPassword)
+
+        // res.status(201).json({
+        //     message:"User registered successfully",
+        //     userId
+        // })
 
 
 
@@ -60,70 +70,75 @@ export const register = async(req,res) =>{
 
 
 export const login = async (req,res) =>{
-    try{
 
-        const {email,password} = req.body
+    const {email,password} = req.body
+
+    console.log(email)
+
+    // try{
+
+    //     const {email,password} = req.body
         
-        // validation
-        if(!email || !password){
-            return res.status(400).json({
-                message:"Email and password are required"
-            })
-        }
+    // //     // validation
+    //     if(!email || !password){
+    //         return res.status(400).json({
+    //             message:"Email and password are required"
+    //         })
+    //     }
 
-        // const user = await findUserByEmail(email)
+    //     // const user = await findUserByEmail(email)
 
-        const user = await prisma.user.findUnique({
-        where: { email },
-        });
+    //     const user = await prisma.user.findUnique({
+    //     where: { email },
+    //     });
 
-        console.log(user)
+    //     console.log(user)
 
 
-        if(!user){
-            return res.status(401).json({
-                message:"Invalid email or password"
-            })
-        }   
+    //     if(!user){
+    //         return res.status(401).json({
+    //             message:"Invalid email or password"
+    //         })
+    //     }   
 
-        //check password 
+    //     //check password 
 
-        const isPasswordValid = await bcrypt.compare(password,user.password)
-        if(!isPasswordValid){
-            return res.status(401).json({
-                message:'invalid email or password'
-            })
-        }
+    //     const isPasswordValid = await bcrypt.compare(password,user.password)
+    //     if(!isPasswordValid){
+    //         return res.status(401).json({
+    //             message:'invalid email or password'
+    //         })
+    //     }
 
-        // Generate JWT token
+    //     // Generate JWT token
 
-        const token = jwt.sign(
-            {
-                id:user.id,
-                // email:user.email
-                role:user.role
-            },
-            process.env.JWT_SECRET,
-            {expiresIn:'24h'}
-        );
+    //     const token = jwt.sign(
+    //         {
+    //             id:user.id,
+    //             // email:user.email
+    //             role:user.role
+    //         },
+    //         process.env.JWT_SECRET,
+    //         {expiresIn:'24h'}
+    //     );
 
-        // send response 
+    //     // send response 
 
-        res.status(200).json({
-            message:"Login successful",
-            token,
-            user:{
-                id:user.id,
-                name:user.name,
-                email:user.email,
-                role:user.role
-            }
-        });
+    //     res.status(200).json({
+    //         message:"Login successful",
+    //         token,
+    //         user:{
+    //             id:user.id,
+    //             name:user.name,
+    //             email:user.email,
+    //             role:user.role
+    //         }
+    //     });
     
-    }catch(err){
-        console.log(err);
-        res.status(500).json({
-            message:"Server error during login"
-        })
-    }
+    // }catch(err){
+    //     console.log(err);
+    //     res.status(500).json({
+    //         message:"Server error during login"
+    //     })
+    // }
 }
